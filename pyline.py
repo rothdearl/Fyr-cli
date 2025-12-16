@@ -65,7 +65,7 @@ class PyLine(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display the matched strings, file names and line numbers in color")
         parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
-        parser.add_argument("--xargs", action="store_true", help="read FILES from standard input")
+        parser.add_argument("--stdin", action="store_true", help="read FILES from standard input")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser
@@ -86,12 +86,12 @@ class PyLine(CLIProgram):
         The main function of the program.
         :return: None
         """
-        # Set --no-file-header to True if there are no files and --xargs=False.
-        if not self.args.files and not self.args.xargs:
+        # Set --no-file-header to True if there are no files and --stdin=False.
+        if not self.args.files and not self.args.stdin:
             self.args.no_file_header = True
 
         if CLIProgram.input_is_redirected():
-            if self.args.xargs:  # --xargs
+            if self.args.stdin:  # --stdin
                 self.print_matches_in_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
