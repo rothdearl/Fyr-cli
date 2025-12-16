@@ -47,7 +47,7 @@ class PyTail(CLIProgram):
         Builds an argument parser.
         :return: An argument parser.
         """
-        parser = argparse.ArgumentParser(allow_abbrev=False, description="print the last 10 lines from FILES",
+        parser = argparse.ArgumentParser(allow_abbrev=False, description="print the last part of FILES",
                                          epilog="with no FILES, read standard input", prog=self.NAME)
 
         parser.add_argument("files", help="files to print", metavar="FILES", nargs="*")
