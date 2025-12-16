@@ -122,14 +122,11 @@ class CLIProgram(ABC):
         windows = os.name == "nt"
 
         try:
-            # Fix ANSI escape sequences on Windows.
-            if windows:
+            if windows:  # Fix ANSI escape sequences on Windows.
                 from colorama import just_fix_windows_console
 
                 just_fix_windows_console()
-
-            # Prevent a broken pipe error (not supported on Windows).
-            if not windows:
+            else:  # Prevent broken pipe errors (not supported on Windows).
                 from signal import SIG_DFL, SIGPIPE, signal
 
                 signal(SIGPIPE, SIG_DFL)
