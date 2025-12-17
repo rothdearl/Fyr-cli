@@ -53,7 +53,7 @@ class PyLine(CLIProgram):
         parser.add_argument("files", help="files to search", metavar="FILES", nargs="*")
         parser.add_argument("-c", "--count", action="store_true",
                             help="print only a count of matching lines per input file")
-        parser.add_argument("-g", "--grep", action="extend", help="print lines that match PATTERN", metavar="PATTERN",
+        parser.add_argument("-e", "--grep", action="extend", help="print lines that match PATTERN", metavar="PATTERN",
                             required=True, nargs=1)
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the file name header on output")
