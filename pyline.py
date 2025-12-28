@@ -60,6 +60,8 @@ class PyLine(CLIProgram):
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case in patterns and input data")
         parser.add_argument("-I", "--invert-match", action="store_true", help="print nonmatching lines")
         parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
+        parser.add_argument("-q", "--quiet", "--silent", action="store_true", help="suppress all normal output")
+        parser.add_argument("-s", "--no-messages", action="store_true", help="suppress error messages about files")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display the matched strings, file names and line numbers in color")
         parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
@@ -113,7 +115,7 @@ class PyLine(CLIProgram):
             try:
                 self.print_matches_in_lines(text, origin_file=file)
             except UnicodeDecodeError:
-                self.log_error(f"{file}: unable to read with {self.encoding}")
+                self.log_file_error(f"{file}: unable to read with {self.encoding}")
 
     def print_matches_in_input(self) -> None:
         """
@@ -152,6 +154,10 @@ class PyLine(CLIProgram):
             if PatternFinder.text_has_patterns(self, line, self.args.find,
                                                ignore_case=self.args.ignore_case) != self.args.invert_match:  # --invert-match
                 self.at_least_one_match = True
+
+                # If --quiet, exit on first match for performance.
+                if self.args.quiet:
+                    raise SystemExit(0)
 
                 if self.print_color and not self.args.invert_match:  # --invert-match
                     line = PatternFinder.color_patterns_in_text(line, self.args.find, ignore_case=self.args.ignore_case,
