@@ -87,22 +87,18 @@ class PyWalk(CLIProgram):
         if not self.at_least_one_match:
             raise SystemExit(1)
 
-    def color_patterns_in_path(self, path: str, text: str, patterns: list[str]) -> str:
+    def color_patterns_in_path(self, text: str, patterns: list[str]) -> str:
         """
         Colors all patterns in the path.
-        :param path: The path.
         :param text: The text to color.
         :param patterns: The patterns.
         :return: The path with all the patterns colored.
         """
         if patterns:
-            colored_text = PatternFinder.color_patterns_in_text(text, patterns, ignore_case=self.args.ignore_case,
-                                                                color=Colors.MATCH)
+            text = PatternFinder.color_patterns_in_text(text, patterns, ignore_case=self.args.ignore_case,
+                                                        color=Colors.MATCH)
 
-            # Ensure only the text gets colored and nothing else.
-            path = colored_text.join(path.rsplit(text, maxsplit=1))
-
-        return path
+        return text
 
     def file_matches_filters(self, file: pathlib.Path) -> bool:
         """
@@ -159,7 +155,7 @@ class PyWalk(CLIProgram):
         :return: True or False.
         """
         return not patterns or PatternFinder.text_has_patterns(self, file, patterns,
-                                                               ignore_case=self.args.ignore_case) != self.args.invert_match  # --invert-match
+                                                               ignore_case=self.args.ignore_case) != self.args.invert_match
 
     def main(self) -> None:
         """
@@ -185,17 +181,17 @@ class PyWalk(CLIProgram):
         :param file: The file.
         :return: None
         """
-        file_name = file.name if file.name else os.path.curdir  # The dot file does not have a file name.
+        file_name = file.name if file.name else os.curdir  # The dot file does not have a file name.
         file_path = str(file.parent)
 
         # Check --depth then --name then --path then filters.
         if self.args.depth and self.args.depth < len(file.parents):
             return
 
-        if self.args.name and not self.file_has_patterns(file_name, self.args.name):
+        if not self.file_has_patterns(file_name, self.args.name):
             return
 
-        if self.args.path and not self.file_has_patterns(file_path, self.args.path):
+        if not self.file_has_patterns(file_path, self.args.path):
             return
 
         if not self.file_matches_filters(file):
@@ -207,11 +203,14 @@ class PyWalk(CLIProgram):
         if self.args.quiet:
             raise SystemExit(0)
 
-        path = str(file.absolute() if self.args.abs else file)  # --abs
-
         if self.print_color and not self.args.invert_match:  # --invert-match
-            path = self.color_patterns_in_path(path, file_name, self.args.name)
-            path = self.color_patterns_in_path(path, file_path, self.args.path)
+            file_name = self.color_patterns_in_path(file_name, self.args.name)
+            file_path = self.color_patterns_in_path(file_path, self.args.path)
+
+        path = os.path.join(file_path, file_name)
+
+        if self.args.abs:  # --abs
+            path = os.path.join(pathlib.Path.cwd(), path)
 
         if self.args.quote:  # --quote
             path = f"\"{path}\""
