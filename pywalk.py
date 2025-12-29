@@ -4,7 +4,7 @@
 """
 Filename: pywalk.py
 Author: Roth Earl
-Version: 1.2.1
+Version: 1.2.2
 Description: A program to print files in a directory hierarchy.
 License: GNU GPLv3
 """
@@ -37,9 +37,10 @@ class PyWalk(CLIProgram):
         """
         Initializes a new instance.
         """
-        super().__init__(name="pywalk", version="1.2.1", error_exit_code=2)
+        super().__init__(name="pywalk", version="1.2.2", error_exit_code=2)
 
         self.at_least_one_match: bool = False
+        self.max_depth: int = 0
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
@@ -47,10 +48,12 @@ class PyWalk(CLIProgram):
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="print files in a directory hierarchy",
-                                         epilog="default directory is the current directory", prog=self.NAME)
+                                         epilog="default starting-point is the current directory", prog=self.NAME)
         modified_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("dirs", help="directory starting-points", metavar="DIRECTORIES", nargs="*")
+        parser.add_argument("-d", "--depth", help="descend at most N+ levels of directories below the starting-points",
+                            metavar="N+", nargs=1, type=int)
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case in patterns and input data")
         parser.add_argument("-I", "--invert-match", action="store_true", help="print non-matching files")
         parser.add_argument("-n", "--name", action="extend", help="print files that match PATTERN", metavar="PATTERN",
@@ -164,6 +167,12 @@ class PyWalk(CLIProgram):
         The main function of the program.
         :return: None
         """
+        if self.args.depth:  # --depth
+            self.max_depth = self.args.depth[0]
+
+            if self.max_depth < 1:
+                self.log_error(f"depth ({self.max_depth}) cannot be less than 1", raise_system_exit=True)
+
         if CLIProgram.input_is_redirected():
             for directory in sys.stdin:
                 self.print_files(directory.rstrip("\n"))
@@ -186,25 +195,35 @@ class PyWalk(CLIProgram):
         file_name = file.name if file.name else os.path.curdir  # The dot file does not have a file name.
         file_path = str(file.parent)
 
-        # Check --name then --path then filters.
-        if self.file_has_patterns(file_name, self.args.name) and self.file_has_patterns(file_path, self.args.path):
-            if self.file_matches_filters(file):
-                self.at_least_one_match = True
+        # Check --depth then --name then --path then filters.
+        if self.max_depth and self.max_depth < len(file.parents):
+            return
 
-                # If --quiet, exit on first match for performance.
-                if self.args.quiet:
-                    raise SystemExit(0)
+        if not self.file_has_patterns(file_name, self.args.name):
+            return
 
-                path = str(file.absolute() if self.args.abs else file)  # --abs
+        if not self.file_has_patterns(file_path, self.args.path):
+            return
 
-                if self.print_color and not self.args.invert_match:  # --invert-match
-                    path = self.color_patterns_in_path(path, file_name, self.args.name)
-                    path = self.color_patterns_in_path(path, file_path, self.args.path)
+        if not self.file_matches_filters(file):
+            return
 
-                if self.args.quote:  # --quote
-                    path = f"\"{path}\""
+        self.at_least_one_match = True
 
-                print(path)
+        # If --quiet, exit on first match for performance.
+        if self.args.quiet:
+            raise SystemExit(0)
+
+        path = str(file.absolute() if self.args.abs else file)  # --abs
+
+        if self.print_color and not self.args.invert_match:  # --invert-match
+            path = self.color_patterns_in_path(path, file_name, self.args.name)
+            path = self.color_patterns_in_path(path, file_path, self.args.path)
+
+        if self.args.quote:  # --quote
+            path = f"\"{path}\""
+
+        print(path)
 
     def print_files(self, directory: str) -> None:
         """
