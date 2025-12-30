@@ -186,6 +186,9 @@ class PyWalk(CLIProgram):
         file_name = file.name if file.name else os.curdir  # The dot file does not have a file name.
         file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the dot file in the path.
 
+        if not file.name and not self.args.cur:  # Skip the dot file if not --cur.
+            return
+
         if self.args.depth and self.args.depth < len(file.parents):  # --depth
             return
 
