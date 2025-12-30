@@ -64,8 +64,7 @@ class PySort(CLIProgram):
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="compare words alphabetically and numbers numerically")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="randomize the result of comparisons")
-        parser.add_argument("-f", "--skip-fields", help="avoid comparing the first N fields", metavar="N", nargs=1,
-                            type=int)
+        parser.add_argument("-f", "--skip-fields", help="avoid comparing the first N fields", metavar="N", type=int)
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the file name header on output")
         parser.add_argument("-i", "--ignore-case", action="store_true",
@@ -183,7 +182,7 @@ class PySort(CLIProgram):
         :return: None
         """
         self.pattern = None if not self.args.pattern else self.args.pattern[0]  # --pattern
-        self.skip_fields = 0 if not self.args.skip_fields else self.args.skip_fields[0]  # --skip-fields
+        self.skip_fields = 0 if not self.args.skip_fields else self.args.skip_fields  # --skip-fields
 
         # Validate the field values.
         if self.skip_fields < 0:

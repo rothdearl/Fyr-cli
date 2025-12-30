@@ -62,10 +62,10 @@ class PySplit(CLIProgram):
         parser.add_argument("-c", "--count", action="store_true", help="prefix output with field count")
         quote_group.add_argument("-D", "--double-quote", action="store_true", help="print double quotes around fields")
         quote_group.add_argument("-S", "--single-quote", action="store_true", help="print single quotes around fields")
-        parser.add_argument("-f", "--field-start", help="print at field N+", metavar="N+", nargs=1, type=int)
+        parser.add_argument("-f", "--field-start", help="print at field N+", metavar="N+", type=int)
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the file name header on output")
-        parser.add_argument("-n", "--fields", help="print only N+ fields", metavar="N+", nargs=1, type=int)
+        parser.add_argument("-n", "--fields", help="print only N+ fields", metavar="N+", type=int)
         parser.add_argument("-p", "--pattern", help="split lines into fields using PATTERN", nargs=1)
         parser.add_argument("-s", "--separator", help="separate each field with α", metavar="α", nargs=1)
         parser.add_argument("--color", choices=("on", "off"), default="on",
@@ -125,8 +125,8 @@ class PySplit(CLIProgram):
         Sets the values to use for separating lines.
         :return: None
         """
-        field_start = 1 if not self.args.field_start else self.args.field_start[0]  # --field-start
-        fields = sys.maxsize if not self.args.fields else self.args.fields[0]  # --fields
+        field_start = 1 if not self.args.field_start else self.args.field_start  # --field-start
+        fields = sys.maxsize if not self.args.fields else self.args.fields  # --fields
 
         # Validate the field values.
         if field_start < 1:

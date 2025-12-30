@@ -4,7 +4,7 @@
 """
 Filename: pywalk.py
 Author: Roth Earl
-Version: 1.2.2
+Version: 1.2.3
 Description: A program to print files in a directory hierarchy.
 License: GNU GPLv3
 """
@@ -37,7 +37,7 @@ class PyWalk(CLIProgram):
         """
         Initializes a new instance.
         """
-        super().__init__(name="pywalk", version="1.2.2", error_exit_code=2)
+        super().__init__(name="pywalk", version="1.2.3", error_exit_code=2)
 
         self.at_least_one_match: bool = False
 
@@ -49,6 +49,7 @@ class PyWalk(CLIProgram):
         parser = argparse.ArgumentParser(allow_abbrev=False, description="print files in a directory hierarchy",
                                          epilog="default starting-point is the current directory", prog=self.NAME)
         modified_group = parser.add_mutually_exclusive_group()
+        path_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("dirs", help="directory starting-points", metavar="DIRECTORIES", nargs="*")
         parser.add_argument("-d", "--depth", help="descend at most N+ levels of directories below the starting-points",
@@ -61,7 +62,8 @@ class PyWalk(CLIProgram):
                             nargs=1)
         parser.add_argument("-q", "--quiet", "--silent", action="store_true", help="suppress all normal output")
         parser.add_argument("-s", "--no-messages", action="store_true", help="suppress error messages about files")
-        parser.add_argument("--abs", action="store_true", help="print absolute file paths")
+        path_group.add_argument("--abs", action="store_true", help="print absolute file paths")
+        path_group.add_argument("--rel", action="store_true", help=f"print relative file paths (.{os.path.sep})")
         parser.add_argument("--color", choices=("on", "off"), default="on", help="display the matched strings in color")
         parser.add_argument("--empty", choices=("y", "n"), help="print files that are empty")
         modified_group.add_argument("--m-days", help="print files modified < than or > than n days", metavar="±n",
@@ -182,7 +184,7 @@ class PyWalk(CLIProgram):
         :return: None
         """
         file_name = file.name if file.name else os.curdir  # The dot file does not have a file name.
-        file_path = str(file.parent)
+        file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the dot file in the path.
 
         # Check --depth then --name then --path then filters.
         if self.args.depth and self.args.depth < len(file.parents):
@@ -207,10 +209,12 @@ class PyWalk(CLIProgram):
             file_name = self.color_patterns_in_path(file_name, self.args.name)
             file_path = self.color_patterns_in_path(file_path, self.args.path)
 
-        path = os.path.join(file_path, file_name)
-
         if self.args.abs:  # --abs
-            path = os.path.join(pathlib.Path.cwd(), path)
+            path = os.path.join(pathlib.Path.cwd(), file_path, file_name)
+        elif file.name and self.args.rel:  # Join the current directory if not the dot file and --rel.
+            path = os.path.join(os.curdir, file_path, file_name)
+        else:
+            path = os.path.join(file_path, file_name)
 
         if self.args.quote:  # --quote
             path = f"\"{path}\""
