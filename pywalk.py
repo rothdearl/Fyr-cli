@@ -4,7 +4,7 @@
 """
 Filename: pywalk.py
 Author: Roth Earl
-Version: 1.2.1
+Version: 1.2.2
 Description: A program to print files in a directory hierarchy.
 License: GNU GPLv3
 """
@@ -37,7 +37,7 @@ class PyWalk(CLIProgram):
         """
         Initializes a new instance.
         """
-        super().__init__(name="pywalk", version="1.2.1", error_exit_code=2)
+        super().__init__(name="pywalk", version="1.2.2", error_exit_code=2)
 
         self.at_least_one_match: bool = False
 
@@ -51,6 +51,8 @@ class PyWalk(CLIProgram):
         modified_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("dirs", help="directory starting-points", metavar="DIRECTORIES", nargs="*")
+        parser.add_argument("-d", "--depth", help="descend at most N+ levels of directories below the starting-points",
+                            metavar="N+", type=int)
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case in patterns and input data")
         parser.add_argument("-I", "--invert-match", action="store_true", help="print non-matching files")
         parser.add_argument("-n", "--name", action="extend", help="print files that match PATTERN", metavar="PATTERN",
@@ -59,8 +61,9 @@ class PyWalk(CLIProgram):
                             nargs=1)
         parser.add_argument("-q", "--quiet", "--silent", action="store_true", help="suppress all normal output")
         parser.add_argument("-s", "--no-messages", action="store_true", help="suppress error messages about files")
-        parser.add_argument("--abs", action="store_true", help="print absolute file paths")
         parser.add_argument("--color", choices=("on", "off"), default="on", help="display the matched strings in color")
+        parser.add_argument("--cur", action="store_true", help="print the current directory")
+        parser.add_argument("--cwd", action="store_true", help="print the current working directory")
         parser.add_argument("--empty", choices=("y", "n"), help="print files that are empty")
         modified_group.add_argument("--m-days", help="print files modified < than or > than n days", metavar="±n",
                                     type=int)
@@ -68,7 +71,7 @@ class PyWalk(CLIProgram):
                                     type=int)
         modified_group.add_argument("--m-mins", help="print files modified < than or > than n minutes", metavar="±n",
                                     type=int)
-        parser.add_argument("--quote", action="store_true", help="print paths in quotation marks")
+        parser.add_argument("--quote", action="store_true", help="print files in quotation marks")
         parser.add_argument("--type", choices=("d", "f"), help="print files by type")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
 
@@ -182,6 +185,12 @@ class PyWalk(CLIProgram):
         file_name = file.name if file.name else os.curdir  # The dot file does not have a file name.
         file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the dot file in the path.
 
+        if not file.name and not self.args.cur:  # Skip the dot file if not --cur.
+            return
+
+        if self.args.depth and self.args.depth < len(file.parents):  # --depth
+            return
+
         if not self.file_has_patterns(file_name, self.args.name):  # --name
             return
 
@@ -201,12 +210,12 @@ class PyWalk(CLIProgram):
             file_name = self.color_patterns_in_path(file_name, self.args.name)
             file_path = self.color_patterns_in_path(file_path, self.args.path)
 
-        if self.args.abs:  # --abs
-            if file.name:  # Do not join the absolute path with the dot file.
+        if self.args.cwd:  # --cwd
+            if file.name:  # Do not join the current working directory with the dot file.
                 path = os.path.join(pathlib.Path.cwd(), file_path, file_name)
             else:
-                path = pathlib.Path.cwd()
-        elif file.name:  # Do not join the current directory with the dot file.
+                path = os.path.join(pathlib.Path.cwd(), file_path)
+        elif self.args.cur and file.name:  # Do not join the current directory with the dot file.
             path = os.path.join(os.curdir, file_path, file_name)
         else:
             path = os.path.join(file_path, file_name)
