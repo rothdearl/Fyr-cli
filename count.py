@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Filename: pyc.py
+Filename: count.py
 Author: Roth Earl
-Version: 1.2.1
+Version: 1.2.2
 Description: A program to print line, word and character counts in files.
 License: GNU GPLv3
 """
@@ -42,7 +42,7 @@ class Indexes:
 
 
 @final
-class PyCount(CLIProgram):
+class Count(CLIProgram):
     """
     A program to print line, word and character counts in files.
     """
@@ -51,7 +51,7 @@ class PyCount(CLIProgram):
         """
         Initializes a new instance.
         """
-        super().__init__(name="pyc", version="1.2.1")
+        super().__init__(name="count", version="1.2.2")
 
         self.OPTIONS: Final[list[bool]] = [False, False, False, False]
         self.TOTALS: Final[list[int]] = [0, 0, 0, 0]
@@ -90,7 +90,7 @@ class PyCount(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display the counts and file names in color")
         parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
-        parser.add_argument("--pipe", action="store_true", help="read FILES from standard output")
+        parser.add_argument("--piped", action="store_true", help="read FILES from standard output")
         parser.add_argument("--total", choices=("auto", "on", "off"), default="auto",
                             help="print a line with total counts")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
@@ -127,7 +127,7 @@ class PyCount(CLIProgram):
         self.set_count_info_values()
 
         if CLIProgram.input_is_redirected():
-            if self.args.pipe:  # --pipe
+            if self.args.piped:  # --piped
                 self.print_stats_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
@@ -239,4 +239,4 @@ class PyCount(CLIProgram):
 
 
 if __name__ == "__main__":
-    CLIProgram.run(PyCount())
+    CLIProgram.run(Count())

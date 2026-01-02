@@ -6,7 +6,7 @@ bright_yellow="\x1b[93m"
 reset="\x1b[0m"
 
 # Copy scripts to ./local/bin.
-declare -a scripts=("files" "pyc" "pycat" "pyhead" "pyline" "pyniq" "pysort" "pyspl" "pytail" "pytype")
+declare -a scripts=("count" "files" "match" "pycat" "pyhead" "pyniq" "pysort" "pyspl" "pytail" "pytype")
 
 for script in "${scripts[@]}"
 do
