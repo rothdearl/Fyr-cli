@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Filename: pywalk.py
+Filename: files.py
 Author: Roth Earl
 Version: 1.2.2
 Description: A program to print files in a directory hierarchy.
@@ -28,7 +28,7 @@ class Colors:
 
 
 @final
-class PyWalk(CLIProgram):
+class Files(CLIProgram):
     """
     A program to print files in a directory hierarchy.
     """
@@ -37,7 +37,7 @@ class PyWalk(CLIProgram):
         """
         Initializes a new instance.
         """
-        super().__init__(name="pywalk", version="1.2.2", error_exit_code=2)
+        super().__init__(name="files", version="1.2.2", error_exit_code=2)
 
         self.at_least_one_match: bool = False
 
@@ -246,4 +246,4 @@ class PyWalk(CLIProgram):
 
 
 if __name__ == "__main__":
-    CLIProgram.run(PyWalk())
+    CLIProgram.run(Files())
