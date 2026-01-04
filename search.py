@@ -72,7 +72,7 @@ class Main(CLIProgram):
         modified_group.add_argument("--m-mins", help="print files modified less than or more than n minutes ago",
                                     metavar="±n", type=int)
         parser.add_argument("--quotes", action="store_true", help="print file paths in double quotes")
-        parser.add_argument("--type", choices=("d", "f"), help="print only directories (d) or regular files (f)")
+        parser.add_argument("--type", choices=("d", "f"), help="print only directories or regular files")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser
