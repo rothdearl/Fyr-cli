@@ -62,10 +62,10 @@ class PySplit(CLIProgram):
         parser.add_argument("-c", "--count", action="store_true", help="prefix output with field count")
         quote_group.add_argument("-D", "--double-quote", action="store_true", help="print double quotes around fields")
         quote_group.add_argument("-S", "--single-quote", action="store_true", help="print single quotes around fields")
-        parser.add_argument("-f", "--field-start", help="print at field N+", metavar="N+", type=int)
+        parser.add_argument("-f", "--field-start", help="print at field N", metavar="N+", type=int)
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
-        parser.add_argument("-n", "--fields", help="print only N+ fields", metavar="N+", type=int)
+        parser.add_argument("-n", "--fields", help="print only N fields", metavar="N+", type=int)
         parser.add_argument("-p", "--pattern", help="split lines into fields using PATTERN", nargs=1)
         parser.add_argument("-s", "--separator", help="separate each field with α", metavar="α", nargs=1)
         parser.add_argument("--color", choices=("on", "off"), default="on",

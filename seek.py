@@ -51,10 +51,11 @@ class Seek(CLIProgram):
         modified_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("dirs", help="directory starting-points", metavar="DIRECTORIES", nargs="*")
-        parser.add_argument("-d", "--depth", help="descend at most N+ levels of directories below the starting-points",
+        parser.add_argument("-d", "--depth", help="descend at most N levels of directories below the starting-points",
                             metavar="N+", type=int)
-        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case in patterns and input data")
-        parser.add_argument("-I", "--invert-match", action="store_true", help="print non-matching files")
+        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when matching patterns")
+        parser.add_argument("-I", "--invert-match", action="store_true",
+                            help="print files that do not match the specified criteria")
         parser.add_argument("-n", "--name", action="extend", help="print files whose names match PATTERN",
                             metavar="PATTERN", nargs=1)
         parser.add_argument("-p", "--path", action="extend", help="print files whose paths match PATTERN",
@@ -71,8 +72,8 @@ class Seek(CLIProgram):
                                     metavar="±n", type=int)
         modified_group.add_argument("--m-mins", help="print files modified less than or more than n minutes ago",
                                     metavar="±n", type=int)
-        parser.add_argument("--quotes", action="store_true", help="print file paths in double quotes")
-        parser.add_argument("--type", choices=("d", "f"), help="print only directories or regular files")
+        parser.add_argument("--quotes", action="store_true", help="print file paths enclosed in double quotes")
+        parser.add_argument("--type", choices=("d", "f"), help="print only directories (d) or regular files (f)")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser

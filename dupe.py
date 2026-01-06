@@ -69,14 +69,14 @@ class Dupe(CLIProgram):
                             help="suppress the prefixing of file names on output")
         parser.add_argument("-i", "--ignore-case", action="store_true",
                             help="ignore differences in case when comparing")
-        parser.add_argument("-m", "--max-chars", help="compare no more than N+ characters", metavar="N+", type=int)
+        parser.add_argument("-m", "--max-chars", help="compare no more than N characters", metavar="N+", type=int)
         parser.add_argument("-s", "--skip-chars", help="avoid comparing the first N characters", metavar="N", type=int)
         parser.add_argument("-w", "--skip-whitespace", action="store_true",
                             help="avoid comparing leading and trailing whitespace")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display the counts and file headers in color")
         parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
-        parser.add_argument("--pipe", action="store_true", help="read input from standard output")
+        parser.add_argument("--pipe", action="store_true", help="read FILES from standard output")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser

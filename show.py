@@ -55,14 +55,14 @@ class Show(CLIProgram):
         parser.add_argument("files", help="files to print", metavar="FILES", nargs="*")
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
-        parser.add_argument("-l", "--lines", help="print only N+ lines", metavar="N+", type=int)
+        parser.add_argument("-l", "--lines", help="print only N lines", metavar="N+", type=int)
         parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
         parser.add_argument("-s", "--line-start", help="print at line n from the head or tail", metavar="±n", type=int)
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display the file names, whitespace and line numbers in color")
         parser.add_argument("--ends", action="store_true", help=f"display {Whitespace.EOL} at end of each line")
         parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
-        parser.add_argument("--pipe", action="store_true", help="read input from standard output")
+        parser.add_argument("--pipe", action="store_true", help="read FILES from standard output")
         parser.add_argument("--spaces", action="store_true", help=f"display spaces as {Whitespace.SPACE}")
         parser.add_argument("--tabs", action="store_true", help=f"display tab characters as {Whitespace.TAB}")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")

@@ -84,13 +84,13 @@ class Tally(CLIProgram):
         parser.add_argument("-c", "--chars", action="store_true", help="print the character counts")
         parser.add_argument("-l", "--lines", action="store_true", help="print the line counts")
         parser.add_argument("-L", "--max-line-length", action="store_true", help="print the maximum line length")
-        parser.add_argument("-t", "--tab-width", help="count tabs as N+ spaces instead of 8 for line length",
+        parser.add_argument("-t", "--tab-width", help="count tabs as N spaces instead of 8 for line length",
                             metavar="N+", type=int)
         parser.add_argument("-w", "--words", action="store_true", help="print the word counts")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display the counts and file names in color")
         parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
-        parser.add_argument("--pipe", action="store_true", help="read input from standard output")
+        parser.add_argument("--pipe", action="store_true", help="read FILES from standard output")
         parser.add_argument("--total", choices=("auto", "on", "off"), default="auto",
                             help="print a line with total counts")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
