@@ -47,11 +47,11 @@ class Seek(CLIProgram):
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="search for files in a directory hierarchy",
-                                         epilog="default starting-point is the current directory", prog=self.NAME)
+                                         epilog="default starting point is the current directory", prog=self.NAME)
         modified_group = parser.add_mutually_exclusive_group()
 
-        parser.add_argument("dirs", help="directory starting-points", metavar="DIRECTORIES", nargs="*")
-        parser.add_argument("-d", "--depth", help="descend at most N levels of directories below the starting-points",
+        parser.add_argument("dirs", help="directory starting points", metavar="DIRECTORIES", nargs="*")
+        parser.add_argument("-d", "--depth", help="descend at most N levels of directories below the starting points",
                             metavar="N+", type=int)
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when matching patterns")
         parser.add_argument("-I", "--invert-match", action="store_true",
