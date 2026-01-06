@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Run Python script with options.
-"${HOME}/GitHub/PyTools/count.py" "$@"
+"${HOME}/GitHub/PyTools/tally.py" "$@"
