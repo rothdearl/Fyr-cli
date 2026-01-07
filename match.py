@@ -53,7 +53,7 @@ class Match(CLIProgram):
         parser.add_argument("files", help="files to search", metavar="FILES", nargs="*")
         parser.add_argument("-c", "--count", action="store_true",
                             help="print only the count of matching lines per input file")
-        parser.add_argument("-f", "--find", action="extend", help="print lines that match PATTERN", metavar="PATTERN",
+        parser.add_argument("-g", "--grep", action="extend", help="print lines that match PATTERN", metavar="PATTERN",
                             nargs=1, required=True)
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
@@ -90,7 +90,7 @@ class Match(CLIProgram):
             if self.args.pipe:  # --pipe
                 self.print_matches_in_files(sys.stdin)
             elif standard_input := sys.stdin.readlines():
-                self.args.no_file_header = self.args.no_file_header or not self.args.files  # --no-file-header (True if no files)
+                self.args.no_file_header = self.args.no_file_header or not self.args.files  # No file header if no files
                 self.print_matches_in_lines(standard_input, origin_file="")
 
             if self.args.files:  # Process any additional files.
@@ -98,7 +98,7 @@ class Match(CLIProgram):
         elif self.args.files:
             self.print_matches_in_files(self.args.files)
         else:
-            self.args.no_file_header = True  # --no-file-header (True for input)
+            self.args.no_file_header = True  # No file header if no files
             self.print_matches_in_input()
 
     def print_matches_in_files(self, files: TextIO | list[str]) -> None:
@@ -147,7 +147,7 @@ class Match(CLIProgram):
 
         # Find matches.
         for index, line in enumerate(lines):
-            if PatternFinder.text_has_patterns(self, line, self.args.find,
+            if PatternFinder.text_has_patterns(self, line, self.args.grep,
                                                ignore_case=self.args.ignore_case) != self.args.invert_match:  # --invert-match
                 self.at_least_one_match = True
 
@@ -156,7 +156,7 @@ class Match(CLIProgram):
                     raise SystemExit(0)
 
                 if self.print_color and not self.args.invert_match:  # --invert-match
-                    line = PatternFinder.color_patterns_in_text(line, self.args.find, ignore_case=self.args.ignore_case,
+                    line = PatternFinder.color_patterns_in_text(line, self.args.grep, ignore_case=self.args.ignore_case,
                                                                 color=Colors.MATCH)
 
                 if self.args.line_number:  # --line-number
