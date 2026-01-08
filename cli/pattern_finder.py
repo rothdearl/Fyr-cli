@@ -90,17 +90,13 @@ class PatternFinder(ABC):
         flags = re.IGNORECASE if ignore_case else 0
 
         for pattern in patterns:
-            matched = False
-
             for sub_pattern in PatternFinder.__split_pattern_on_pipe(pattern):
                 try:
                     if re.search(sub_pattern, text, flags=flags):
-                        matched = True
                         break
                 except re.PatternError:
                     program.log_error(f"invalid pattern: {sub_pattern}", raise_system_exit=True)
-
-            if not matched:
+            else:
                 return False
 
         return True
