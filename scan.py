@@ -147,7 +147,7 @@ class Scan(CLIProgram):
         patterns = self.args.find if self.args.find else []
 
         # Find matches.
-        for index, line in enumerate(lines):
+        for index, line in enumerate(lines, start=1):
             if PatternFinder.text_has_patterns(self, line, patterns,
                                                ignore_case=self.args.ignore_case) != self.args.invert_match:  # --invert-match
                 self.at_least_one_match = True
@@ -164,9 +164,9 @@ class Scan(CLIProgram):
                     width = 7
 
                     if self.print_color:
-                        line = f"{Colors.LINE_NUMBER}{index + 1:>{width}}{Colors.COLON}:{ConsoleColors.RESET}{line}"
+                        line = f"{Colors.LINE_NUMBER}{index:>{width}}{Colors.COLON}:{ConsoleColors.RESET}{line}"
                     else:
-                        line = f"{index + 1:>{width}}:{line}"
+                        line = f"{index:>{width}}:{line}"
 
                 matches.append(line)
 
