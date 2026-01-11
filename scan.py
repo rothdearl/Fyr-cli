@@ -111,7 +111,7 @@ class Scan(CLIProgram):
             try:
                 self.print_matches_in_lines(text, origin_file=file)
             except UnicodeDecodeError:
-                self.log_file_error(f"{file}: unable to read with {self.encoding}")
+                self.print_file_error(f"{file}: unable to read with {self.encoding}")
 
     def print_matches_in_input(self) -> None:
         """

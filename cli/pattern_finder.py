@@ -95,7 +95,7 @@ class PatternFinder(ABC):
                     if re.search(sub_pattern, text, flags=flags):
                         break
                 except re.PatternError:
-                    program.log_error(f"invalid pattern: {sub_pattern}", raise_system_exit=True)
+                    program.print_error(f"invalid pattern: {sub_pattern}", raise_system_exit=True)
             else:
                 return False
 

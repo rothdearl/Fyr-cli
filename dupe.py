@@ -147,7 +147,7 @@ class Dupe(CLIProgram):
             try:
                 self.filter_matching_lines(text, origin_file=file)
             except UnicodeDecodeError:
-                self.log_file_error(f"{file}: unable to read with {self.encoding}")
+                self.print_file_error(f"{file}: unable to read with {self.encoding}")
 
     def filter_matching_lines_from_input(self) -> None:
         """
@@ -291,13 +291,13 @@ class Dupe(CLIProgram):
 
         # Validate the match values.
         if self.skip_fields < 0:
-            self.log_error(f"skip fields ({self.skip_fields}) cannot be less than 0", raise_system_exit=True)
+            self.print_error(f"skip fields ({self.skip_fields}) cannot be less than 0", raise_system_exit=True)
 
         if self.skip_chars < 0:
-            self.log_error(f"skip characters ({self.skip_chars}) cannot be less than 0", raise_system_exit=True)
+            self.print_error(f"skip characters ({self.skip_chars}) cannot be less than 0", raise_system_exit=True)
 
         if self.max_chars < 1:
-            self.log_error(f"max characters ({self.max_chars}) cannot be less than 1", raise_system_exit=True)
+            self.print_error(f"max characters ({self.max_chars}) cannot be less than 1", raise_system_exit=True)
 
 
 if __name__ == "__main__":

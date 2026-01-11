@@ -167,7 +167,7 @@ class Show(CLIProgram):
                 self.print_file_header(file)
                 self.print_lines(text.readlines())
             except UnicodeDecodeError:
-                self.log_file_error(f"{file}: unable to read with {self.encoding}")
+                self.print_file_error(f"{file}: unable to read with {self.encoding}")
 
     def print_lines_from_input(self) -> None:
         """
@@ -195,10 +195,10 @@ class Show(CLIProgram):
 
         # Validate the line values.
         if self.line_start == 0:
-            self.log_error(f"line start ({self.line_start}) cannot be 0", raise_system_exit=True)
+            self.print_error(f"line start ({self.line_start}) cannot be 0", raise_system_exit=True)
 
         if self.lines < 1:
-            self.log_error(f"lines ({self.lines}) cannot be less than 1", raise_system_exit=True)
+            self.print_error(f"lines ({self.lines}) cannot be less than 1", raise_system_exit=True)
 
 
 @final

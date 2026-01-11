@@ -50,33 +50,6 @@ class CLIProgram(ABC):
         """
         return not sys.stdin.isatty()
 
-    @final
-    def log_error(self, error_message: str, *, raise_system_exit: bool = False) -> None:
-        """
-        Sets the error flag to True and prints the error message to standard error.
-        :param error_message: The error message.
-        :param raise_system_exit: Whether to raise a SystemExit; default is False.
-        :return: None
-        :raises SystemExit: Request to exit from the interpreter if raise_system_exit = True.
-        """
-        self.has_errors = True
-        print(f"{self.NAME}: {error_message}", file=sys.stderr)
-
-        if raise_system_exit:
-            raise SystemExit(self.ERROR_EXIT_CODE)
-
-    @final
-    def log_file_error(self, error_message: str) -> None:
-        """
-        Sets the error flag to True and prints the error message to standard error.
-        :param error_message: The error message to print.
-        :return: None
-        """
-        self.has_errors = True
-
-        if not getattr(self.args, "no_messages", False):
-            print(f"{self.NAME}: {error_message}", file=sys.stderr)
-
     @abstractmethod
     def main(self) -> None:
         """
@@ -101,6 +74,33 @@ class CLIProgram(ABC):
         self.args = self.build_arguments().parse_args()
         self.encoding = "iso-8859-1" if getattr(self.args, "latin1", False) else "utf-8"  # --latin1
         self.print_color = self.args.color == "on" and CLIProgram.output_is_terminal()  # --color (terminal only)
+
+    @final
+    def print_error(self, error_message: str, *, raise_system_exit: bool = False) -> None:
+        """
+        Sets the error flag to True and prints the error message to standard error.
+        :param error_message: The error message.
+        :param raise_system_exit: Whether to raise a SystemExit; default is False.
+        :return: None
+        :raises SystemExit: Request to exit from the interpreter if raise_system_exit = True.
+        """
+        self.has_errors = True
+        print(f"{self.NAME}: {error_message}", file=sys.stderr)
+
+        if raise_system_exit:
+            raise SystemExit(self.ERROR_EXIT_CODE)
+
+    @final
+    def print_file_error(self, error_message: str) -> None:
+        """
+        Sets the error flag to True and prints the error message to standard error if the argument no_messages = False.
+        :param error_message: The error message to print.
+        :return: None
+        """
+        self.has_errors = True
+
+        if not getattr(self.args, "no_messages", False):
+            print(f"{self.NAME}: {error_message}", file=sys.stderr)
 
     @staticmethod
     def print_line(line: str) -> None:

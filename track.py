@@ -101,9 +101,9 @@ class Track(CLIProgram):
 
                 time.sleep(polling_interval)
         except FileNotFoundError:
-            self.log_file_error(f"{file_name} has been deleted")
+            self.print_file_error(f"{file_name} has been deleted")
         except (OSError, UnicodeDecodeError):
-            self.log_file_error(f"{file_name} is no longer accessible")
+            self.print_file_error(f"{file_name} is no longer accessible")
 
     def follow_files(self, files: list[str]) -> list[Thread]:
         """
@@ -214,7 +214,7 @@ class Track(CLIProgram):
                 self.print_lines(text.readlines())
                 files_printed.append(file)
             except UnicodeDecodeError:
-                self.log_file_error(f"{file}: unable to read with {self.encoding}")
+                self.print_file_error(f"{file}: unable to read with {self.encoding}")
 
         return files_printed
 

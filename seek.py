@@ -145,7 +145,7 @@ class Seek(CLIProgram):
                     matches_filters = difference > last_modified
         except PermissionError:
             matches_filters = False
-            self.log_file_error(f"{file}: permission denied")
+            self.print_file_error(f"{file}: permission denied")
 
         return matches_filters
 
@@ -241,9 +241,9 @@ class Seek(CLIProgram):
                 for file in directory_hierarchy.rglob("*"):
                     self.print_file(file)
             except PermissionError as error:
-                self.log_file_error(f"{error.filename}: permission denied")
+                self.print_file_error(f"{error.filename}: permission denied")
         else:
-            self.log_file_error(f"{directory if directory else "\"\""}: no such file or directory")
+            self.print_file_error(f"{directory if directory else "\"\""}: no such file or directory")
 
 
 if __name__ == "__main__":
