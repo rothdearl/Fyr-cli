@@ -14,7 +14,7 @@ import os
 import sys
 from typing import Final, TextIO, final
 
-from cli import CLIProgram, CLIProgramRunner, ConsoleColors, FileReader
+from cli import CLIProgram, ConsoleColors, FileReader
 
 
 @final
@@ -61,7 +61,7 @@ class Show(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display file names, whitespace and line numbers in color")
         parser.add_argument("--ends", action="store_true", help=f"display {Whitespace.EOL} at end of each line")
-        parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
+        parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 instead of utf-8")
         parser.add_argument("--spaces", action="store_true", help=f"display spaces as {Whitespace.SPACE}")
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
         parser.add_argument("--tabs", action="store_true", help=f"display tab characters as {Whitespace.TAB}")
@@ -212,4 +212,4 @@ class Whitespace:
 
 
 if __name__ == "__main__":
-    CLIProgramRunner.run(Show())
+    Show().run()

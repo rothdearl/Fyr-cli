@@ -16,7 +16,7 @@ import sys
 import time
 from typing import Final, final
 
-from cli import CLIProgram, CLIProgramRunner, ConsoleColors, PatternFinder
+from cli import CLIProgram, ConsoleColors, PatternFinder
 
 
 @final
@@ -247,4 +247,4 @@ class Seek(CLIProgram):
 
 
 if __name__ == "__main__":
-    CLIProgramRunner.run(Seek())
+    Seek().run()

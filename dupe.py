@@ -15,7 +15,7 @@ import re
 import sys
 from typing import Final, TextIO, final
 
-from cli import CLIProgram, CLIProgramRunner, ConsoleColors, FileReader
+from cli import CLIProgram, ConsoleColors, FileReader
 
 
 @final
@@ -75,7 +75,7 @@ class Dupe(CLIProgram):
                             help="avoid comparing leading and trailing whitespace")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display counts and file headers in color")
-        parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
+        parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 instead of utf-8")
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
         parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
 
@@ -301,4 +301,4 @@ class Dupe(CLIProgram):
 
 
 if __name__ == "__main__":
-    CLIProgramRunner.run(Dupe())
+    Dupe().run()

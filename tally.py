@@ -14,7 +14,7 @@ import re
 import sys
 from typing import Final, TextIO, final
 
-from cli import CLIProgram, CLIProgramRunner, ConsoleColors, FileReader
+from cli import CLIProgram, ConsoleColors, FileReader
 
 # Define type aliases.
 Stats = tuple[int, int, int, int]
@@ -89,7 +89,7 @@ class Tally(CLIProgram):
         parser.add_argument("-w", "--words", action="store_true", help="print the word counts")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display counts and file names in color")
-        parser.add_argument("--iso", action="store_true", help="use iso-8859-1 instead of utf-8 when reading files")
+        parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 instead of utf-8")
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
         parser.add_argument("--total", choices=("auto", "on", "off"), default="auto",
                             help="print a line with total counts")
@@ -239,4 +239,4 @@ class Tally(CLIProgram):
 
 
 if __name__ == "__main__":
-    CLIProgramRunner.run(Tally())
+    Tally().run()
