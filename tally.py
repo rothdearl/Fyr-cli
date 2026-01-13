@@ -23,7 +23,7 @@ Stats = tuple[int, int, int, int]
 @final
 class Colors:
     """
-    Class for managing colors.
+    Class for managing color constants.
     """
     STAT: Final[str] = colors.BRIGHT_CYAN
     STAT_ORIGIN: Final[str] = colors.BRIGHT_MAGENTA

@@ -21,7 +21,7 @@ from cli import CLIProgram, colors, io, patterns, terminal
 @final
 class Colors:
     """
-    Class for managing colors.
+    Class for managing color constants.
     """
     COLON: Final[str] = colors.BRIGHT_CYAN
     FILE_NAME: Final[str] = colors.BRIGHT_MAGENTA
@@ -191,8 +191,8 @@ class Scan(CLIProgram):
             if file_name:
                 print(file_name)
 
-            for _ in matches:
-                io.print_line(_)
+            for line in matches:
+                io.print_line(line)
 
 
 if __name__ == "__main__":

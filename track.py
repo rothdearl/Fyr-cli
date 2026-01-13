@@ -22,7 +22,7 @@ from cli import CLIProgram, colors, io, terminal
 @final
 class Colors:
     """
-    Class for managing colors.
+    Class for managing color constants.
     """
     COLON: Final[str] = colors.BRIGHT_CYAN
     FILE_NAME: Final[str] = colors.BRIGHT_MAGENTA

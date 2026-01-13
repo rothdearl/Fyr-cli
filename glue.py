@@ -19,11 +19,20 @@ from cli import CLIProgram, colors, io, terminal
 @final
 class Colors:
     """
-    Class for managing colors.
+    Class for managing color constants.
     """
     EOL: Final[str] = colors.BRIGHT_BLUE
     NUMBER: Final[str] = colors.BRIGHT_GREEN
     TABS: Final[str] = colors.BRIGHT_CYAN
+
+
+@final
+class Whitespace:
+    """
+    Class for managing whitespace constants.
+    """
+    EOL: Final[str] = "$"
+    TAB: Final[str] = ">···"
 
 
 @final
@@ -170,15 +179,6 @@ class Glue(CLIProgram):
                 self.print_lines([input()])
             except EOFError:
                 eof = True
-
-
-@final
-class Whitespace:
-    """
-    Class for managing whitespace constants.
-    """
-    EOL: Final[str] = "$"
-    TAB: Final[str] = ">···"
 
 
 if __name__ == "__main__":

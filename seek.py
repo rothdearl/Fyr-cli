@@ -23,7 +23,7 @@ from cli import CLIProgram, colors, patterns, terminal
 @final
 class Colors:
     """
-    Class for managing colors.
+    Class for managing color constants.
     """
     MATCH: Final[str] = colors.BRIGHT_RED
 
