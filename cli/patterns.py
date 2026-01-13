@@ -78,7 +78,7 @@ def compile_patterns(program: CLIProgram, patterns: list[str], *, ignore_case: b
     :param program: The program finding patterns.
     :param patterns: The patterns.
     :param ignore_case: Whether to ignore case.
-    :return: A list of compiled patterns.
+    :return: A list of OR-groups of compiled regular expression patterns.
     """
     compiled = []
     flags = re.IGNORECASE if ignore_case else 0
@@ -89,7 +89,7 @@ def compile_patterns(program: CLIProgram, patterns: list[str], *, ignore_case: b
         for sub_pattern in _split_pattern_on_pipe(pattern):
             try:
                 group.append(re.compile(sub_pattern, flags=flags))
-            except re.PatternError:
+            except re.error:  # re.PatternError was introduced in Python 3.13; use re.error for Python < 3.13.
                 program.print_error(f"invalid pattern: {sub_pattern}", raise_system_exit=True)
 
         compiled.append(group)
