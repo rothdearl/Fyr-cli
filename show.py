@@ -26,7 +26,8 @@ class Colors:
     EOL: Final[str] = colors.BRIGHT_BLUE
     FILE_NAME: Final[str] = colors.BRIGHT_MAGENTA
     LINE_NUMBER: Final[str] = colors.BRIGHT_GREEN
-    WHITESPACE: Final[str] = colors.BRIGHT_CYAN
+    SPACE: Final[str] = colors.BRIGHT_CYAN
+    TAB: Final[str] = colors.BRIGHT_CYAN
 
 
 @final
@@ -131,8 +132,8 @@ class Show(CLIProgram):
         """
         line_start = len(lines) + self.line_start + 1 if self.line_start < 0 else self.line_start
         line_end = line_start + self.lines - 1
-        line_max = min(self.args.lines, len(lines)) if self.args.lines else len(lines)
-        line_number_width = len(str(line_max))
+        line_min = min(self.args.lines, len(lines)) if self.args.lines else len(lines)
+        line_number_width = len(str(line_min))
 
         for index, line in enumerate(lines, start=1):
             if line_start <= index <= line_end:
@@ -230,8 +231,8 @@ class Show(CLIProgram):
             trailing_count -= 1
 
         if self.print_color:
-            line = line.replace(" ", f"{Colors.WHITESPACE}{Whitespace.SPACE}{colors.RESET}")
-            line = line + Colors.WHITESPACE + (Whitespace.TRAILING_SPACE * trailing_count) + colors.RESET
+            line = line.replace(" ", f"{Colors.SPACE}{Whitespace.SPACE}{colors.RESET}")
+            line = line + Colors.SPACE + (Whitespace.TRAILING_SPACE * trailing_count) + colors.RESET
         else:
             line = line.replace(" ", Whitespace.SPACE)
             line = line + (Whitespace.TRAILING_SPACE * trailing_count)
@@ -245,7 +246,7 @@ class Show(CLIProgram):
         :return: The line.
         """
         if self.print_color:
-            return line.replace("\t", f"{Colors.WHITESPACE}{Whitespace.TAB}{colors.RESET}")
+            return line.replace("\t", f"{Colors.TAB}{Whitespace.TAB}{colors.RESET}")
 
         return line.replace("\t", Whitespace.TAB)
 
