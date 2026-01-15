@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Filename: peek.py
+Filename: page.py
 Author: Roth Earl
-Version: 1.3.3
-Description: A program to print the first part of files.
+Version: 0.0.0
+Description: A program to print files to standard output one page at a time.
 License: GNU GPLv3
 """
 
@@ -30,29 +30,28 @@ class Colors:
 @final
 class Peek(CLIProgram):
     """
-    A program to print the first part of files.
+    A program to print files to standard output one page at a time.
     """
 
     def __init__(self) -> None:
         """
         Initializes a new instance.
         """
-        super().__init__(name="peek", version="1.3.3")
+        super().__init__(name="page", version="0.0.0")
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
         Builds and returns an argument parser.
         :return: An argument parser.
         """
-        parser = argparse.ArgumentParser(allow_abbrev=False, description="print the first part of FILES",
+        parser = argparse.ArgumentParser(allow_abbrev=False,
+                                         description="print files to standard output one page at a time",
                                          epilog="with no FILES, read standard input", prog=self.NAME)
 
         parser.add_argument("files", help="files to print", metavar="FILES", nargs="*")
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
-        parser.add_argument("-n", "--lines", help="print the first or all but the last N lines (N ≠ 0)", metavar="N",
-                            type=int)
-        parser.add_argument("-N", "--line-number", action="store_true", help="print line number with output lines")
+        parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
         parser.add_argument("--color", choices=("on", "off"), default="on", help="display file headers in color")
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 instead of utf-8")
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
@@ -106,25 +105,16 @@ class Peek(CLIProgram):
         :param lines: The lines.
         :return: None
         """
-        lines_to_print = self.args.lines if self.args.lines or self.args.lines == 0 else 10  # --lines
-
-        # Print all but the last 'n' lines.
-        if lines_to_print < 0:
-            lines_to_print = len(lines) + lines_to_print
-
-        padding = len(str(min(lines_to_print, len(lines))))
+        padding = len(str(len(lines)))
 
         for index, line in enumerate(lines, start=1):
-            if index <= lines_to_print:
-                if self.args.line_number:  # --line-number
-                    if self.print_color:
-                        line = f"{Colors.LINE_NUMBER}{index:>{padding}}{Colors.COLON}:{colors.RESET}{line}"
-                    else:
-                        line = f"{index:>{padding}}:{line}"
+            if self.args.line_number:  # --line-number
+                if self.print_color:
+                    line = f"{Colors.LINE_NUMBER}{index:>{padding}}{Colors.COLON}:{colors.RESET}{line}"
+                else:
+                    line = f"{index:>{padding}}:{line}"
 
-                io.print_line(line)
-            else:
-                break
+            io.print_line(line)
 
     def print_lines_from_files(self, files: TextIO | list[str]) -> None:
         """

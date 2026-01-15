@@ -54,7 +54,8 @@ class Track(CLIProgram):
         parser.add_argument("-f", "--follow", action="store_true", help="output appended data as the file grows")
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
-        parser.add_argument("-n", "--lines", help="print the last or all but the first n lines", metavar="±n", type=int)
+        parser.add_argument("-n", "--lines", help="print the last or all but the first N lines (N ≠ 0)", metavar="N",
+                            type=int)
         parser.add_argument("-N", "--line-number", action="store_true", help="print line number with output lines")
         parser.add_argument("--color", choices=("on", "off"), default="on", help="display file headers in color")
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 instead of utf-8")
@@ -178,25 +179,21 @@ class Track(CLIProgram):
         :param lines: The lines.
         :return: None
         """
-        line_number = 0
-        lines_to_print = self.args.lines if self.args.lines else 10  # --lines
+        lines_to_print = self.args.lines if self.args.lines or self.args.lines == 0 else 10  # --lines
+        padding = len(str(len(lines)))
         skip_to_line = len(lines) - lines_to_print
 
         # Print all but the first 'n' lines.
         if lines_to_print < 0:
             skip_to_line = abs(lines_to_print)
 
-        for line in lines:
-            line_number += 1
-
-            if line_number > skip_to_line:
+        for index, line in enumerate(lines, start=1):
+            if index > skip_to_line:
                 if self.args.line_number:  # --line-number
-                    width = 7
-
                     if self.print_color:
-                        line = f"{Colors.LINE_NUMBER}{line_number:>{width}}{Colors.COLON}:{colors.RESET}{line}"
+                        line = f"{Colors.LINE_NUMBER}{index:>{padding}}{Colors.COLON}:{colors.RESET}{line}"
                     else:
-                        line = f"{line_number:>{width}}:{line}"
+                        line = f"{index:>{padding}}:{line}"
 
                 io.print_line(line)
 

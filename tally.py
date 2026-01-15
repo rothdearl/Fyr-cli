@@ -84,8 +84,9 @@ class Tally(CLIProgram):
         parser.add_argument("-c", "--chars", action="store_true", help="print the character counts")
         parser.add_argument("-l", "--lines", action="store_true", help="print the line counts")
         parser.add_argument("-L", "--max-line-length", action="store_true", help="print the maximum line length")
-        parser.add_argument("-t", "--tab-width", help="count tabs as N spaces instead of 8 for line length",
-                            metavar="N+", type=int)
+        parser.add_argument("-t", "--tab-width",
+                            help="use N spaces for tabs when computing line length (default: 8; N ≥ 1)", metavar="N",
+                            type=int)
         parser.add_argument("-w", "--words", action="store_true", help="print the word counts")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display counts and file names in color")
@@ -215,8 +216,7 @@ class Tally(CLIProgram):
         Sets the values to use for counting.
         :return: None
         """
-        if self.args.tab_width:  # --tab-width
-            self.tab_width = self.args.tab_width
+        self.tab_width = self.args.tab_width if self.args.tab_width or self.args.tab_width == 0 else 10  # --tab-width
 
         if self.tab_width < 1:
             self.print_error(f"tab width ({self.tab_width}) cannot be less than 1", raise_system_exit=True)

@@ -67,9 +67,10 @@ class Show(CLIProgram):
         parser.add_argument("files", help="files to print", metavar="FILES", nargs="*")
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
-        parser.add_argument("-l", "--lines", help="print only N lines", metavar="N+", type=int)
+        parser.add_argument("-l", "--lines", help="print only N lines (N ≥ 1)", metavar="N", type=int)
         parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
-        parser.add_argument("-s", "--line-start", help="print at line n from the head or tail", metavar="±n", type=int)
+        parser.add_argument("-s", "--line-start", help="print the first or all but the last N lines (N ≠ 0)",
+                            metavar="N", type=int)
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display file names, whitespace and line numbers in color")
         parser.add_argument("--ends", action="store_true", help=f"display {Whitespace.EOL} at end of each line")
@@ -133,15 +134,14 @@ class Show(CLIProgram):
         line_start = len(lines) + self.line_start + 1 if self.line_start < 0 else self.line_start
         line_end = line_start + self.lines - 1
         line_min = min(self.args.lines, len(lines)) if self.args.lines else len(lines)
-        line_number_width = len(str(line_min))
+        padding = len(str(line_min))
 
         for index, line in enumerate(lines, start=1):
             if line_start <= index <= line_end:
                 line = self.show_spaces(line) if self.args.spaces else line  # --spaces
                 line = self.show_tabs(line) if self.args.tabs else line  # --tabs
                 line = self.show_ends(line) if self.args.ends else line  # --ends
-                line = self.show_line_number(line, index,
-                                             line_number_width) if self.args.line_number else line  # --line-number
+                line = self.show_line_number(line, index, padding) if self.args.line_number else line  # --line-number
                 io.print_line(line)
 
     def print_lines_from_files(self, files: TextIO | list[str]) -> None:
@@ -178,12 +178,12 @@ class Show(CLIProgram):
         Sets the values to use for printing lines.
         :return: None
         """
-        self.line_start = self.args.line_start if self.args.line_start else 1  # --line-start
-        self.lines = self.args.lines if self.args.lines else sys.maxsize  # --lines
+        self.line_start = self.args.line_start if self.args.line_start or self.args.line_start == 0 else 1  # --line-start
+        self.lines = self.args.lines if self.args.lines or self.args.lines == 0 else sys.maxsize  # --lines
 
         # Validate the line values.
         if self.line_start == 0:
-            self.print_error(f"line start ({self.line_start}) cannot be 0", raise_system_exit=True)
+            self.print_error(f"line start cannot be 0", raise_system_exit=True)
 
         if self.lines < 1:
             self.print_error(f"lines ({self.lines}) cannot be less than 1", raise_system_exit=True)
@@ -202,18 +202,18 @@ class Show(CLIProgram):
 
         return f"{line[:end_index]}{Whitespace.EOL}{newline}"
 
-    def show_line_number(self, line: str, line_number: int, line_number_width: int) -> str:
+    def show_line_number(self, line: str, line_number: int, padding: int) -> str:
         """
         Prepends the line with the line number.
         :param line: The line.
         :param line_number: The line number.
-        :param line_number_width: The line number width.
+        :param padding: The line number padding.
         :return: The line.
         """
         if self.print_color:
-            return f"{Colors.LINE_NUMBER}{line_number:>{line_number_width}}{Colors.COLON}:{colors.RESET}{line}"
+            return f"{Colors.LINE_NUMBER}{line_number:>{padding}}{Colors.COLON}:{colors.RESET}{line}"
 
-        return f"{line_number:>{line_number_width}}:{line}"
+        return f"{line_number:>{padding}}:{line}"
 
     def show_spaces(self, line: str) -> str:
         """

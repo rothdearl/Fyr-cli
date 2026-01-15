@@ -64,13 +64,16 @@ class Dupe(CLIProgram):
         print_group.add_argument("-g", "--group", action="store_true",
                                  help="show all items, separating groups with an empty line")
         print_group.add_argument("-u", "--unique", action="store_true", help="only print unique lines")
-        parser.add_argument("-f", "--skip-fields", help="avoid comparing the first N fields", metavar="N", type=int)
+        parser.add_argument("-f", "--skip-fields", help="avoid comparing the first N fields (N ≥ 0)", metavar="N",
+                            type=int)
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
         parser.add_argument("-i", "--ignore-case", action="store_true",
                             help="ignore differences in case when comparing")
-        parser.add_argument("-m", "--max-chars", help="compare no more than N characters", metavar="N+", type=int)
-        parser.add_argument("-s", "--skip-chars", help="avoid comparing the first N characters", metavar="N", type=int)
+        parser.add_argument("-m", "--max-chars", help="compare no more than N characters (N ≥ 1)", metavar="N",
+                            type=int)
+        parser.add_argument("-s", "--skip-chars", help="avoid comparing the first N characters (N ≥ 0)", metavar="N",
+                            type=int)
         parser.add_argument("-w", "--skip-whitespace", action="store_true",
                             help="avoid comparing leading and trailing whitespace")
         parser.add_argument("--color", choices=("on", "off"), default="on",
@@ -216,6 +219,29 @@ class Dupe(CLIProgram):
 
         return group_list
 
+    def group_all_matching_lines(self, lines: TextIO | list[str]) -> dict[str, list[str]]:
+        """
+        Groups all lines that match.
+        :param lines: The lines.
+        :return: A mapping of lines where the key is the group and the values are the matching lines.
+        """
+        group_map = {}
+
+        for line in lines:
+            key = self.get_character_compare_sequence(line)
+
+            if self.args.skip_blank and (not key or key == "\n"):  # --skip-blank
+                continue
+
+            if self.args.ignore_case and key in (k.casefold() for k in group_map.keys()):  # --ignore-case
+                group_map[key].append(line)
+            elif key in group_map:
+                group_map[key].append(line)
+            else:
+                group_map[key] = [line]
+
+        return group_map
+
     def main(self) -> None:
         """
         The main function of the program.
@@ -241,29 +267,6 @@ class Dupe(CLIProgram):
         else:
             self.filter_matching_lines_from_input()
 
-    def group_all_matching_lines(self, lines: TextIO | list[str]) -> dict[str, list[str]]:
-        """
-        Groups all lines that match.
-        :param lines: The lines.
-        :return: A mapping of lines where the key is the group and the values are the matching lines.
-        """
-        group_map = {}
-
-        for line in lines:
-            key = self.get_character_compare_sequence(line)
-
-            if self.args.skip_blank and (not key or key == "\n"):  # --skip-blank
-                continue
-
-            if self.args.ignore_case and key in (k.casefold() for k in group_map.keys()):  # --ignore-case
-                group_map[key].append(line)
-            elif key in group_map:
-                group_map[key].append(line)
-            else:
-                group_map[key] = [line]
-
-        return group_map
-
     def print_file_header(self, file: str) -> None:
         """
         Prints the file name, or (standard input) if empty, with a colon.
@@ -285,7 +288,7 @@ class Dupe(CLIProgram):
         Sets the values to use for matching lines.
         :return: None
         """
-        self.max_chars = self.args.max_chars if self.args.max_chars else 1  # --max-chars
+        self.max_chars = self.args.max_chars if self.args.max_chars or self.args.max_chars == 0 else 1  # --max-chars
         self.skip_chars = self.args.skip_chars if self.args.skip_chars else 0  # --skip-chars
         self.skip_fields = self.args.skip_fields if self.args.skip_fields else 0  # --skip-fields
 
