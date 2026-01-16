@@ -79,7 +79,7 @@ class Show(CLIProgram):
                             help=f"display spaces as {Whitespace.SPACE} and trailing spaces as {Whitespace.TRAILING_SPACE}")
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
         parser.add_argument("--tabs", action="store_true", help=f"display tab characters as {Whitespace.TAB}")
-        parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser
 

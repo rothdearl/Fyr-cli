@@ -61,7 +61,7 @@ class Track(CLIProgram):
                             help="display file headers in color (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
-        parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser
 

@@ -94,7 +94,7 @@ class Tally(CLIProgram):
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
         parser.add_argument("--total", choices=("auto", "on", "off"), default="auto",
                             help="print a line with total counts")
-        parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser
 

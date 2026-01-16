@@ -41,8 +41,8 @@ class Scan(CLIProgram):
         """
         super().__init__(name="scan", version="1.3.3", error_exit_code=2)
 
-        self.line_number: int = 0
         self.found_match: bool = False
+        self.line_number: int = 0
         self.patterns: list[list[re.Pattern]] = []
 
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -61,15 +61,15 @@ class Scan(CLIProgram):
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="suppress the prefixing of file names on output")
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when matching patterns")
-        parser.add_argument("-I", "--invert-match", action="store_true", help="print lines that do not match")
         parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
         parser.add_argument("-q", "--quiet", "--silent", action="store_true", help="suppress all normal output")
         parser.add_argument("-s", "--no-messages", action="store_true", help="suppress error messages about files")
+        parser.add_argument("-v", "--invert-match", action="store_true", help="print lines that do not match")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="display matched strings, file names and line numbers in color (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input as arguments")
-        parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
 
         return parser
 
