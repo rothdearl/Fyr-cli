@@ -4,7 +4,7 @@
 """
 Filename: tally.py
 Author: Roth Earl
-Version: 1.3.3
+Version: 1.3.4
 Description: A program to print line, word and character counts in files.
 License: GNU GPLv3
 """
@@ -51,7 +51,7 @@ class Tally(CLIProgram):
         """
         Initializes a new instance.
         """
-        super().__init__(name="tally", version="1.3.3")
+        super().__init__(name="tally", version="1.3.4")
 
         self.OPTIONS: Final[list[bool]] = [False, False, False, False]
         self.TOTALS: Final[list[int]] = [0, 0, 0, 0]

@@ -4,7 +4,7 @@
 """
 Filename: show.py
 Author: Roth Earl
-Version: 1.3.3
+Version: 1.3.4
 Description: A program to print files to standard output.
 License: GNU GPLv3
 """
@@ -51,7 +51,7 @@ class Show(CLIProgram):
         """
         Initializes a new instance.
         """
-        super().__init__(name="show", version="1.3.3")
+        super().__init__(name="show", version="1.3.4")
 
         self.line_start: int = 0
         self.lines: int = 0

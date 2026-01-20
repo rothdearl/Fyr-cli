@@ -30,7 +30,7 @@ def _split_pattern_on_pipe(pattern: str) -> Iterator[str]:
         yield token
 
 
-def color_patterns_in_text(text: str, patterns: list[list[re.Pattern]], *, color: str) -> str:
+def color_patterns_in_text(text: str, patterns: list[re.Pattern], *, color: str) -> str:
     """
     Colors all patterns in the text.
     :param text: The text to color.
@@ -42,9 +42,8 @@ def color_patterns_in_text(text: str, patterns: list[list[re.Pattern]], *, color
 
     # Get the indices for each match.
     for group in patterns:
-        for sub_group in group:
-            for match in sub_group.finditer(text):
-                indices.append((match.start(), match.end()))
+        for match in group.finditer(text):
+            indices.append((match.start(), match.end()))
 
     # Merge the overlapping indices.
     merged_indices = []
@@ -72,7 +71,7 @@ def color_patterns_in_text(text: str, patterns: list[list[re.Pattern]], *, color
     return "".join(colored_text)
 
 
-def compile_patterns(program: CLIProgram, patterns: list[str], *, ignore_case: bool) -> list[list[re.Pattern]]:
+def compile_patterns(program: CLIProgram, patterns: list[str], *, ignore_case: bool) -> list[re.Pattern]:
     """
     Returns a list of OR-groups of compiled regular expression patterns implementing AND-of-OR logic.
     :param program: The program finding patterns.
@@ -84,22 +83,22 @@ def compile_patterns(program: CLIProgram, patterns: list[str], *, ignore_case: b
     flags = re.IGNORECASE if ignore_case else re.NOFLAG
 
     for pattern in patterns:
-        group = []
+        group = [sub_group for sub_group in _split_pattern_on_pipe(pattern)]
 
-        for sub_group in _split_pattern_on_pipe(pattern):
-            try:
-                group.append(re.compile(sub_group, flags=flags))
-            except re.error:  # re.PatternError was introduced in Python 3.13; use re.error for Python < 3.13.
-                program.print_error(f"invalid pattern: {sub_group}", raise_system_exit=True)
+        if not group:  # Skip empty groups.
+            continue
 
-        compiled.append(group)
+        try:
+            compiled.append(re.compile("|".join(group), flags=flags))
+        except re.error:  # re.PatternError was introduced in Python 3.13; use re.error for Python < 3.13.
+            program.print_error(f"invalid pattern: {pattern}", raise_system_exit=True)
 
     return compiled
 
 
-def text_has_patterns(text: str, patterns: list[list[re.Pattern]]) -> bool:
+def text_has_patterns(text: str, patterns: list[re.Pattern]) -> bool:
     """
-    Returns whether the text matches all pattern groups (AND), where each group requires at least one sub-pattern (OR).
+    Returns whether the text matches all patterns.
     :param text: The text.
     :param patterns: The patterns to match.
     :return: True or False.
@@ -108,10 +107,7 @@ def text_has_patterns(text: str, patterns: list[list[re.Pattern]]) -> bool:
         if not group:  # Empty groups match everything.
             continue
 
-        for sub_group in group:
-            if sub_group.search(text):
-                break
-        else:
+        if not group.search(text):
             return False
 
     return True
