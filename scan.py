@@ -170,13 +170,7 @@ class Scan(CLIProgram):
                     line = patterns.color_patterns_in_text(line, self.patterns,
                                                            color=Colors.MATCH) if self.patterns else line
 
-                if self.args.line_number:  # --line-number
-                    if self.print_color:
-                        line = f"{Colors.LINE_NUMBER}{self.line_number:>}{Colors.COLON}:{colors.RESET}{line}"
-                    else:
-                        line = f"{self.line_number:>}:{line}"
-
-                matches.append(line)
+                matches.append((self.line_number, line))
 
         # Print matches.
         file_name = ""
@@ -192,10 +186,18 @@ class Scan(CLIProgram):
         if self.args.count:  # --count
             print(f"{file_name}{len(matches)}")
         elif matches:
+            padding = len(str(matches[-1][0])) if reset_line_number else 0
+
             if file_name:
                 print(file_name)
 
-            for line in matches:
+            for line_number, line in matches:
+                if self.args.line_number:  # --line-number
+                    if self.print_color:
+                        print(f"{Colors.LINE_NUMBER}{line_number:>{padding}}{Colors.COLON}:{colors.RESET}", end="")
+                    else:
+                        print(f"{line_number:>{padding}}:", end="")
+
                 io.print_line(line)
 
 
