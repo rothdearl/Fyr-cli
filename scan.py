@@ -13,12 +13,9 @@ import argparse
 import os
 import re
 import sys
-from typing import Final, TextIO, TypeAlias, final
+from typing import Final, TextIO, final
 
 from cli import CLIProgram, colors, io, patterns, terminal
-
-# Define type aliases.
-Match: TypeAlias = tuple[int, str]
 
 
 @final
@@ -153,7 +150,7 @@ class Scan(CLIProgram):
         :param reset_line_number: Whether to reset the internal line number; default is True.
         :return: None
         """
-        matches: list[Match] = []
+        matches = []
 
         if reset_line_number:
             self.line_number = 0
