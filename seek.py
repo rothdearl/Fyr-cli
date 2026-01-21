@@ -170,7 +170,7 @@ class Seek(CLIProgram):
         :param file: The file.
         :return: None
         """
-        file_name = file.name if file.name else os.curdir  # The dot file does not have a file name.
+        file_name = file.name or os.curdir  # The dot file does not have a file name.
         file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the dot file in the path.
 
         if not file.name and not self.args.dot:  # Skip the dot file if not --dot.
@@ -232,7 +232,7 @@ class Seek(CLIProgram):
             except PermissionError as error:
                 self.print_file_error(f"{error.filename}: permission denied")
         else:
-            self.print_file_error(f"{directory if directory else "\"\""}: no such file or directory")
+            self.print_file_error(f"{directory or "\"\""}: no such file or directory")
 
 
 if __name__ == "__main__":
