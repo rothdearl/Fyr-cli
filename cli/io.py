@@ -20,7 +20,7 @@ class FileInfo(NamedTuple):
     text: TextIO
 
 
-class _IOLogger(Protocol):
+class _Logger(Protocol):
     """
     Protocol for printing error messages pertaining to files.
     """
@@ -43,7 +43,7 @@ def print_line(line: str) -> None:
     print(line, end="" if line.endswith("\n") else "\n")
 
 
-def read_files(files: TextIO | list[str], encoding: str, *, logger: _IOLogger) -> Iterator[FileInfo]:
+def read_files(files: TextIO | list[str], encoding: str, *, logger: _Logger) -> Iterator[FileInfo]:
     """
     Opens the files for reading in text mode and returns an iterator yielding FileInfo objects.
     :param files: A list of file names or a text stream containing file names (e.g. standard input).
@@ -69,7 +69,7 @@ def read_files(files: TextIO | list[str], encoding: str, *, logger: _IOLogger) -
             logger.print_io_error(f"{filename}: unable to read file")
 
 
-def write_text_to_file(filename: str, text: Iterable[str], encoding: str, *, logger: _IOLogger) -> None:
+def write_text_to_file(filename: str, text: Iterable[str], encoding: str, *, logger: _Logger) -> None:
     """
     Write text lines to the file in text mode where each output line is written with exactly one trailing newline.
     :param filename: The filename.

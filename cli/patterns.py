@@ -7,14 +7,14 @@ import re
 from cli import Protocol, colors
 
 
-class _PatternLogger(Protocol):
+class _Logger(Protocol):
     """
     Protocol for printing error messages pertaining to patterns.
     """
 
     def print_error_and_exit(self, error_message: str) -> None:
         """
-        Prints the error message to standard error.
+        Prints the error message to standard error and raises a SystemExit.
         :param error_message: The error message to print.
         :return: None
         """
@@ -75,7 +75,7 @@ def combine_patterns(patterns: list[re.Pattern[str]], *, ignore_case: bool) -> r
     return re.compile("|".join(sources), flags=flags)
 
 
-def compile_patterns(patterns: list[str], *, ignore_case: bool, logger: _PatternLogger) -> list[re.Pattern[str]]:
+def compile_patterns(patterns: list[str], *, ignore_case: bool, logger: _Logger) -> list[re.Pattern[str]]:
     """
     Compiles patterns into OR-groups implementing AND-of-OR matching.
     :param patterns: The patterns to compile.
