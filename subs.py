@@ -14,7 +14,7 @@ import os
 import re
 import sys
 from enum import StrEnum
-from typing import Iterator, TextIO, final
+from typing import Iterable, TextIO, final
 
 from cli import CLIProgram, colors, io, patterns, terminal
 
@@ -69,7 +69,7 @@ class Subs(CLIProgram):
 
         return parser
 
-    def iterate_replaced_lines(self, lines: list[str]) -> Iterator[str]:
+    def iterate_replaced_lines(self, lines: Iterable[str]) -> Iterable[str]:
         """
         Yield lines with pattern matches replaced.
         :param lines: Input lines.
@@ -127,7 +127,7 @@ class Subs(CLIProgram):
 
             print(filename)
 
-    def print_replaced_lines(self, lines: list[str]) -> None:
+    def print_replaced_lines(self, lines: Iterable[str]) -> None:
         """
         Prints the replaced matches in the lines.
         :param lines: The lines.
@@ -143,7 +143,7 @@ class Subs(CLIProgram):
         """
         self.print_replaced_lines(sys.stdin.read().splitlines())
 
-    def process_files(self, files: TextIO | list[str]) -> None:
+    def process_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Process files by replacing matches and printing results or writing changes in place.
         :param files: The files to process.

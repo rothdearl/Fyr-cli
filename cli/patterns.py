@@ -3,6 +3,7 @@ Module for pattern related functions.
 """
 
 import re
+from typing import Iterable
 
 from cli import Protocol, colors
 
@@ -21,7 +22,7 @@ class _Logger(Protocol):
         ...
 
 
-def color_patterns_in_text(text: str, patterns: list[re.Pattern[str]], *, color: str) -> str:
+def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
     """
     Colors all patterns in the text.
     :param text: The text to color.
@@ -62,7 +63,7 @@ def color_patterns_in_text(text: str, patterns: list[re.Pattern[str]], *, color:
     return "".join(colored_text)
 
 
-def combine_patterns(patterns: list[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
+def combine_patterns(patterns: Iterable[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
     """
     Combines all patterns into a single compiled OR-pattern.
     :param patterns: A list of compiled pattern groups.
@@ -75,7 +76,7 @@ def combine_patterns(patterns: list[re.Pattern[str]], *, ignore_case: bool) -> r
     return re.compile("|".join(sources), flags=flags)
 
 
-def compile_patterns(patterns: list[str], *, ignore_case: bool, logger: _Logger) -> list[re.Pattern[str]]:
+def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, logger: _Logger) -> list[re.Pattern[str]]:
     """
     Compiles patterns into OR-groups implementing AND-of-OR matching.
     :param patterns: The patterns to compile.
@@ -98,7 +99,7 @@ def compile_patterns(patterns: list[str], *, ignore_case: bool, logger: _Logger)
     return compiled
 
 
-def text_has_patterns(text: str, patterns: list[re.Pattern[str]]) -> bool:
+def text_has_patterns(text: str, patterns: Iterable[re.Pattern[str]]) -> bool:
     """
     Returns whether the text matches all patterns.
     :param text: The text.

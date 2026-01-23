@@ -13,7 +13,7 @@ import argparse
 import os
 import sys
 from enum import StrEnum
-from typing import TextIO, final
+from typing import Iterable, Sequence, TextIO, final
 
 from cli import CLIProgram, colors, io, terminal
 
@@ -121,7 +121,7 @@ class Show(CLIProgram):
 
             print(filename)
 
-    def print_lines(self, lines: list[str]) -> None:
+    def print_lines(self, lines: Sequence[str]) -> None:
         """
         Prints the lines.
         :param lines: The lines.
@@ -140,7 +140,7 @@ class Show(CLIProgram):
                 line = self.show_line_number(line, index, padding) if self.args.line_number else line  # --line-number
                 io.print_line(line)
 
-    def print_lines_from_files(self, files: TextIO | list[str]) -> None:
+    def print_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Prints lines from files.
         :param files: The files.

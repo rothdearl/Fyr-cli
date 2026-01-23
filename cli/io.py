@@ -43,7 +43,7 @@ def print_line(line: str) -> None:
     print(line, end="" if line.endswith("\n") else "\n")
 
 
-def read_files(files: TextIO | list[str], encoding: str, *, logger: _Logger) -> Iterator[FileInfo]:
+def read_files(files: Iterable[str] | TextIO, encoding: str, *, logger: _Logger) -> Iterator[FileInfo]:
     """
     Opens the files for reading in text mode and returns an iterator yielding FileInfo objects.
     :param files: A list of file names or a text stream containing file names (e.g. standard input).

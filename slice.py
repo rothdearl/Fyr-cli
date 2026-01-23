@@ -14,7 +14,7 @@ import os
 import shlex
 import sys
 from enum import StrEnum
-from typing import TextIO, final
+from typing import Iterable, TextIO, final
 
 from cli import CLIProgram, colors, io, terminal
 
@@ -113,7 +113,7 @@ class Slice(CLIProgram):
 
             print(filename)
 
-    def print_sliced_lines(self, lines: TextIO | list[str]) -> None:
+    def print_sliced_lines(self, lines: Iterable[str] | TextIO) -> None:
         """
         Prints the sliced the lines.
         :param lines: The lines.
@@ -131,7 +131,7 @@ class Slice(CLIProgram):
 
             print(separator.join(f"{quote}{field}{quote}" for field in fields))
 
-    def print_sliced_lines_from_files(self, files: TextIO | list[str]) -> None:
+    def print_sliced_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Slices lines into fields from files.
         :param files: The files.

@@ -14,7 +14,7 @@ import os
 import re
 import sys
 from enum import StrEnum
-from typing import TextIO, final
+from typing import Iterable, TextIO, final
 
 from cli import CLIProgram, colors, io, patterns, terminal
 
@@ -111,7 +111,7 @@ class Scan(CLIProgram):
             self.args.no_file_header = True  # No file header if no files
             self.print_matches_in_input()
 
-    def print_matches_in_files(self, files: TextIO | list[str]) -> None:
+    def print_matches_in_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Prints matches found in files.
         :param files: The files.
@@ -146,7 +146,8 @@ class Scan(CLIProgram):
         if self.args.count or self.args.count_nonzero:  # --count or --count-nonzero
             self.print_matches_in_lines(lines, origin_file="")
 
-    def print_matches_in_lines(self, lines: TextIO | list[str], *, origin_file: str, reset_line_number=True) -> None:
+    def print_matches_in_lines(self, lines: Iterable[str] | TextIO, *, origin_file: str,
+                               reset_line_number=True) -> None:
         """
         Prints matches found in lines.
         :param lines: The lines.

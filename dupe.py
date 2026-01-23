@@ -14,7 +14,7 @@ import os
 import re
 import sys
 from enum import StrEnum
-from typing import Final, TextIO, final
+from typing import Final, Iterable, TextIO, final
 
 from cli import CLIProgram, colors, io, terminal
 
@@ -108,7 +108,7 @@ class Dupe(CLIProgram):
 
         return line
 
-    def group_adjacent_matching_lines(self, lines: TextIO | list[str]) -> list[list[str]]:
+    def group_adjacent_matching_lines(self, lines: Iterable[str] | TextIO) -> list[list[str]]:
         """
         Groups adjacent lines that match.
         :param lines: The lines.
@@ -136,7 +136,7 @@ class Dupe(CLIProgram):
 
         return group_list
 
-    def group_all_matching_lines(self, lines: TextIO | list[str]) -> dict[str, list[str]]:
+    def group_all_matching_lines(self, lines: Iterable[str] | TextIO) -> dict[str, list[str]]:
         """
         Groups all lines that match.
         :param lines: The lines.
@@ -198,7 +198,7 @@ class Dupe(CLIProgram):
 
             print(filename)
 
-    def print_matching_lines(self, lines: TextIO | list[str], *, origin_file) -> None:
+    def print_matching_lines(self, lines: Iterable[str] | TextIO, *, origin_file) -> None:
         """
         Prints lines that match.
         :param lines: The lines.
@@ -254,7 +254,7 @@ class Dupe(CLIProgram):
             if self.args.group and group_index < last_group_index:  # --group
                 print()
 
-    def print_matching_lines_from_files(self, files: TextIO | list[str]) -> None:
+    def print_matching_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Prints lines that match from files.
         :param files: The files.

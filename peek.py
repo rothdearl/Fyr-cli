@@ -12,8 +12,9 @@ License: GNU GPLv3
 import argparse
 import os
 import sys
+from collections import deque
 from enum import StrEnum
-from typing import TextIO, final
+from typing import Iterable, TextIO, final
 
 from cli import CLIProgram, colors, io, terminal
 
@@ -100,25 +101,32 @@ class Peek(CLIProgram):
 
             print(filename)
 
-    def print_lines(self, lines: list[str]) -> None:
+    def print_lines(self, lines: Iterable[str] | TextIO) -> None:
         """
         Prints the lines.
         :param lines: The lines.
         :return: None
         """
-        max_lines = self.args.lines  # --lines
+        # If --lines is positive or zero: print the first N lines.
+        if self.args.lines >= 0:
+            for index, line in enumerate(lines):
+                if index >= self.args.lines:
+                    break
 
-        # Print all but the last 'N' lines.
-        if max_lines < 0:
-            max_lines = len(lines) + max_lines
-
-        for index, line in enumerate(lines, start=1):
-            if index <= max_lines:
                 io.print_line(line)
-            else:
-                break
 
-    def print_lines_from_files(self, files: TextIO | list[str]) -> None:
+            return
+
+        # --lines is negative: print all but last |N| lines
+        buffer = deque(maxlen=-self.args.lines)
+
+        for line in lines:
+            if len(buffer) == buffer.maxlen:
+                io.print_line(buffer.popleft())
+
+            buffer.append(line)
+
+    def print_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Prints lines from files.
         :param files: The files.
@@ -127,7 +135,7 @@ class Peek(CLIProgram):
         for file_info in io.read_files(files, self.encoding, logger=self):
             try:
                 self.print_file_header(file=file_info.filename)
-                self.print_lines(file_info.text.readlines())
+                self.print_lines(file_info.text)
             except UnicodeDecodeError:
                 self.print_io_error(f"{file_info.filename}: unable to read with {self.encoding}")
 

@@ -13,7 +13,7 @@ import argparse
 import re
 import sys
 from enum import IntEnum, StrEnum
-from typing import Final, TextIO, TypeAlias, final
+from typing import Final, Iterable, TextIO, TypeAlias, final
 
 from cli import CLIProgram, colors, io, terminal
 
@@ -98,7 +98,7 @@ class Tally(CLIProgram):
 
         return parser
 
-    def get_stats(self, text: TextIO | list[str]) -> Stats:
+    def get_stats(self, text: Iterable[str] | TextIO) -> Stats:
         """
         Returns the counts for the lines, words, characters and the maximum line length in the text.
         :param text: The text.
@@ -143,7 +143,7 @@ class Tally(CLIProgram):
         if self.args.total == "on" or (self.args.total == "auto" and self.files_counted > 1):  # --total
             self.print_stats(self.TOTALS, stat_origin="total")
 
-    def print_stats(self, stats: Stats | list[int], *, stat_origin: str) -> None:
+    def print_stats(self, stats: Iterable[int] | Stats, *, stat_origin: str) -> None:
         """
         Prints the stats.
         :param stats: The stats.
@@ -170,7 +170,7 @@ class Tally(CLIProgram):
         else:
             print()
 
-    def print_stats_from_files(self, files: TextIO | list[str]) -> None:
+    def print_stats_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Prints stats from files.
         :param files: The files.
