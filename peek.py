@@ -106,14 +106,14 @@ class Peek(CLIProgram):
         :param lines: The lines.
         :return: None
         """
-        lines_to_print = self.args.lines  # --lines
+        max_lines = self.args.lines  # --lines
 
-        # Print all but the last 'n' lines.
-        if lines_to_print < 0:
-            lines_to_print = len(lines) + lines_to_print
+        # Print all but the last 'N' lines.
+        if max_lines < 0:
+            max_lines = len(lines) + max_lines
 
         for index, line in enumerate(lines, start=1):
-            if index <= lines_to_print:
+            if index <= max_lines:
                 io.print_line(line)
             else:
                 break

@@ -85,81 +85,6 @@ class Dupe(CLIProgram):
 
         return parser
 
-    def filter_matching_lines(self, lines: TextIO | list[str], *, origin_file) -> None:
-        """
-        Filters lines that match.
-        :param lines: The lines.
-        :param origin_file: The file where the lines originated from.
-        :return: None
-        """
-        file_header_printed = False
-
-        # Group matches.
-        if self.args.adjacent:
-            groups = self.group_adjacent_matching_lines(lines)
-        else:
-            groups = self.group_all_matching_lines(lines).values()
-
-        # Print groups.
-        last_group_index = len(groups) - 1
-
-        for group_index, group in enumerate(groups):
-            group_count = len(group)
-
-            for line_index, line in enumerate(group):
-                can_print = True
-                group_count_str = ""
-
-                if self.args.count:  # --count
-                    padding = 7
-
-                    # Only print the group count for the first line.
-                    if line_index == 0:
-                        if self.print_color:
-                            group_count_str = f"{Colors.GROUP_COUNT}{group_count:>{padding},}{Colors.COLON}:{colors.RESET}"
-                        else:
-                            group_count_str = f"{group_count:>{padding},}:"
-                    else:
-                        space = " "
-                        group_count_str = f"{space:>{padding}} "
-
-                if self.args.duplicate or self.args.repeated:  # --duplicate or --repeated
-                    can_print = group_count > 1
-                elif self.args.unique:  # --unique
-                    can_print = group_count == 1
-
-                if can_print:
-                    if not file_header_printed:
-                        self.print_file_header(origin_file)
-                        file_header_printed = True
-
-                    io.print_line(f"{group_count_str}{line}")
-
-                    if not (self.args.duplicate or self.args.group):  # --duplicate or --group
-                        break
-
-            if self.args.group and group_index < last_group_index:  # --group
-                print()
-
-    def filter_matching_lines_from_files(self, files: TextIO | list[str]) -> None:
-        """
-        Filters lines that match from files.
-        :param files: The files.
-        :return: None
-        """
-        for file_info in io.read_files(files, self.encoding, logger=self):
-            try:
-                self.filter_matching_lines(file_info.text, origin_file=file_info.filename)
-            except UnicodeDecodeError:
-                self.print_io_error(f"{file_info.filename}: unable to read with {self.encoding}")
-
-    def filter_matching_lines_from_input(self) -> None:
-        """
-        Filters lines that match from standard input until EOF is entered.
-        :return: None
-        """
-        self.filter_matching_lines(sys.stdin.read().splitlines(), origin_file="")
-
     def get_character_compare_sequence(self, line: str) -> str:
         """
         Returns the character sequence from the line to use for comparing.
@@ -239,25 +164,23 @@ class Dupe(CLIProgram):
         The main function of the program.
         :return: None
         """
-        self.set_match_info_values()
-
         # Set --no-file-header to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_header = True
 
         if terminal.input_is_redirected():
             if self.args.stdin_files:  # --stdin-files
-                self.filter_matching_lines_from_files(sys.stdin)
+                self.print_matching_lines_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
-                    self.filter_matching_lines(standard_input, origin_file="")
+                    self.print_matching_lines(standard_input, origin_file="")
 
             if self.args.files:  # Process any additional files.
-                self.filter_matching_lines_from_files(self.args.files)
+                self.print_matching_lines_from_files(self.args.files)
         elif self.args.files:
-            self.filter_matching_lines_from_files(self.args.files)
+            self.print_matching_lines_from_files(self.args.files)
         else:
-            self.filter_matching_lines_from_input()
+            self.print_matching_lines_from_input()
 
     def print_file_header(self, file: str) -> None:
         """
@@ -275,9 +198,84 @@ class Dupe(CLIProgram):
 
             print(filename)
 
-    def set_match_info_values(self) -> None:
+    def print_matching_lines(self, lines: TextIO | list[str], *, origin_file) -> None:
         """
-        Sets the values to use for matching lines.
+        Prints lines that match.
+        :param lines: The lines.
+        :param origin_file: The file where the lines originated from.
+        :return: None
+        """
+        file_header_printed = False
+
+        # Group matches.
+        if self.args.adjacent:
+            groups = self.group_adjacent_matching_lines(lines)
+        else:
+            groups = self.group_all_matching_lines(lines).values()
+
+        # Print groups.
+        last_group_index = len(groups) - 1
+
+        for group_index, group in enumerate(groups):
+            group_count = len(group)
+
+            for line_index, line in enumerate(group):
+                can_print = True
+                group_count_str = ""
+
+                if self.args.count:  # --count
+                    padding = 7
+
+                    # Only print the group count for the first line.
+                    if line_index == 0:
+                        if self.print_color:
+                            group_count_str = f"{Colors.GROUP_COUNT}{group_count:>{padding},}{Colors.COLON}:{colors.RESET}"
+                        else:
+                            group_count_str = f"{group_count:>{padding},}:"
+                    else:
+                        space = " "
+                        group_count_str = f"{space:>{padding}} "
+
+                if self.args.duplicate or self.args.repeated:  # --duplicate or --repeated
+                    can_print = group_count > 1
+                elif self.args.unique:  # --unique
+                    can_print = group_count == 1
+
+                if can_print:
+                    if not file_header_printed:
+                        self.print_file_header(origin_file)
+                        file_header_printed = True
+
+                    io.print_line(f"{group_count_str}{line}")
+
+                    if not (self.args.duplicate or self.args.group):  # --duplicate or --group
+                        break
+
+            if self.args.group and group_index < last_group_index:  # --group
+                print()
+
+    def print_matching_lines_from_files(self, files: TextIO | list[str]) -> None:
+        """
+        Prints lines that match from files.
+        :param files: The files.
+        :return: None
+        """
+        for file_info in io.read_files(files, self.encoding, logger=self):
+            try:
+                self.print_matching_lines(file_info.text, origin_file=file_info.filename)
+            except UnicodeDecodeError:
+                self.print_io_error(f"{file_info.filename}: unable to read with {self.encoding}")
+
+    def print_matching_lines_from_input(self) -> None:
+        """
+        Prints lines that match from standard input until EOF is entered.
+        :return: None
+        """
+        self.print_matching_lines(sys.stdin.read().splitlines(), origin_file="")
+
+    def validate_parsed_arguments(self) -> None:
+        """
+        Validates the parsed command-line arguments.
         :return: None
         """
         self.max_chars = self.args.max_chars if self.args.max_chars is not None else 1  # --max-chars

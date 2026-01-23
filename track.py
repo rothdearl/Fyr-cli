@@ -176,12 +176,12 @@ class Track(CLIProgram):
         :param lines: The lines.
         :return: None
         """
-        lines_to_print = self.args.lines  # --lines
-        skip_to_line = len(lines) - lines_to_print
+        max_lines = self.args.lines  # --lines
+        skip_to_line = len(lines) - max_lines
 
-        # Print all but the first 'n' lines.
-        if lines_to_print < 0:
-            skip_to_line = abs(lines_to_print)
+        # Print all but the first 'N' lines.
+        if max_lines < 0:
+            skip_to_line = abs(max_lines)
 
         for index, line in enumerate(lines, start=1):
             if index > skip_to_line:
