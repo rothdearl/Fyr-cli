@@ -15,7 +15,7 @@ import sys
 import time
 from enum import StrEnum
 from threading import Thread
-from typing import Iterable, Sequence, TextIO, final
+from typing import Collection, Iterable, TextIO, final
 
 from cli import CLIProgram, colors, io, terminal
 
@@ -106,7 +106,7 @@ class Track(CLIProgram):
         except (OSError, UnicodeDecodeError):
             self.print_io_error(f"{filename} is no longer accessible")
 
-    def follow_files(self, files: Sequence[str]) -> list[Thread]:
+    def follow_files(self, files: Collection[str]) -> list[Thread]:
         """
         Follows the files for new lines.
         :param files: The files.
@@ -170,7 +170,7 @@ class Track(CLIProgram):
 
             print(filename)
 
-    def print_lines(self, lines: Sequence[str]) -> None:
+    def print_lines(self, lines: Collection[str]) -> None:
         """
         Prints the lines.
         :param lines: The lines.

@@ -12,7 +12,7 @@ License: GNU GPLv3
 import argparse
 import sys
 from enum import StrEnum
-from typing import Iterable, Sequence, TextIO, final
+from typing import Collection, Iterable, TextIO, final
 
 from cli import CLIProgram, colors, io, terminal
 
@@ -151,7 +151,7 @@ class Glue(CLIProgram):
 
             io.print_line(line)
 
-    def print_lines_from_files(self, files: Sequence[str]) -> None:
+    def print_lines_from_files(self, files: Collection[str]) -> None:
         """
         Prints lines from files.
         :param files: The files.
