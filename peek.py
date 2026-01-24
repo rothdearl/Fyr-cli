@@ -146,6 +146,13 @@ class Peek(CLIProgram):
         """
         self.print_lines(sys.stdin.read().splitlines())
 
+    def validate_parsed_arguments(self) -> None:
+        """
+        Validates the parsed command-line arguments.
+        :return: None
+        """
+        pass
+
 
 if __name__ == "__main__":
     Peek().run()

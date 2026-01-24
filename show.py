@@ -67,7 +67,8 @@ class Show(CLIProgram):
                             type=int)
         parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
         parser.add_argument("-s", "--line-start", default=1,
-                            help="print the first or all but the last N lines (N != 0)", metavar="N", type=int)
+                            help="print the first or all but the last N lines if negative (N != 0)", metavar="N",
+                            type=int)
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="colorize file names, whitespace and line numbers (default: on)")
         parser.add_argument("--ends", action="store_true", help=f"display '{Whitespace.EOL}' at end of each line")

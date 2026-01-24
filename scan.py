@@ -208,6 +208,13 @@ class Scan(CLIProgram):
 
                 io.print_line(line)
 
+    def validate_parsed_arguments(self) -> None:
+        """
+        Validates the parsed command-line arguments.
+        :return: None
+        """
+        pass
+
 
 if __name__ == "__main__":
     Scan().run()

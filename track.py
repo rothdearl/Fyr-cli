@@ -224,6 +224,13 @@ class Track(CLIProgram):
                 if not self.args.follow:
                     eof = True
 
+    def validate_parsed_arguments(self) -> None:
+        """
+        Validates the parsed command-line arguments.
+        :return: None
+        """
+        pass
+
 
 if __name__ == "__main__":
     Track().run()

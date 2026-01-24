@@ -54,8 +54,6 @@ class Seek(CLIProgram):
         modified_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("dirs", help="directory starting points", metavar="DIRECTORIES", nargs="*")
-        parser.add_argument("-d", "--depth", help="descend at most N levels of directories below the starting points",
-                            metavar="N+", type=int)
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when matching patterns")
         parser.add_argument("-n", "--name", action="extend", help="print files whose names match PATTERN",
                             metavar="PATTERN", nargs=1)
@@ -69,12 +67,14 @@ class Seek(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on", help="colorize matches (default: on)")
         parser.add_argument("--dot", action="store_true", help="include dot (.) files in output")
         parser.add_argument("--empty", choices=("y", "n"), help="print only empty files")
-        modified_group.add_argument("--m-days", help="print files modified less than or more than n days ago",
-                                    metavar="±n", type=int)
-        modified_group.add_argument("--m-hours", help="print files modified less than or more than n hours ago",
-                                    metavar="±n", type=int)
-        modified_group.add_argument("--m-mins", help="print files modified less than or more than n minutes ago",
-                                    metavar="±n", type=int)
+        modified_group.add_argument("--m-days", help="print files modified less than or more than N days ago",
+                                    metavar="N", type=int)
+        modified_group.add_argument("--m-hours", help="print files modified less than or more than N hours ago",
+                                    metavar="N", type=int)
+        modified_group.add_argument("--m-mins", help="print files modified less than or more than N minutes ago",
+                                    metavar="N", type=int)
+        parser.add_argument("--max-depth", default=sys.maxsize,
+                            help="descend at most N levels below the starting points (N >= 1)", metavar="N", type=int)
         parser.add_argument("--quotes", action="store_true", help="print file paths enclosed in double quotes")
         parser.add_argument("--type", choices=("d", "f"), help="print only directories (d) or regular files (f)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
@@ -178,7 +178,7 @@ class Seek(CLIProgram):
         if not file.name and not self.args.dot:  # Skip the dot file if not --dot.
             return
 
-        if self.args.depth and self.args.depth < len(file.parts):  # --depth
+        if self.args.max_depth < len(file.parts):  # --max-depth
             return
 
         if not patterns.text_has_patterns(filename, self.name_patterns) != self.args.invert_match:
@@ -236,6 +236,14 @@ class Seek(CLIProgram):
         else:
             directory = directory or '""'
             self.print_io_error(f"{directory}: no such file or directory")
+
+    def validate_parsed_arguments(self) -> None:
+        """
+        Validates the parsed command-line arguments.
+        :return: None
+        """
+        if self.args.max_depth < 1:  # --max-depth
+            self.print_error_and_exit("'max-depth' must be >= 1")
 
 
 if __name__ == "__main__":

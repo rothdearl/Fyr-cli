@@ -117,9 +117,10 @@ class CLIProgram(ABC):
         except OSError as e:
             raise SystemExit(self.ERROR_EXIT_CODE) from e
 
+    @abstractmethod
     def validate_parsed_arguments(self) -> None:
         """
         Validates the parsed command-line arguments.
         :return: None
         """
-        pass
+        ...
