@@ -63,7 +63,7 @@ class Show(CLIProgram):
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="do not prefix output lines with file names")
-        parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
+        parser.add_argument("-n", "--line-numbers", action="store_true", help="print line numbers with output lines")
         parser.add_argument("-p", "--print", default=sys.maxsize, help="print only N lines (N >= 1)", metavar="N",
                             type=int)
         parser.add_argument("-s", "--start", default=1, help="start at line N, from end if negative (N != 0)",
@@ -137,7 +137,7 @@ class Show(CLIProgram):
                 line = self.show_spaces(line) if self.args.spaces else line  # --spaces
                 line = self.show_tabs(line) if self.args.tabs else line  # --tabs
                 line = self.show_ends(line) if self.args.ends else line  # --ends
-                line = self.show_line_number(line, index, padding) if self.args.line_number else line  # --line-number
+                line = self.show_line_number(line, index, padding) if self.args.line_numbers else line  # --line-numbers
                 io.print_line(line)
 
     def print_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
