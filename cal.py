@@ -4,14 +4,19 @@
 """
 Filename: cal.py
 Author: Roth Earl
-Version: 1.3.5
-Description: A program to filter matching lines in files.
+Version: 0.0.0
+Description: A program to ... WORK IN PROGRESS.
 License: GNU GPLv3
 """
 
 import calendar
 import datetime
-import re
+from typing import Final
+
+from cli import colors
+
+# Define constants.
+DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p"
 
 
 def main() -> None:
@@ -21,92 +26,91 @@ def main() -> None:
     """
     today = datetime.date.today()
 
-    calendar.setfirstweekday(calendar.SUNDAY)
+    # Printing the current datetime, including format, will be options: https://strftime.org/
+    if True:  # --datetime
+        print(datetime.datetime.now().strftime(DEFAULT_DATETIME_FORMAT), "\n")  # --datetime-format
 
-    print(calendar.month(today.year, today.month))
-    print(calendar.calendar(today.year))
+    # Weekday start will be an option, either monday (m) or sunday (s)
+    if True:  # --weekday-start
+        calendar.setfirstweekday(calendar.SUNDAY)
 
-
-def highlight_today():
-    today = datetime.date.today()
-
-    # ANSI escape sequences for inverse colors
-    highlight_start = '\033[7m'
-    highlight_end = '\033[0m'
-
-    # Generate the calendar string with consistent spacing
-    cal_output_consistent = calendar.month(today.year, today.month, w=2)
-
-    # Format the current day with leading space or not depending on its value
-    day_str_formatted = str(today.day).rjust(2)
-
-    # Create the highlighted day string
-    highlighted_day_str = f"{highlight_start}{day_str_formatted}{highlight_end}"
-
-    # Use regex to find and replace the day, ensuring it's a whole number in the calendar
-    # This helps avoid replacing a digit in the year.
-    rday = r'(?<!\d)' + re.escape(str(today.day)) + r'(?!\d)'
-    highlighted_calendar = re.sub(rday, highlighted_day_str, cal_output_consistent, count=1)
-
-    print(highlighted_calendar)
+    # Which to print will be an option.
+    if True:  # --year
+        print_year(today)
+    else:
+        print_month(today)
 
 
-def print_highlighted_year_calendar():
-    """Prints the current year's calendar with today's date highlighted."""
+def print_month(today: datetime.date) -> None:
+    """
+    Prints the current month.
+    :param today: The current date.
+    :return: None
+    """
+    month = calendar.month(today.year, today.month).splitlines()
 
-    # Get today's date
-    today = datetime.date.today()
-    current_year = today.year
-    current_day = today.day
-    current_month = today.month
+    # Print the year header and the days of the week.
+    print(month[0])
+    print(month[1])
 
-    # ANSI escape codes for highlighting (reverse video - swap foreground/background colors)
-    # This works in most modern terminals and PowerShell/Windows Terminal
-    HIGHLIGHT_START = "\033[7m"
-    HIGHLIGHT_END = "\033[0m"
+    # Print the weeks highlighting the current day of the month.
+    day = f"{today.day:>2}"
+    found_day = False
 
-    # Generate the full year's calendar as a string
-    # w=2: day width, l=1: lines per week, c=6: space between months, m=3: months per row
-    cal = calendar.TextCalendar(calendar.MONDAY) # Start week on Monday
-    year_calendar_str = cal.formatyear(current_year, w=2, l=1, c=6, m=3)
+    for week in month[2:]:
+        if not found_day and day in week:
+            week = week.replace(f"{day}", f"{colors.REVERSE}{day}{colors.RESET}")
+            print(week)
+            found_day = True
+        else:
+            print(week)
 
-    # Prepare the string representation of today's day for replacement
-    # Ensure consistent width (2 chars) to maintain calendar alignment
-    day_str = str(current_day).rjust(2)
-    highlighted_day_str = f"{HIGHLIGHT_START}{day_str}{HIGHLIGHT_END}"
 
-    # Replace the current day in the calendar string.
-    # The trickiest part is ensuring only the correct day is replaced in the correct month.
-    # For a simple console output, direct replacement across the whole string will highlight
-    # all occurrences of the day number. A more robust solution would involve month-by-month processing.
+def print_year(today: datetime.date) -> None:
+    """
+    Prints the current year.
+    :param today: The current date.
+    :return: None
+    """
+    calendar_output = calendar.calendar(today.year).splitlines()
+    month_name = calendar.month_name[today.month]
 
-    # Below is a simple implementation that replaces the first occurrence of the day in the current month's section.
-    # This might highlight other dates if they are identical in other months.
-    # A complete solution is complex. Let's provide a function that iterates month by month for accuracy.
-    for month in range(1, 13):
-        month_cal_str = calendar.month(current_year, month)
-        # Only replace in the current month
-        if month == current_month:
-            # Use regex with word boundaries (approximated) to avoid partial number matches (e.g., 2 in 20, 21, etc)
-            # This is still not perfect as spacing in the calendar string is tricky.
-            # The most reliable way is to iterate over the lines of the month string.
+    # Print the year header.
+    print(calendar_output[0])
+    print()
 
-            # Recreate month_cal_str with consistent spacing for easier highlighting
-            month_cal_list = calendar.month(current_year, month).splitlines()
-            for i, line in enumerate(month_cal_list):
-                # We are only interested in lines with day numbers (not header lines)
-                if any(char.isdigit() for char in line) and len(line) > 10:
-                    # Replace the exact day number with the highlighted version, matching the spacing
-                    # This relies on fixed-width columns
-                    line = re.sub(rf'\b{re.escape(day_str)}\b', highlighted_day_str, line)
-                    month_cal_list[i] = line
-            month_cal_str = "\n".join(month_cal_list)
+    # Scan ahead to the current month.
+    month_start = 2
 
-        print(month_cal_str)
-        print("-" * 20) # Separator between months
+    # Scan ahead will be an option.
+    if True:
+        for line in calendar_output[2:]:
+            if month_name in line:
+                break
+
+            month_start += 1
+
+    #
+    day = today.day
+    day_find_str = f"{day:>3}"
+    day_padded = f"{day:>2}"
+    found_day, found_month = False, False
+
+    for line in calendar_output[month_start:]:
+        if not found_month and month_name in line:
+            line = line.replace(month_name, f"{colors.REVERSE}{month_name}{colors.RESET}")
+            print(line)
+            found_month = True
+        elif not line and True:  # This will be an option.
+            break
+        else:
+            if not found_day and found_month and day_find_str in line:
+                line = line.replace(f"{day_padded}", f"{colors.REVERSE}{day_padded}{colors.RESET}")
+                found_day = True
+                # print(line[:20], line[21:25], line[26:46], line[47:51], line[52:])
+
+            print(line)
 
 
 if __name__ == "__main__":
     main()
-    highlight_today()
-    #print_highlighted_year_calendar()
