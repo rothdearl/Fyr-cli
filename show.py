@@ -63,12 +63,11 @@ class Show(CLIProgram):
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-H", "--no-file-header", action="store_true",
                             help="do not prefix output lines with file names")
-        parser.add_argument("-l", "--lines", default=sys.maxsize, help="print only N lines (N >= 1)", metavar="N",
-                            type=int)
         parser.add_argument("-n", "--line-number", action="store_true", help="print line number with output lines")
-        parser.add_argument("-s", "--line-start", default=1,
-                            help="print the first or all but the last N lines if negative (N != 0)", metavar="N",
+        parser.add_argument("-p", "--print", default=sys.maxsize, help="print only N lines (N >= 1)", metavar="N",
                             type=int)
+        parser.add_argument("-s", "--start", default=1, help="start at line N, from end if negative (N != 0)",
+                            metavar="N", type=int)
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="colorize file names, whitespace and line numbers (default: on)")
         parser.add_argument("--ends", action="store_true", help=f"display '{Whitespace.EOL}' at end of each line")
@@ -128,9 +127,9 @@ class Show(CLIProgram):
         :param lines: The lines.
         :return: None
         """
-        line_start = len(lines) + self.args.line_start + 1 if self.args.line_start < 0 else self.args.line_start
-        line_end = line_start + self.args.lines - 1
-        line_min = min(self.args.lines, len(lines)) if self.args.lines else len(lines)
+        line_start = len(lines) + self.args.start + 1 if self.args.start < 0 else self.args.start
+        line_end = line_start + self.args.print - 1
+        line_min = min(self.args.print, len(lines)) if self.args.print else len(lines)
         padding = len(str(line_min))
 
         for index, line in enumerate(lines, start=1):
@@ -228,11 +227,11 @@ class Show(CLIProgram):
         Validates the parsed command-line arguments.
         :return: None
         """
-        if self.args.line_start == 0:  # --line-start
-            self.print_error_and_exit("'line-start' cannot = 0")
+        if self.args.print < 1:  # --print
+            self.print_error_and_exit("'print' must be >= 1")
 
-        if self.args.lines < 1:  # --lines
-            self.print_error_and_exit("'lines' must be >= 1")
+        if self.args.start == 0:  # --start
+            self.print_error_and_exit("'start' cannot = 0")
 
 
 if __name__ == "__main__":
