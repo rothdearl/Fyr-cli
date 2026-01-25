@@ -5,7 +5,7 @@
 Filename: cal.py
 Author: Roth Earl
 Version: 0.0.0
-Description: A program to ... WORK IN PROGRESS.
+Description: A program to ... TODO.
 License: GNU GPLv3
 """
 
@@ -18,6 +18,39 @@ from cli import colors
 # Define constants.
 DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p"
 
+QUARTER_RANGES: dict[int, tuple[int, int]] = {
+    0: (52, 72),
+    1: (0, 20),
+    2: (26, 46)
+}
+
+
+def _color_day_in_week(week: str, quarter: tuple[int, int], day: str) -> str:
+    """
+    TODO
+    :param week: TODO
+    :param quarter: TODO
+    :param day: TODO
+    :return: TODO
+    """
+    start, end = quarter
+
+    # Split into quarters, replacing only within the middle slice.
+    prefix = week[:start]
+    middle = week[start:end].replace(day, _color_value(day))
+    suffix = week[end:]
+
+    return prefix + middle + suffix
+
+
+def _color_value(value: str) -> str:
+    """
+    TODO
+    :param value: TODO
+    :return: TODO
+    """
+    return f"{colors.REVERSE}{value}{colors.RESET}"
+
 
 def main() -> None:
     """
@@ -26,19 +59,19 @@ def main() -> None:
     """
     today = datetime.date.today()
 
-    # Printing the current datetime, including format, will be options: https://strftime.org/
-    if True:  # --datetime
-        print(datetime.datetime.now().strftime(DEFAULT_DATETIME_FORMAT), "\n")  # --datetime-format
-
     # Weekday start will be an option, either monday (m) or sunday (s)
     if True:  # --weekday-start
         calendar.setfirstweekday(calendar.SUNDAY)
 
     # Which to print will be an option.
-    if True:  # --year
-        print_year(today)
-    else:
-        print_month(today)
+    print_month(today)
+    print_quarter(today)
+    print_year(today)
+
+    # Printing the current datetime, including format, will be options: https://strftime.org/
+    if True:  # --datetime
+        print()
+        print(datetime.datetime.now().strftime(DEFAULT_DATETIME_FORMAT), "\n")  # --datetime-format
 
 
 def print_month(today: datetime.date) -> None:
@@ -59,11 +92,55 @@ def print_month(today: datetime.date) -> None:
 
     for week in month[2:]:
         if not found_day and day in week:
-            week = week.replace(f"{day}", f"{colors.REVERSE}{day}{colors.RESET}")
-            print(week)
+            week = week.replace(day, _color_value(day))
             found_day = True
-        else:
-            print(week)
+
+        print(week)
+
+
+def print_quarter(today: datetime.date) -> None:
+    """
+    Prints the current quarter.
+    :param today: The current date.
+    :return: None
+    """
+    month_name = calendar.month_name[today.month]
+    quarter = QUARTER_RANGES[today.month % 3]
+    year = calendar.calendar(today.year).splitlines()
+
+    # Print the year header.
+    print(year[0])
+    print()
+
+    # Find the current quarter.
+    quarter_start = 2
+
+    for line in year[quarter_start:]:
+        if month_name in line:
+            break
+
+        quarter_start += 1
+
+    # Highlight the current month name.
+    year[quarter_start] = year[quarter_start].replace(month_name, _color_value(month_name))
+
+    # Print the month names and weekdays.
+    print(year[quarter_start])
+    print(year[quarter_start + 1])
+
+    # Print the weeks highlighting the current day of the current month.
+    day = f"{today.day:>2}"
+    found_day = False
+
+    for week in year[quarter_start + 2:]:
+        if not week:  # End of quarter?
+            break
+
+        if not found_day and day in week[quarter[0]:quarter[1]]:
+            week = _color_day_in_week(week, quarter, day)
+            found_day = True
+
+        print(week)
 
 
 def print_year(today: datetime.date) -> None:
@@ -72,44 +149,24 @@ def print_year(today: datetime.date) -> None:
     :param today: The current date.
     :return: None
     """
-    calendar_output = calendar.calendar(today.year).splitlines()
     month_name = calendar.month_name[today.month]
+    quarter = QUARTER_RANGES[today.month % 3]
+    year = calendar.calendar(today.year).splitlines()
 
-    # Print the year header.
-    print(calendar_output[0])
-    print()
-
-    # Scan ahead to the current month.
-    month_start = 2
-
-    # Scan ahead will be an option.
-    if True:
-        for line in calendar_output[2:]:
-            if month_name in line:
-                break
-
-            month_start += 1
-
-    #
-    day = today.day
-    day_find_str = f"{day:>3}"
-    day_padded = f"{day:>2}"
+    # Print the weeks highlighting the current day of the current month.
+    day = f"{today.day:>2}"
     found_day, found_month = False, False
 
-    for line in calendar_output[month_start:]:
+    for line in year:
         if not found_month and month_name in line:
-            line = line.replace(month_name, f"{colors.REVERSE}{month_name}{colors.RESET}")
-            print(line)
+            line = line.replace(month_name, _color_value(month_name))
             found_month = True
-        elif not line and True:  # This will be an option.
-            break
-        else:
-            if not found_day and found_month and day_find_str in line:
-                line = line.replace(f"{day_padded}", f"{colors.REVERSE}{day_padded}{colors.RESET}")
-                found_day = True
-                # print(line[:20], line[21:25], line[26:46], line[47:51], line[52:])
 
-            print(line)
+        if not found_day and found_month and day in line[quarter[0]:quarter[1]]:
+            line = _color_day_in_week(line, quarter, day)
+            found_day = True
+
+        print(line)
 
 
 if __name__ == "__main__":
