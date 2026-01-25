@@ -5,7 +5,7 @@
 Filename: when.py
 Author: Roth Earl
 Version: 1.0.0
-Description: A program to display the current calendar, with optional date and time
+Description: A program to display the current calendar, with optional date and time.
 License: GNU GPLv3
 """
 
@@ -21,11 +21,11 @@ class CalendarQuarterSlice(NamedTuple):
     """
     Immutable container for information about a calendar quarter slice.
 
-    :ivar int start: Start of the quarter slice.
     :ivar int end: End of the quarter slice.
+    :ivar int start: Start of the quarter slice.
     """
-    start: int
     end: int
+    start: int
 
 
 def build_arguments() -> argparse.ArgumentParser:
@@ -71,9 +71,9 @@ def get_calendar_quarter_slice(date: datetime.date) -> CalendarQuarterSlice:
     :return: An immutable container for information about a calendar quarter slice.
     """
     slices = {
-        0: CalendarQuarterSlice(0, 20),
-        1: CalendarQuarterSlice(26, 46),
-        2: CalendarQuarterSlice(52, 72)
+        0: CalendarQuarterSlice(start=0, end=20),
+        1: CalendarQuarterSlice(start=26, end=46),
+        2: CalendarQuarterSlice(start=52, end=72)
     }
 
     return slices[(date.month - 1) % 3]
@@ -187,7 +187,7 @@ def reverse_color(value: str) -> str:
 @final
 class When:
     """
-    A program to display the current calendar, with optional date and time
+    A program to display the current calendar, with optional date and time.
 
     :cvar Final[str] DEFAULT_DATETIME_FORMAT: Default format for printing the date and time.
     :cvar Final[str] NAME: Program name.

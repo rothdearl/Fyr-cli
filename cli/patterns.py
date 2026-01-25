@@ -31,27 +31,27 @@ def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, co
     :param color: Color to use.
     :return: The text with all patterns colored.
     """
-    indices = []
+    slices = []
 
-    # Get the indices for each match.
+    # Get the slices for each match.
     for group in patterns:
         for match in group.finditer(text):
-            indices.append((match.start(), match.end()))
+            slices.append((match.start(), match.end()))
 
-    # Merge the overlapping indices.
-    merged_indices = []
+    # Merge the overlapping slices.
+    merged_slices = []
 
-    for start, end in sorted(indices):
-        if merged_indices and start <= merged_indices[-1][1]:
-            merged_indices[-1] = (merged_indices[-1][0], max(merged_indices[-1][1], end))
+    for start, end in sorted(slices):
+        if merged_slices and start <= merged_slices[-1][1]:
+            merged_slices[-1] = (merged_slices[-1][0], max(merged_slices[-1][1], end))
         else:
-            merged_indices.append((start, end))
+            merged_slices.append((start, end))
 
-    # Color the indices.
+    # Color the slices.
     colored_text = []
     prev_end = 0
 
-    for start, end in merged_indices:
+    for start, end in merged_slices:
         if prev_end < start:
             colored_text.append(text[prev_end:start])
 
