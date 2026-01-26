@@ -32,7 +32,14 @@ class Colors(StrEnum):
 class Dupe(CLIProgram):
     """
     A program to filter matching lines in files.
+
+    :cvar Final[str] FIELD_PATTERN: Pattern for splitting lines into fields.
+    :ivar int max_chars: Maximum number of characters to compare.
+    :ivar int skip_chars: Number of characters to skip at the beginning of each line.
+    :ivar int skip_fields: Number of fields to skip at the beginning of each line.
     """
+
+    FIELD_PATTERN: Final[str] = r"\s+|\W+"
 
     def __init__(self) -> None:
         """
@@ -40,7 +47,6 @@ class Dupe(CLIProgram):
         """
         super().__init__(name="dupe", version="1.3.5")
 
-        self.FIELD_PATTERN: Final[str] = r"\s+|\W+"
         self.max_chars: int = 0
         self.skip_chars: int = 0
         self.skip_fields: int = 0
@@ -48,6 +54,7 @@ class Dupe(CLIProgram):
     def build_arguments(self) -> argparse.ArgumentParser:
         """
         Builds an argument parser.
+
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="filter matching lines in FILES",
@@ -88,14 +95,15 @@ class Dupe(CLIProgram):
     def get_character_compare_sequence(self, line: str) -> str:
         """
         Returns the character sequence from the line to use for comparing.
-        :param line: The line.
+
+        :param line: Line to process.
         :return: The character sequence to use for comparing.
         """
         if self.args.skip_whitespace:  # --skip-whitespace
             line = line.strip()
 
         if self.args.skip_fields:  # --skip-fields
-            line = "".join(re.split(self.FIELD_PATTERN, line)[self.skip_fields:])
+            line = "".join(re.split(Dupe.FIELD_PATTERN, line)[self.skip_fields:])
 
         if self.args.max_chars or self.args.skip_chars:  # --max_chars or --skip_chars
             start_index = self.skip_chars
@@ -111,7 +119,8 @@ class Dupe(CLIProgram):
     def group_adjacent_matching_lines(self, lines: Iterable[str] | TextIO) -> list[list[str]]:
         """
         Groups adjacent lines that match.
-        :param lines: The lines.
+
+        :param lines: Lines to group.
         :return: A list of lines where the first element is the group and the remaining elements are the matching lines.
         """
         group_index = 0
@@ -139,7 +148,8 @@ class Dupe(CLIProgram):
     def group_all_matching_lines(self, lines: Iterable[str] | TextIO) -> dict[str, list[str]]:
         """
         Groups all lines that match.
-        :param lines: The lines.
+
+        :param lines: Lines to group.
         :return: A mapping of lines where the key is the group and the values are the matching lines.
         """
         group_map = {}
@@ -161,8 +171,7 @@ class Dupe(CLIProgram):
 
     def main(self) -> None:
         """
-        The main function of the program.
-        :return: None
+        Runs the primary function of the program.
         """
         # Set --no-file-header to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
@@ -185,8 +194,8 @@ class Dupe(CLIProgram):
     def print_file_header(self, file: str) -> None:
         """
         Prints the file name, or (standard input) if empty, with a colon.
-        :param file: The file.
-        :return: None
+
+        :param file: File header to print.
         """
         if not self.args.no_file_header:  # --no-file-header
             filename = os.path.relpath(file) if file else "(standard input)"
@@ -201,9 +210,9 @@ class Dupe(CLIProgram):
     def print_matching_lines(self, lines: Iterable[str] | TextIO, *, origin_file) -> None:
         """
         Prints lines that match.
-        :param lines: The lines.
-        :param origin_file: The file where the lines originated from.
-        :return: None
+
+        :param lines: Lines to print.
+        :param origin_file: File where the lines originated from.
         """
         file_header_printed = False
 
@@ -257,8 +266,8 @@ class Dupe(CLIProgram):
     def print_matching_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
         Prints lines that match from files.
-        :param files: The files.
-        :return: None
+
+        :param files: Files to search.
         """
         for file_info in io.read_files(files, self.encoding, reporter=self):
             try:
@@ -269,14 +278,12 @@ class Dupe(CLIProgram):
     def print_matching_lines_from_input(self) -> None:
         """
         Prints lines that match from standard input until EOF is entered.
-        :return: None
         """
         self.print_matching_lines(sys.stdin.read().splitlines(), origin_file="")
 
     def validate_parsed_arguments(self) -> None:
         """
         Validates the parsed command-line arguments.
-        :return: None
         """
         self.max_chars = self.args.max_chars if self.args.max_chars is not None else 1  # --max-chars
         self.skip_chars = self.args.skip_chars if self.args.skip_chars is not None else 0  # --skip-chars

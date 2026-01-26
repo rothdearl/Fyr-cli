@@ -207,7 +207,7 @@ class When:
 
     def main(self) -> None:
         """
-        The main function of the program.
+        Runs the primary function of the program.
         """
         today = datetime.date.today()
 

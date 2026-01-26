@@ -127,7 +127,7 @@ class Track(CLIProgram):
 
     def main(self) -> None:
         """
-        The main function of the program.
+        Runs the primary function of the program.
         """
         files_printed = []
 

@@ -88,8 +88,7 @@ class Subs(CLIProgram):
 
     def main(self) -> None:
         """
-        The main function of the program.
-        :return: None
+        Runs the primary function of the program.
         """
         # Pre-compile --find patterns.
         if compiled := patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case, reporter=self):

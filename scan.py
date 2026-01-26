@@ -95,7 +95,7 @@ class Scan(CLIProgram):
 
     def main(self) -> None:
         """
-        The main function of the program.
+        Runs the primary function of the program.
         """
         # Pre-compile --find patterns.
         self.patterns = patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case, reporter=self)

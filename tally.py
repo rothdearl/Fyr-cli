@@ -5,7 +5,7 @@
 Filename: tally.py
 Author: Roth Earl
 Version: 1.3.5
-Description: A program to print line, word and character counts in files.
+Description: A program to print line, word, and character counts in files.
 License: GNU GPLv3
 """
 
@@ -18,21 +18,21 @@ from typing import Final, Iterable, TextIO, TypeAlias, final
 from cli import CLIProgram, colors, io, terminal
 
 # Define type aliases.
-Stats: TypeAlias = tuple[int, int, int, int]
+Counts: TypeAlias = tuple[int, int, int, int]
 
 
 class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    STAT = colors.BRIGHT_CYAN
-    STAT_ORIGIN = colors.BRIGHT_MAGENTA
-    STAT_TOTAL = colors.BRIGHT_YELLOW
+    COUNT = colors.BRIGHT_CYAN
+    COUNT_ORIGIN = colors.BRIGHT_MAGENTA
+    COUNT_TOTAL = colors.BRIGHT_YELLOW
 
 
-class StatIndex(IntEnum):
+class CountIndex(IntEnum):
     """
-    Stat index constants.
+    Count index constants.
     """
     LINES = 0
     WORDS = 1
@@ -43,8 +43,18 @@ class StatIndex(IntEnum):
 @final
 class Tally(CLIProgram):
     """
-    A program to print line, word and character counts in files.
+    A program to print line, word, and character counts in files.
+
+    :cvar Final[list[bool]] COUNT_FLAGS: Flags for determining if a count will be printed.
+    :cvar Final[str] TOTALS: Total of all counts.
+    :cvar Final[str] WORD_PATTERN: Pattern for splitting lines into words.
+    :ivar int files_counted: Number of files counted.
+    :ivar int flag_count: Number of flags provided as arguments.
     """
+
+    COUNT_FLAGS: Final[list[bool]] = [False, False, False, False]
+    TOTALS: Final[list[int]] = [0, 0, 0, 0]
+    WORD_PATTERN: Final[str] = r"\b\w+\b"
 
     def __init__(self) -> None:
         """
@@ -52,27 +62,26 @@ class Tally(CLIProgram):
         """
         super().__init__(name="tally", version="1.3.5")
 
-        self.OPTIONS: Final[list[bool]] = [False, False, False, False]
-        self.TOTALS: Final[list[int]] = [0, 0, 0, 0]
-        self.WORD_PATTERN: Final[str] = r"\b\w+\b"
         self.files_counted: int = 0
-        self.options_count: int = 0
+        self.flag_count: int = 0
 
-    def add_stats_to_totals(self, stats: Stats) -> None:
+    @staticmethod
+    def add_counts_to_totals(counts: Counts) -> None:
         """
-        Adds the stats to the totals.
-        :param stats: The stats.
-        :return: None
+        Adds the counts to the totals.
+
+        :param counts: The counts.
         """
-        self.TOTALS[StatIndex.LINES] += stats[StatIndex.LINES]
-        self.TOTALS[StatIndex.WORDS] += stats[StatIndex.WORDS]
-        self.TOTALS[StatIndex.CHARACTERS] += stats[StatIndex.CHARACTERS]
-        self.TOTALS[StatIndex.MAX_LINE_LENGTH] = max(self.TOTALS[StatIndex.MAX_LINE_LENGTH],
-                                                     stats[StatIndex.MAX_LINE_LENGTH])
+        Tally.TOTALS[CountIndex.LINES] += counts[CountIndex.LINES]
+        Tally.TOTALS[CountIndex.WORDS] += counts[CountIndex.WORDS]
+        Tally.TOTALS[CountIndex.CHARACTERS] += counts[CountIndex.CHARACTERS]
+        Tally.TOTALS[CountIndex.MAX_LINE_LENGTH] = max(Tally.TOTALS[CountIndex.MAX_LINE_LENGTH],
+                                                       counts[CountIndex.MAX_LINE_LENGTH])
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
         Builds an argument parser.
+
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False,
@@ -98,12 +107,13 @@ class Tally(CLIProgram):
 
         return parser
 
-    def get_stats(self, text: Iterable[str] | TextIO, *, has_newlines: bool) -> Stats:
+    def get_counts(self, text: Iterable[str] | TextIO, *, has_newlines: bool) -> Counts:
         """
-        Returns the counts for the lines, words, characters and the maximum line length in the text.
-        :param text: The text.
+        Gets the counts for the lines, words, characters, and the maximum line length in the text.
+
+        :param text: Text to count.
         :param has_newlines: Whether the text has newlines.
-        :return: The stats.
+        :return: Counts.
         """
         character_count, line_count, max_line_length, words = 0, 0, 0, 0
         display_width_offset = -1 if has_newlines else 0
@@ -116,93 +126,90 @@ class Tally(CLIProgram):
             character_count += line_length
             line_count += 1
             max_line_length = max(max_display_width, max_line_length)
-            words += len(re.findall(self.WORD_PATTERN, line))
+            words += len(re.findall(Tally.WORD_PATTERN, line))
 
         return line_count, words, character_count, max_line_length
 
     def main(self) -> None:
         """
-        The main function of the program.
-        :return: None
+        Runs the primary function of the program.
         """
         if terminal.input_is_redirected():
             if self.args.stdin_files:  # --stdin-files
-                self.print_stats_from_files(sys.stdin)
+                self.print_counts_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
-                    stats = self.get_stats(standard_input, has_newlines=True)
+                    counts = self.get_counts(standard_input, has_newlines=True)
 
                     self.files_counted += 1
-                    self.add_stats_to_totals(stats)
-                    self.print_stats(stats, stat_origin="(standard input)" if self.args.files else "")
+                    self.add_counts_to_totals(counts)
+                    self.print_counts(counts, count_origin="(standard input)" if self.args.files else "")
 
             if self.args.files:  # Process any additional files.
-                self.print_stats_from_files(self.args.files)
+                self.print_counts_from_files(self.args.files)
         elif self.args.files:
-            self.print_stats_from_files(self.args.files)
+            self.print_counts_from_files(self.args.files)
         else:
-            self.print_stats_from_input()
+            self.print_counts_from_input()
 
         if self.args.total == "on" or (self.args.total == "auto" and self.files_counted > 1):  # --total
-            self.print_stats(self.TOTALS, stat_origin="total")
+            self.print_counts(Tally.TOTALS, count_origin="total")
 
-    def print_stats(self, stats: Iterable[int] | Stats, *, stat_origin: str) -> None:
+    def print_counts(self, counts: Iterable[int] | Counts, *, count_origin: str) -> None:
         """
-        Prints the stats.
-        :param stats: The stats.
-        :param stat_origin: Where the stats originated from.
-        :return: None
-        """
-        stat_color = Colors.STAT_TOTAL if stat_origin == "total" else Colors.STAT
-        stat_origin_color = Colors.STAT_TOTAL if stat_origin == "total" else Colors.STAT_ORIGIN
+        Prints the counts.
 
-        for index, stat in enumerate(stats):
-            if self.OPTIONS[index]:
-                width = 12 if self.options_count > 1 or stat_origin else 0
+        :param counts: Counts to print.
+        :param count_origin: Where the counts originated from.
+        """
+        count_color = Colors.COUNT_TOTAL if count_origin == "total" else Colors.COUNT
+        count_origin_color = Colors.COUNT_TOTAL if count_origin == "total" else Colors.COUNT_ORIGIN
+
+        for index, count in enumerate(counts):
+            if Tally.COUNT_FLAGS[index]:
+                width = 12 if self.flag_count > 1 or count_origin else 0
 
                 if self.print_color:
-                    print(f"{stat_color}{stat:>{width},}{colors.RESET}", end="")
+                    print(f"{count_color}{count:>{width},}{colors.RESET}", end="")
                 else:
-                    print(f"{stat:>{width},}", end="")
+                    print(f"{count:>{width},}", end="")
 
-        if stat_origin:
+        if count_origin:
             if self.print_color:
-                print(f"\t{stat_origin_color}{stat_origin}{colors.RESET}")
+                print(f"\t{count_origin_color}{count_origin}{colors.RESET}")
             else:
-                print(f"\t{stat_origin}")
+                print(f"\t{count_origin}")
         else:
             print()
 
-    def print_stats_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_counts_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
-        Prints stats from files.
-        :param files: The files.
-        :return: None
+        Prints counts from files.
+
+        :param files: Files to count.
         """
         for file_info in io.read_files(files, self.encoding, reporter=self):
             try:
-                stats = self.get_stats(file_info.text, has_newlines=True)
+                counts = self.get_counts(file_info.text, has_newlines=True)
 
                 self.files_counted += 1
-                self.add_stats_to_totals(stats)
-                self.print_stats(stats, stat_origin=file_info.filename)
+                self.add_counts_to_totals(counts)
+                self.print_counts(counts, count_origin=file_info.filename)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.filename}: unable to read with {self.encoding}")
 
-    def print_stats_from_input(self) -> None:
+    def print_counts_from_input(self) -> None:
         """
-        Prints stats from standard input until EOF is entered.
-        :return: None
+        Prints counts from standard input until EOF is entered.
         """
-        stats = self.get_stats(sys.stdin.read().splitlines(), has_newlines=False)
+        counts = self.get_counts(sys.stdin.read().splitlines(), has_newlines=False)
 
-        self.add_stats_to_totals(stats)
-        self.print_stats(stats, stat_origin="")
+        self.add_counts_to_totals(counts)
+        self.print_counts(counts, count_origin="")
 
     def validate_parsed_arguments(self) -> None:
         """
         Validates the parsed command-line arguments.
-        :return: None
         """
         if self.args.tab_width < 1:
             self.print_error_and_exit("'tab-width' must be >= 1")
@@ -210,18 +217,20 @@ class Tally(CLIProgram):
         # -1 one for the tab character.
         self.args.tab_width -= 1
 
-        # Check which stat options were provided: --lines, --words, --chars, or --max-line-length
-        for index, option in enumerate((self.args.lines, self.args.words, self.args.chars, self.args.max_line_length)):
-            if option:
-                self.OPTIONS[index] = True
-                self.options_count += 1
+        # Check which count flags were provided: --lines, --words, --chars, or --max-line-length
+        for index, flag in enumerate((self.args.lines, self.args.words, self.args.chars, self.args.max_line_length)):
+            if flag:
+                Tally.COUNT_FLAGS[index] = True
+                self.flag_count += 1
 
-        # If no stat options, default to lines, words and characters.
-        if not self.options_count:
-            self.OPTIONS[StatIndex.LINES] = True
-            self.OPTIONS[StatIndex.WORDS] = True
-            self.OPTIONS[StatIndex.CHARACTERS] = True
-            self.options_count = 3
+        # If no count flags, default to lines, words and characters.
+        if not self.flag_count:
+            flags = (CountIndex.LINES, CountIndex.WORDS, CountIndex.CHARACTERS)
+
+            for index in flags:
+                Tally.COUNT_FLAGS[index] = True
+
+            self.flag_count = len(flags)
 
 
 if __name__ == "__main__":

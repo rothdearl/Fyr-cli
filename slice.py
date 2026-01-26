@@ -33,13 +33,13 @@ class Colors(StrEnum):
 class Slice(CLIProgram):
     """
     A program to slice lines in files into shell-style fields.
+
+    :ivar list[int] fields_to_print: Fields to print.
     """
 
     def __init__(self) -> None:
         """
         Initializes a new instance.
-
-        :ivar list[int] fields_to_print: Fields to print.
         """
         super().__init__(name="slice", version="1.3.5")
 
@@ -78,7 +78,7 @@ class Slice(CLIProgram):
 
     def main(self) -> None:
         """
-        The main function of the program.
+        Runs the primary function of the program.
         """
         # Set --no-file-header to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:

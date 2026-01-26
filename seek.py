@@ -147,7 +147,7 @@ class Seek(CLIProgram):
 
     def main(self) -> None:
         """
-        The main function of the program.
+        Runs the primary function of the program.
         """
         # Pre-compile patterns.
         if self.args.name:  # --name
