@@ -51,7 +51,7 @@ class Dupe(CLIProgram):
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="filter matching lines in FILES",
-                                         epilog="with no FILES, read standard input", prog=self.NAME)
+                                         epilog="with no FILES, read standard input", prog=self.name)
         print_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
@@ -81,7 +81,7 @@ class Dupe(CLIProgram):
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
-        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 

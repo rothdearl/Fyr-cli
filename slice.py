@@ -52,7 +52,7 @@ class Slice(CLIProgram):
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="slice lines in FILES into shell-style fields",
-                                         epilog="with no FILES, read standard input", prog=self.NAME)
+                                         epilog="with no FILES, read standard input", prog=self.name)
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-H", "--no-file-header", action="store_true",
@@ -72,7 +72,7 @@ class Slice(CLIProgram):
                             help="wrap fields in double (d) or single (s) quotes (default: none)")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
-        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 

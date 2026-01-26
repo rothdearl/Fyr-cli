@@ -49,7 +49,7 @@ class Subs(CLIProgram):
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="replace text in FILES",
-                                         epilog="with no FILES, read standard input", prog=self.NAME)
+                                         epilog="with no FILES, read standard input", prog=self.name)
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-f", "--find", action="extend", help="replace text matching PATTERN", metavar="PATTERN",
@@ -67,7 +67,7 @@ class Subs(CLIProgram):
                             help="limit replacements to N per line (default: unlimited; N >= 1)", metavar="N", type=int)
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
-        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 

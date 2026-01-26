@@ -44,10 +44,11 @@ class Track(CLIProgram):
     def build_arguments(self) -> argparse.ArgumentParser:
         """
         Builds an argument parser.
+
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="print the last part of FILES",
-                                         epilog="with no FILES, read standard input", prog=self.NAME)
+                                         epilog="with no FILES, read standard input", prog=self.name)
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-f", "--follow", action="store_true", help="output appended data as the file grows")
@@ -60,17 +61,17 @@ class Track(CLIProgram):
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
-        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 
     def follow_file(self, filename: str, print_name: bool, polling_interval: float = .5) -> None:
         """
         Follows a file for new lines.
-        :param filename: The file name.
+
+        :param filename: File to follow.
         :param print_name: Whether to print the file name with each update.
-        :param polling_interval: The duration between each check.
-        :return: None
+        :param polling_interval: Duration between each check.
         """
         try:
             # Get the initial file content.
@@ -109,7 +110,8 @@ class Track(CLIProgram):
     def follow_files(self, files: Collection[str]) -> list[Thread]:
         """
         Follows the files for new lines.
-        :param files: The files.
+
+        :param files: Files to follow.
         :return: A list of threads that are following files.
         """
         print_filename = len(files) > 1
@@ -126,7 +128,6 @@ class Track(CLIProgram):
     def main(self) -> None:
         """
         The main function of the program.
-        :return: None
         """
         files_printed = []
 
@@ -156,12 +157,12 @@ class Track(CLIProgram):
     def print_file_header(self, file: str) -> None:
         """
         Prints the file name, or (standard input) if empty, with a colon.
-        :param file: The file.
-        :return: None
+
+        :param file: File header to print.
         """
         if not self.args.no_file_header:  # --no-file-header
             filename = os.path.relpath(file) if file else "(standard input)"
-            following = f" (following)" if self.args.follow and file else ""
+            following = " (following)" if self.args.follow and file else ""
 
             if self.print_color:
                 filename = f"{Colors.FILE_NAME}{filename}{Colors.COLON}:{Colors.FOLLOWING}{following}{colors.RESET}"
@@ -173,8 +174,8 @@ class Track(CLIProgram):
     def print_lines(self, lines: Collection[str]) -> None:
         """
         Prints the lines.
-        :param lines: The lines.
-        :return: None
+
+        :param lines: Lines to print.
         """
         max_lines = self.args.lines  # --lines
         skip_to_line = len(lines) - max_lines
@@ -190,7 +191,8 @@ class Track(CLIProgram):
     def print_lines_from_files(self, files: Iterable[str] | TextIO) -> list[str]:
         """
         Prints lines from files.
-        :param files: The files.
+
+        :param files: Files to print lines from.
         :return: A list of the files printed.
         """
         files_printed = []
@@ -208,7 +210,6 @@ class Track(CLIProgram):
     def print_lines_from_input(self) -> None:
         """
         Prints lines from standard input until EOF is entered.
-        :return: None
         """
         eof = False
         lines = []
@@ -227,7 +228,6 @@ class Track(CLIProgram):
     def validate_parsed_arguments(self) -> None:
         """
         Validates the parsed command-line arguments.
-        :return: None
         """
         pass
 

@@ -55,7 +55,7 @@ class Seek(CLIProgram):
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="search for files in a directory hierarchy",
-                                         epilog="default starting point is the current directory", prog=self.NAME)
+                                         epilog="default starting point is the current directory", prog=self.name)
         modified_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("dirs", help="directory starting points", metavar="DIRECTORIES", nargs="*")
@@ -82,7 +82,7 @@ class Seek(CLIProgram):
                             help="descend at most N levels below the starting points (N >= 1)", metavar="N", type=int)
         parser.add_argument("--quotes", action="store_true", help="print file paths enclosed in double quotes")
         parser.add_argument("--type", choices=("d", "f"), help="print only directories (d) or regular files (f)")
-        parser.add_argument("--version", action="version", version=f"%(prog)s {self.VERSION}")
+        parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 

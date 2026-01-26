@@ -6,7 +6,7 @@ import argparse
 import os
 import sys
 from abc import ABC, abstractmethod
-from typing import Final, final
+from typing import final
 
 from cli import terminal
 
@@ -15,13 +15,13 @@ class CLIProgram(ABC):
     """
     ABC base class for command-line programs.
 
-    :ivar int ERROR_EXIT_CODE: Exit code when an error occurs (default: 1).
-    :ivar str NAME: Program name.
-    :ivar str VERSION: Program version.
     :ivar argparse.Namespace args: Parsed command-line arguments.
     :ivar str encoding: Encoding for reading and writing to files.
+    :ivar int error_exit_code: Exit code when an error occurs (default: 1).
     :ivar bool has_errors: Whether the program has encountered errors.
+    :ivar str name: Program name.
     :ivar bool print_color: Whether color output is enabled.
+    :ivar str version: Program version.
     """
 
     def __init__(self, *, name: str, version: str, error_exit_code: int = 1) -> None:
@@ -32,13 +32,13 @@ class CLIProgram(ABC):
         :param version: Program version.
         :param error_exit_code: Exit code when an error occurs (default: 1).
         """
-        self.ERROR_EXIT_CODE: Final[int] = error_exit_code
-        self.NAME: Final[str] = name
-        self.VERSION: Final[str] = version
         self.args: argparse.Namespace | None = None
         self.encoding: str | None = None
+        self.error_exit_code: int = error_exit_code
         self.has_errors: bool = False
+        self.name: str = name
         self.print_color: bool = False
+        self.version: str = version
 
     @abstractmethod
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -56,7 +56,7 @@ class CLIProgram(ABC):
         :raises SystemExit: Request to exit from the interpreter if there are any errors.
         """
         if self.has_errors:
-            raise SystemExit(self.ERROR_EXIT_CODE)
+            raise SystemExit(self.error_exit_code)
 
     @abstractmethod
     def main(self) -> None:
@@ -84,7 +84,7 @@ class CLIProgram(ABC):
         self.has_errors = True
 
         if not getattr(self.args, "no_messages", False):
-            print(f"{self.NAME}: error: {error_message}", file=sys.stderr)
+            print(f"{self.name}: error: {error_message}", file=sys.stderr)
 
     @final
     def print_error_and_exit(self, error_message: str) -> None:
@@ -93,8 +93,8 @@ class CLIProgram(ABC):
 
         :param error_message: Error message to print.
         """
-        print(f"{self.NAME}: error: {error_message}", file=sys.stderr)
-        raise SystemExit(self.ERROR_EXIT_CODE)
+        print(f"{self.name}: error: {error_message}", file=sys.stderr)
+        raise SystemExit(self.error_exit_code)
 
     @final
     def run(self) -> None:
@@ -120,9 +120,9 @@ class CLIProgram(ABC):
             self.check_for_errors()
         except KeyboardInterrupt:
             print()  # Add a newline after Ctrl-C.
-            raise SystemExit(self.ERROR_EXIT_CODE if windows else keyboard_interrupt_error_code)
+            raise SystemExit(self.error_exit_code if windows else keyboard_interrupt_error_code)
         except OSError as e:
-            raise SystemExit(self.ERROR_EXIT_CODE) from e
+            raise SystemExit(self.error_exit_code) from e
 
     @abstractmethod
     def validate_parsed_arguments(self) -> None:

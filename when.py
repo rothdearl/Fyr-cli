@@ -24,8 +24,8 @@ class CalendarQuarterSlice(NamedTuple):
     :ivar int end: End of the quarter slice.
     :ivar int start: Start of the quarter slice.
     """
-    end: int
     start: int
+    end: int
 
 
 def build_arguments() -> argparse.ArgumentParser:
@@ -71,9 +71,9 @@ def get_calendar_quarter_slice(date: datetime.date) -> CalendarQuarterSlice:
     :return: An immutable container for information about a calendar quarter slice.
     """
     slices = {
-        0: CalendarQuarterSlice(start=0, end=20),
-        1: CalendarQuarterSlice(start=26, end=46),
-        2: CalendarQuarterSlice(start=52, end=72)
+        0: CalendarQuarterSlice(0, 20),
+        1: CalendarQuarterSlice(26, 46),
+        2: CalendarQuarterSlice(52, 72)
     }
 
     return slices[(date.month - 1) % 3]
