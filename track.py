@@ -65,23 +65,23 @@ class Track(CLIProgram):
 
         return parser
 
-    def follow_file(self, filename: str, print_name: bool, polling_interval: float = .5) -> None:
+    def follow_file(self, file: str, print_name: bool, polling_interval: float = .5) -> None:
         """
         Follows a file for new lines.
 
-        :param filename: File to follow.
+        :param file: File to follow.
         :param print_name: Whether to print the file name with each update.
         :param polling_interval: Duration between each check.
         """
         try:
             # Get the initial file content.
-            with open(filename, "r", encoding=self.encoding) as f:
+            with open(file, "r", encoding=self.encoding) as f:
                 previous_content = f.read()
 
             # Follow file until Ctrl-C.
             while True:
                 # Re-open the file with each iteration.
-                with open(filename, "r", encoding=self.encoding) as f:
+                with open(file, "r", encoding=self.encoding) as f:
                     next_content = f.read()
 
                     # Check for changes.
@@ -91,21 +91,21 @@ class Track(CLIProgram):
                         if next_content.startswith(previous_content):
                             print_index = len(previous_content)
                         elif len(next_content) < len(previous_content):
-                            print(f"data deleted in: {filename}")
+                            print(f"data deleted in: {file}")
                         else:
-                            print(f"data modified in: {filename}")
+                            print(f"data modified in: {file}")
 
                         if print_name:
-                            self.print_file_header(filename)
+                            self.print_file_header(file)
 
                         io.print_line(next_content[print_index:])
                         previous_content = next_content
 
                 time.sleep(polling_interval)
         except FileNotFoundError:
-            self.print_error(f"{filename} has been deleted")
+            self.print_error(f"{file} has been deleted")
         except (OSError, UnicodeDecodeError):
-            self.print_error(f"{filename} is no longer accessible")
+            self.print_error(f"{file} is no longer accessible")
 
     def follow_files(self, files: Collection[str]) -> list[Thread]:
         """
