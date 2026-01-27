@@ -74,8 +74,11 @@ class Seek(CLIProgram):
                             metavar="PATTERN", nargs=1)
         parser.add_argument("-q", "--quiet", "--silent", action="store_true", help="suppress all normal output")
         parser.add_argument("-s", "--no-messages", action="store_true", help="suppress error messages about files")
-        parser.add_argument("-u", "--user", action="extend", help="print files whose user matches PATTERN",
-                            metavar="PATTERN", nargs=1)
+
+        if not OS_IS_WINDOWS:  # POSIX-only.
+            parser.add_argument("-u", "--user", action="extend", help="print files whose user matches PATTERN",
+                                metavar="PATTERN", nargs=1)
+
         parser.add_argument("-v", "--invert-match", action="store_true",
                             help="print files that do not match the specified criteria")
         parser.add_argument("--abs", action="store_true", help="print absolute file paths")
@@ -162,7 +165,10 @@ class Seek(CLIProgram):
         :param file: File to check.
         :return: True if any pattern is matched.
         """
-        if not OS_IS_WINDOWS and not patterns.text_has_patterns(file.group(), self.group_patterns):  # --group
+        if OS_IS_WINDOWS:
+            return True
+
+        if not patterns.text_has_patterns(file.group(), self.group_patterns):  # --group
             return False
 
         if not patterns.text_has_patterns(file.owner(), self.user_patterns):  # --user
