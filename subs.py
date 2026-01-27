@@ -92,10 +92,7 @@ class Subs(CLIProgram):
         """
         Run the primary function of the program.
         """
-        # Pre-compile --find patterns.
-        if compiled := patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
-                                                 on_error=self.print_error_and_exit):
-            self.pattern = patterns.combine_patterns(compiled, ignore_case=self.args.ignore_case)
+        self.precompile_patterns()
 
         # Set --no-file-header to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
@@ -115,6 +112,14 @@ class Subs(CLIProgram):
             self.process_files(self.args.files)
         else:
             self.print_replaced_lines_from_input()
+
+    def precompile_patterns(self) -> None:
+        """
+        Pre-compile search patterns.
+        """
+        if compiled := patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
+                                                 on_error=self.print_error_and_exit):
+            self.pattern = patterns.combine_patterns(compiled, ignore_case=self.args.ignore_case)
 
     def print_file_header(self, file: str) -> None:
         """

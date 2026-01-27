@@ -103,7 +103,7 @@ class Glue(CLIProgram):
 
     def print_lines(self, lines: Iterable[str] | TextIO) -> None:
         """
-        Print ``lines``.
+        Print ``lines`` with specified formatting.
 
         :param lines: Lines to print.
         """

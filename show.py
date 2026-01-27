@@ -124,7 +124,7 @@ class Show(CLIProgram):
 
     def print_lines(self, lines: Collection[str]) -> None:
         """
-        Print ``lines``.
+        Print ``lines`` with specified formatting.
 
         :param lines: Lines to print.
         """
