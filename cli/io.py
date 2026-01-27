@@ -24,7 +24,7 @@ class FileInfo(NamedTuple):
 
 def print_line(line: str) -> None:
     """
-    Prints a line, ensuring exactly one trailing newline (e.g., for input from files or standard input).
+    Print a line, ensuring exactly one trailing newline (e.g., for input from files or standard input).
 
     :param line: Line to print.
     """
@@ -33,12 +33,12 @@ def print_line(line: str) -> None:
 
 def read_files(files: Iterable[str] | TextIO, encoding: str, *, on_error: ErrorReporter) -> Iterator[FileInfo]:
     """
-    Opens the files for reading in text mode and returns an iterator yielding FileInfo objects.
+    Open ``files`` for reading in text mode and return an iterator yielding FileInfo objects.
 
     :param files: List of file names or a text stream containing file names (e.g. standard input).
     :param encoding: Text encoding.
     :param on_error: Callback invoked with an error message for file-related errors.
-    :return: Iterator of FileInfo objects.
+    :return: Iterator yielding FileInfo objects.
     """
     for file_index, filename in enumerate(files):
         filename = filename.strip()

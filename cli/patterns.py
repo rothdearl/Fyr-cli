@@ -11,7 +11,7 @@ from .types import CompiledPatterns, ErrorReporter, PatternIterable
 
 def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
     """
-    Colors all patterns in the text.
+    Color all patterns in ``text``.
 
     :param text: Text to color.
     :param patterns: Patterns to find.
@@ -20,12 +20,12 @@ def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, co
     """
     slices = []
 
-    # Get the slices for each match.
+    # Get slices for each match.
     for group in patterns:
         for match in group.finditer(text):
             slices.append((match.start(), match.end()))
 
-    # Merge the overlapping slices.
+    # Merge overlapping slices.
     merged_slices = []
 
     for start, end in sorted(slices):
@@ -34,7 +34,7 @@ def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, co
         else:
             merged_slices.append((start, end))
 
-    # Color the slices.
+    # Color slices.
     colored_text = []
     prev_end = 0
 
@@ -53,7 +53,7 @@ def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, co
 
 def combine_patterns(patterns: PatternIterable, *, ignore_case: bool) -> re.Pattern[str]:
     """
-    Combines all patterns into a single compiled OR-pattern.
+    Combine all ``patterns`` into a single compiled OR-pattern.
 
     :param patterns: List of compiled pattern groups.
     :param ignore_case: Whether to ignore case.
@@ -67,7 +67,7 @@ def combine_patterns(patterns: PatternIterable, *, ignore_case: bool) -> re.Patt
 
 def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: ErrorReporter) -> CompiledPatterns:
     """
-    Compiles patterns into OR-groups implementing AND-of-OR matching.
+    Compile ``patterns`` into OR-groups implementing AND-of-OR matching.
 
     :param patterns: Patterns to compile.
     :param ignore_case: Whether to ignore case.
@@ -91,11 +91,11 @@ def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: Er
 
 def text_has_patterns(text: str, patterns: PatternIterable) -> bool:
     """
-    Returns whether the text matches all patterns.
+    Return whether ``text`` matches all ``patterns``.
 
     :param text: Text to search.
     :param patterns: Patterns to match.
-    :return: True or False.
+    :return: True if ``text`` matches all ``patterns``.
     """
     for group in patterns:
         if not group.search(text):

@@ -7,17 +7,17 @@ import sys
 
 def input_is_redirected() -> bool:
     """
-    Returns whether input is being redirected.
+    Return whether input is being redirected.
 
-    :return: True or False.
+    :return: True if input is being redirected.
     """
     return not sys.stdin.isatty()
 
 
 def output_is_terminal() -> bool:
     """
-    Returns whether output is to the terminal.
+    Return whether output is to the terminal.
 
-    :return: True or False.
+    :return: True if output is to the terminal.
     """
     return sys.stdout.isatty()

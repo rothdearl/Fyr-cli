@@ -19,11 +19,11 @@ _truthy_values: set[str] = {"1", "on", "true", "y", "yes"}
 
 def get_bool_option(section: str, option: str) -> bool | None:
     """
-    Gets a boolean option. Fallback is False if section or option are not found, or the value is empty.
+    Get a boolean option. Fallback is False if section or option are not found, or the value is empty.
 
     :param section: Section name.
     :param option: Option name.
-    :return: True, False, or None if the value is neither truthy nor falsy.
+    :return: A boolean value or None if the value is neither truthy nor falsy.
     """
     value = get_str_option_with_fallback(section, option, fallback="false").lower()
 
@@ -38,7 +38,7 @@ def get_bool_option(section: str, option: str) -> bool | None:
 
 def get_float_option(section: str, option: str) -> float | None:
     """
-    Gets a floating point decimal option. Fallback is 0.0 if section or option are not found, or the value is empty.
+    Get a floating point decimal option. Fallback is 0.0 if section or option are not found, or the value is empty.
 
     :param section: Section name.
     :param option: Option name.
@@ -54,7 +54,7 @@ def get_float_option(section: str, option: str) -> float | None:
 
 def get_int_option(section: str, option: str) -> int | None:
     """
-    Gets an integer option. Fallback is 0 if section or option are not found, or the value is empty.
+    Get an integer option. Fallback is 0 if section or option are not found, or the value is empty.
 
     :param section: Section name.
     :param option: Option name.
@@ -70,7 +70,7 @@ def get_int_option(section: str, option: str) -> int | None:
 
 def get_json_option(section: str, option: str) -> Json | None:
     """
-    Gets a JSON option. Fallback is {} if section or option are not found, or the value is empty.
+    Get a JSON option. Fallback is {} if section or option are not found, or the value is empty.
 
     :param section: Section name.
     :param option: Option name.
@@ -86,7 +86,7 @@ def get_json_option(section: str, option: str) -> Json | None:
 
 def get_str_option(section: str, option: str) -> str:
     """
-    Gets a string option. Fallback is an empty string if section or option are not found, or the value is empty.
+    Get a string option. Fallback is an empty string if section or option are not found, or the value is empty.
 
     :param section: Section name.
     :param option: Option name.
@@ -97,7 +97,7 @@ def get_str_option(section: str, option: str) -> str:
 
 def get_str_option_with_fallback(section: str, option: str, *, fallback: str) -> str:
     """
-    Gets a string option.
+    Get a string option.
 
     :param section: Section name.
     :param option: Option name.
@@ -109,7 +109,7 @@ def get_str_option_with_fallback(section: str, option: str, *, fallback: str) ->
 
 def get_str_options(section: str, option: str, *, separator: str = ",") -> list[str]:
     """
-    Gets a string option and splits it on separator, ignoring empty values.
+    Get a string option and split it on ``separator``, ignoring empty values.
 
     :param section: Section name.
     :param option: Option name.
@@ -123,11 +123,11 @@ def get_str_options(section: str, option: str, *, separator: str = ",") -> list[
 
 def read_options(path: str, on_error: ErrorReporter) -> bool:
     """
-    Reads options from the configuration file, clearing previous reads, and returns whether the process was successful.
+    Read options from the configuration file, clearing previous reads, and return whether the process was successful.
 
     :param path: Path to the configuration file.
     :param on_error: Callback invoked with an error message if the file cannot be read or parsed.
-    :return: True or False.
+    :return: True if the process was successful.
     """
     try:
         path = path.strip()

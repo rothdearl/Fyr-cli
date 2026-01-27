@@ -26,7 +26,7 @@ class CLIProgram(ABC):
 
     def __init__(self, *, name: str, version: str, error_exit_code: int = 1) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
 
         :param name: Program name.
         :param version: Program version.
@@ -43,7 +43,7 @@ class CLIProgram(ABC):
     @abstractmethod
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds an argument parser.
+        Build an argument parser.
 
         :return: An argument parser.
         """
@@ -51,7 +51,7 @@ class CLIProgram(ABC):
 
     def check_for_errors(self) -> None:
         """
-        Raises a SystemExit if there are any errors.
+        Raise a SystemExit if there are any errors.
 
         :raises SystemExit: Request to exit from the interpreter if there are any errors.
         """
@@ -61,14 +61,14 @@ class CLIProgram(ABC):
     @abstractmethod
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
         ...
 
     @final
     def parse_arguments(self) -> None:
         """
-        Parses the command line arguments to get the program options.
+        Parse the command line arguments to get the program options.
         """
         self.args = self.build_arguments().parse_args()
         self.encoding = "iso-8859-1" if getattr(self.args, "latin1", False) else "utf-8"  # --latin1
@@ -77,7 +77,7 @@ class CLIProgram(ABC):
     @final
     def print_error(self, error_message: str) -> None:
         """
-        Sets the error flag to True and prints the error message to standard error if the argument no_messages = False.
+        Set the error flag to True and print the error message to standard error if the argument no_messages = False.
 
         :param error_message: Error message to print.
         """
@@ -89,7 +89,7 @@ class CLIProgram(ABC):
     @final
     def print_error_and_exit(self, error_message: str) -> None:
         """
-        Prints the error message to standard error and raises a SystemExit.
+        Print the error message to standard error and raise a SystemExit.
 
         :param error_message: Error message to print.
         """
@@ -99,7 +99,7 @@ class CLIProgram(ABC):
     @final
     def run(self) -> None:
         """
-        Runs the program.
+        Setup and run the program.
         """
         keyboard_interrupt_error_code = 130
 
@@ -126,6 +126,6 @@ class CLIProgram(ABC):
     @abstractmethod
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         ...
