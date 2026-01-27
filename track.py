@@ -4,7 +4,7 @@
 """
 Filename: track.py
 Author: Roth Earl
-Version: 1.3.5
+Version: 1.3.6
 Description: A program to print the last part of files.
 License: GNU GPLv3
 """
@@ -40,7 +40,7 @@ class Track(CLIProgram):
         """
         Initialize a new instance.
         """
-        super().__init__(name="track", version="1.3.5")
+        super().__init__(name="track", version="1.3.6")
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """

@@ -4,7 +4,7 @@
 """
 Filename: glue.py
 Author: Roth Earl
-Version: 1.3.5
+Version: 1.3.6
 Description: A program to join files and standard input to standard output.
 License: GNU GPLv3
 """
@@ -47,7 +47,7 @@ class Glue(CLIProgram):
         """
         Initialize a new instance.
         """
-        super().__init__(name="glue", version="1.3.5")
+        super().__init__(name="glue", version="1.3.6")
 
         self.line_number: int = 0
 
