@@ -1,5 +1,5 @@
 """
-Module for defining type aliases for the command-line interface package.
+Module for defining type aliases used throughout the command-line interface package.
 """
 
 import re

@@ -3,11 +3,11 @@ ABC base class for command-line programs.
 """
 
 import argparse
-import os
 import sys
 from abc import ABC, abstractmethod
 from typing import final
 
+from .constants import OS_IS_WINDOWS
 from .terminal import output_is_terminal
 
 
@@ -102,10 +102,9 @@ class CLIProgram(ABC):
         Runs the program.
         """
         keyboard_interrupt_error_code = 130
-        windows = os.name == "nt"
 
         try:
-            if windows:  # Fix ANSI escape sequences on Windows.
+            if OS_IS_WINDOWS:  # Fix ANSI escape sequences on Windows.
                 from colorama import just_fix_windows_console
 
                 just_fix_windows_console()
@@ -120,7 +119,7 @@ class CLIProgram(ABC):
             self.check_for_errors()
         except KeyboardInterrupt:
             print()  # Add a newline after Ctrl-C.
-            raise SystemExit(self.error_exit_code if windows else keyboard_interrupt_error_code)
+            raise SystemExit(self.error_exit_code if OS_IS_WINDOWS else keyboard_interrupt_error_code)
         except OSError as error:
             raise SystemExit(self.error_exit_code) from error
 
