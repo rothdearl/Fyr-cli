@@ -59,7 +59,7 @@ class Tally(CLIProgram):
 
     def __init__(self) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
         """
         super().__init__(name="tally", version="1.3.5")
 
@@ -69,9 +69,9 @@ class Tally(CLIProgram):
     @staticmethod
     def add_counts_to_totals(counts: Counts) -> None:
         """
-        Adds the counts to the totals.
+        Add ``counts`` to the totals.
 
-        :param counts: The counts.
+        :param counts: Counts.
         """
         Tally.TOTALS[CountIndex.LINES] += counts[CountIndex.LINES]
         Tally.TOTALS[CountIndex.WORDS] += counts[CountIndex.WORDS]
@@ -81,7 +81,7 @@ class Tally(CLIProgram):
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds an argument parser.
+        Build an argument parser.
 
         :return: An argument parser.
         """
@@ -110,7 +110,7 @@ class Tally(CLIProgram):
 
     def get_counts(self, text: Iterable[str] | TextIO, *, has_newlines: bool) -> Counts:
         """
-        Gets the counts for the lines, words, characters, and the maximum line length in the text.
+        Return counts for the lines, words, characters, and the maximum line length in ``text``.
 
         :param text: Text to count.
         :param has_newlines: Whether the text has newlines.
@@ -133,7 +133,7 @@ class Tally(CLIProgram):
 
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
         if terminal.input_is_redirected():
             if self.args.stdin_files:  # --stdin-files
@@ -158,7 +158,7 @@ class Tally(CLIProgram):
 
     def print_counts(self, counts: Iterable[int] | Counts, *, count_origin: str) -> None:
         """
-        Prints the counts.
+        Print ``counts``.
 
         :param counts: Counts to print.
         :param count_origin: Where the counts originated from.
@@ -185,7 +185,7 @@ class Tally(CLIProgram):
 
     def print_counts_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
-        Prints counts from files.
+        Print counts from ``files``.
 
         :param files: Files to count.
         """
@@ -210,7 +210,7 @@ class Tally(CLIProgram):
 
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         if self.args.tab_width < 1:
             self.print_error_and_exit("'tab-width' must be >= 1")

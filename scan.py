@@ -41,7 +41,7 @@ class Scan(CLIProgram):
 
     def __init__(self) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
         """
         super().__init__(name="scan", version="1.3.5", error_exit_code=2)
 
@@ -51,7 +51,7 @@ class Scan(CLIProgram):
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds an argument parser.
+        Build an argument parser.
 
         :return: An argument parser.
         """
@@ -84,7 +84,7 @@ class Scan(CLIProgram):
 
     def check_for_errors(self) -> None:
         """
-        Raises a SystemExit if there are any errors.
+        Raise a SystemExit if there are any errors.
 
         :raises SystemExit: Request to exit from the interpreter if there are any errors.
         """
@@ -95,7 +95,7 @@ class Scan(CLIProgram):
 
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
         # Pre-compile --find patterns.
         self.patterns = patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
@@ -118,7 +118,7 @@ class Scan(CLIProgram):
 
     def print_matches_in_files(self, files: Iterable[str] | TextIO) -> None:
         """
-        Prints matches found in files.
+        Print matches found in ``files``.
 
         :param files: Files to search.
         """
@@ -130,7 +130,7 @@ class Scan(CLIProgram):
 
     def print_matches_in_input(self) -> None:
         """
-        Prints matches found in standard input until EOF is entered.
+        Print matches found in standard input until EOF is entered.
         """
         eof = False
         lines = []
@@ -153,7 +153,7 @@ class Scan(CLIProgram):
     def print_matches_in_lines(self, lines: Iterable[str] | TextIO, *, origin_file: str,
                                reset_line_number=True) -> None:
         """
-        Prints matches found in lines.
+        Print matches found in ``lines``.
 
         :param lines: Lines to search.
         :param origin_file: File where the lines originated from.
@@ -214,7 +214,7 @@ class Scan(CLIProgram):
 
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         pass
 

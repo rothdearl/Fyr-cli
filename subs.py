@@ -38,7 +38,7 @@ class Subs(CLIProgram):
 
     def __init__(self) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
         """
         super().__init__(name="subs", version="1.3.5")
 
@@ -46,7 +46,8 @@ class Subs(CLIProgram):
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds and returns an argument parser.
+        Build an argument parser.
+
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False, description="replace text in FILES",
@@ -77,7 +78,7 @@ class Subs(CLIProgram):
         Yield lines with pattern matches replaced.
 
         :param lines: Input lines.
-        :return: An iterator yielding transformed lines.
+        :return: Iterator yielding transformed lines.
         """
         for line in lines:
             line = line.rstrip("\n")  # Remove trailing newlines so $ matches only once per line.
@@ -89,7 +90,7 @@ class Subs(CLIProgram):
 
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
         # Pre-compile --find patterns.
         if compiled := patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
@@ -117,7 +118,7 @@ class Subs(CLIProgram):
 
     def print_file_header(self, file: str) -> None:
         """
-        Prints the file name, or (standard input) if empty, with a colon.
+        Print the file name, or (standard input) if empty, with a colon.
 
         :param file: File header to print.
         """
@@ -133,16 +134,16 @@ class Subs(CLIProgram):
 
     def print_replaced_lines(self, lines: Iterable[str]) -> None:
         """
-        Prints the replaced matches in the lines.
+        Print replaced matches in ``lines``.
 
-        :param lines: Lines to replace.
+        :param lines: Lines to replace matches in.
         """
         for line in self.iterate_replaced_lines(lines):
             io.print_line(line)
 
     def print_replaced_lines_from_input(self) -> None:
         """
-        Prints the replaced matches in the lines from standard input until EOF is entered.
+        Print replaced matches in lines from standard input until EOF is entered.
         """
         self.print_replaced_lines(sys.stdin.read().splitlines())
 
@@ -165,7 +166,7 @@ class Subs(CLIProgram):
 
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         if self.args.max_replacements < 1:  # --max-replacements
             self.print_error_and_exit("'max-replacements' must be >= 1")

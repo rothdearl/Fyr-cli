@@ -45,7 +45,7 @@ class Glue(CLIProgram):
 
     def __init__(self) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
         """
         super().__init__(name="glue", version="1.3.5")
 
@@ -53,7 +53,7 @@ class Glue(CLIProgram):
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds an argument parser.
+        Build an argument parser.
 
         :return: An argument parser.
         """
@@ -86,7 +86,7 @@ class Glue(CLIProgram):
 
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
         if terminal.input_is_redirected():
             if self.args.stdin_files:  # --stdin-files
@@ -103,7 +103,7 @@ class Glue(CLIProgram):
 
     def print_lines(self, lines: Iterable[str] | TextIO) -> None:
         """
-        Prints the lines.
+        Print ``lines``.
 
         :param lines: Lines to print.
         """
@@ -156,7 +156,7 @@ class Glue(CLIProgram):
 
     def print_lines_from_files(self, files: Collection[str]) -> None:
         """
-        Prints lines from files.
+        Print lines from ``files``.
 
         :param files: Files to print lines from.
         """
@@ -173,7 +173,7 @@ class Glue(CLIProgram):
 
     def print_lines_from_input(self) -> None:
         """
-        Prints lines from standard input until EOF is entered.
+        Print lines from standard input until EOF is entered.
         """
         eof = False
 
@@ -185,7 +185,7 @@ class Glue(CLIProgram):
 
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         if self.args.number_width < 1:  # --number-width
             self.print_error_and_exit("'number-width' must be >= 1")

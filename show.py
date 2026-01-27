@@ -49,13 +49,13 @@ class Show(CLIProgram):
 
     def __init__(self) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
         """
         super().__init__(name="show", version="1.3.5")
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds an argument parser.
+        Build an argument parser.
 
         :return: An argument parser.
         """
@@ -85,7 +85,7 @@ class Show(CLIProgram):
 
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
         # Set --no-file-header to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
@@ -108,7 +108,7 @@ class Show(CLIProgram):
 
     def print_file_header(self, file: str) -> None:
         """
-        Prints the file name, or (standard input) if empty, with a colon.
+        Print the file name, or (standard input) if empty, with a colon.
 
         :param file: File header to print.
         """
@@ -124,7 +124,7 @@ class Show(CLIProgram):
 
     def print_lines(self, lines: Collection[str]) -> None:
         """
-        Prints the lines.
+        Print ``lines``.
 
         :param lines: Lines to print.
         """
@@ -143,7 +143,7 @@ class Show(CLIProgram):
 
     def print_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
-        Prints lines from files.
+        Print lines from ``files``.
 
         :param files: Files to print lines from.
         """
@@ -156,16 +156,16 @@ class Show(CLIProgram):
 
     def print_lines_from_input(self) -> None:
         """
-        Prints lines from standard input until EOF is entered.
+        Print lines from standard input until EOF is entered.
         """
         self.print_lines(sys.stdin.read().splitlines())
 
     def show_ends(self, line: str) -> str:
         """
-        Appends the EOL character to the end of the line.
+        Append the EOL character to the end of ``line``.
 
         :param line: Line to append.
-        :return: The line.
+        :return: Formatted line with the EOL character appended.
         """
         end_index = -1 if line.endswith("\n") else len(line)
         newline = "\n" if end_index == -1 else ""
@@ -177,12 +177,12 @@ class Show(CLIProgram):
 
     def show_line_number(self, line: str, line_number: int, padding: int) -> str:
         """
-        Prepends the line with the line number.
+        Prepend the line with the line number.
 
         :param line: Line to prepend.
         :param line_number: Line number.
         :param padding: Line number padding.
-        :return: The line.
+        :return: Formatted line with a line number prepended.
         """
         if self.print_color:
             return f"{Colors.LINE_NUMBER}{line_number:>{padding}}{Colors.COLON}:{colors.RESET}{line}"
@@ -191,10 +191,10 @@ class Show(CLIProgram):
 
     def show_spaces(self, line: str) -> str:
         """
-        Replaces spaces with Whitespace.SPACE or Whitespace.TRAILING_SPACE in the line.
+        Replace spaces with Whitespace.SPACE or Whitespace.TRAILING_SPACE in ``line``.
 
         :param line: Line to replace spaces.
-        :return: The line.
+        :return: Formatted line with spaces replaced.
         """
         has_newline = line.endswith("\n")
         trailing_count = len(line) - len(line.rstrip())  # Count trailing spaces.
@@ -216,10 +216,10 @@ class Show(CLIProgram):
 
     def show_tabs(self, line: str) -> str:
         """
-        Replaces tabs with Whitespace.TAB in the line.
+        Replace tabs with Whitespace.TAB in ``line``.
 
         :param line: Line to replace tabs.
-        :return: The line.
+        :return: Formatted line with tabs replaced.
         """
         if self.print_color:
             return line.replace("\t", f"{Colors.TAB}{Whitespace.TAB}{colors.RESET}")
@@ -228,7 +228,7 @@ class Show(CLIProgram):
 
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         if self.args.print < 1:  # --print
             self.print_error_and_exit("'print' must be >= 1")

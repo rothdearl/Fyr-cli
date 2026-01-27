@@ -44,7 +44,7 @@ class Dupe(CLIProgram):
 
     def __init__(self) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
         """
         super().__init__(name="dupe", version="1.3.5")
 
@@ -54,7 +54,7 @@ class Dupe(CLIProgram):
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds an argument parser.
+        Build an argument parser.
 
         :return: An argument parser.
         """
@@ -95,10 +95,10 @@ class Dupe(CLIProgram):
 
     def get_character_compare_sequence(self, line: str) -> str:
         """
-        Returns the character sequence from the line to use for comparing.
+        Return a character sequence derived from ``line`` for comparison.
 
         :param line: Line to process.
-        :return: The character sequence to use for comparing.
+        :return: Character sequence for comparison.
         """
         if self.args.skip_whitespace:  # --skip-whitespace
             line = line.strip()
@@ -119,10 +119,10 @@ class Dupe(CLIProgram):
 
     def group_adjacent_matching_lines(self, lines: Iterable[str] | TextIO) -> list[list[str]]:
         """
-        Groups adjacent lines that match.
+        Group adjacent lines that match.
 
         :param lines: Lines to group.
-        :return: A list of lines where the first element is the group and the remaining elements are the matching lines.
+        :return: List of lines where the first element is the group and subsequent elements are matching lines.
         """
         group_index = 0
         group_list = []
@@ -148,10 +148,10 @@ class Dupe(CLIProgram):
 
     def group_all_matching_lines(self, lines: Iterable[str] | TextIO) -> dict[str, list[str]]:
         """
-        Groups all lines that match.
+        Group all lines that match.
 
         :param lines: Lines to group.
-        :return: A mapping of lines where the key is the group and the values are the matching lines.
+        :return: Mapping of lines where the key is the group and the values are matching lines.
         """
         group_map = {}
 
@@ -172,7 +172,7 @@ class Dupe(CLIProgram):
 
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
         # Set --no-file-header to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
@@ -194,7 +194,7 @@ class Dupe(CLIProgram):
 
     def print_file_header(self, file: str) -> None:
         """
-        Prints the file name, or (standard input) if empty, with a colon.
+        Print the file name, or (standard input) if empty, with a colon.
 
         :param file: File header to print.
         """
@@ -210,7 +210,7 @@ class Dupe(CLIProgram):
 
     def print_matching_lines(self, lines: Iterable[str] | TextIO, *, origin_file) -> None:
         """
-        Prints lines that match.
+        Print lines that match.
 
         :param lines: Lines to print.
         :param origin_file: File where the lines originated from.
@@ -266,7 +266,7 @@ class Dupe(CLIProgram):
 
     def print_matching_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
-        Prints lines that match from files.
+        Print lines that match from ``files``.
 
         :param files: Files to search.
         """
@@ -278,19 +278,19 @@ class Dupe(CLIProgram):
 
     def print_matching_lines_from_input(self) -> None:
         """
-        Prints lines that match from standard input until EOF is entered.
+        Print lines that match from standard input until EOF is entered.
         """
         self.print_matching_lines(sys.stdin.read().splitlines(), origin_file="")
 
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         self.max_chars = self.args.max_chars if self.args.max_chars is not None else 1  # --max-chars
         self.skip_chars = self.args.skip_chars if self.args.skip_chars is not None else 0  # --skip-chars
         self.skip_fields = self.args.skip_fields if self.args.skip_fields is not None else 0  # --skip-fields
 
-        # Validate the match values.
+        # Validate match values.
         if self.skip_fields < 0:
             self.print_error_and_exit("'skip-fields' must be >= 0")
 

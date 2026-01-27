@@ -17,7 +17,7 @@ import time
 from enum import StrEnum
 from typing import final
 
-from cli import CLIProgram, CompiledPatterns, colors, patterns, terminal
+from cli import CLIProgram, CompiledPatterns, colors, patterns, terminal, OS_IS_WINDOWS
 
 
 class Colors(StrEnum):
@@ -33,23 +33,27 @@ class Seek(CLIProgram):
     A program to search for files in a directory hierarchy.
 
     :ivar bool found_match: Whether a match was found.
+    :ivar CompiledPatterns group_patterns: Compiled group patterns to match.
     :ivar CompiledPatterns name_patterns: Compiled name patterns to match.
     :ivar CompiledPatterns path_patterns: Compiled path patterns to match.
+    :ivar CompiledPatterns user_patterns: Compiled user patterns to match.
     """
 
     def __init__(self) -> None:
         """
-        Initializes a new instance.
+        Initialize a new instance.
         """
         super().__init__(name="seek", version="1.3.5", error_exit_code=2)
 
         self.found_match: bool = False
+        self.group_patterns: CompiledPatterns = []
         self.name_patterns: CompiledPatterns = []
         self.path_patterns: CompiledPatterns = []
+        self.user_patterns: CompiledPatterns = []
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Builds an argument parser.
+        Build an argument parser.
 
         :return: An argument parser.
         """
@@ -58,13 +62,20 @@ class Seek(CLIProgram):
         modified_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("dirs", help="directory starting points", metavar="DIRECTORIES", nargs="*")
+
+        if not OS_IS_WINDOWS:  # POSIX-only.
+            parser.add_argument("-g", "--group", action="extend", help="print files whose group matches PATTERN",
+                                metavar="PATTERN", nargs=1)
+
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when matching patterns")
-        parser.add_argument("-n", "--name", action="extend", help="print files whose names match PATTERN",
+        parser.add_argument("-n", "--name", action="extend", help="print files whose name matches PATTERN",
                             metavar="PATTERN", nargs=1)
-        parser.add_argument("-p", "--path", action="extend", help="print files whose paths match PATTERN",
+        parser.add_argument("-p", "--path", action="extend", help="print files whose path matches PATTERN",
                             metavar="PATTERN", nargs=1)
         parser.add_argument("-q", "--quiet", "--silent", action="store_true", help="suppress all normal output")
         parser.add_argument("-s", "--no-messages", action="store_true", help="suppress error messages about files")
+        parser.add_argument("-u", "--user", action="extend", help="print files whose user matches PATTERN",
+                            metavar="PATTERN", nargs=1)
         parser.add_argument("-v", "--invert-match", action="store_true",
                             help="print files that do not match the specified criteria")
         parser.add_argument("--abs", action="store_true", help="print absolute file paths")
@@ -87,7 +98,7 @@ class Seek(CLIProgram):
 
     def check_for_errors(self) -> None:
         """
-        Raises a SystemExit if there are any errors.
+        Raise a SystemExit if there are any errors.
 
         :raises SystemExit: Request to exit from the interpreter if there are any errors.
         """
@@ -98,10 +109,10 @@ class Seek(CLIProgram):
 
     def file_matches_filters(self, file: pathlib.Path) -> bool:
         """
-        Returns whether the file matches any of the filters.
+        Check whether ``file`` matches any of the filters.
 
         :param file: File to check.
-        :return: True or False.
+        :return: True if any filter is matched.
         """
         matches_filters = True
 
@@ -144,18 +155,42 @@ class Seek(CLIProgram):
 
         return matches_filters
 
+    def file_matches_owner(self, file: pathlib.Path) -> bool:
+        """
+        Check whether ``file`` matches the user and group patterns.
+
+        :param file: File to check.
+        :return: True if any pattern is matched.
+        """
+        if not OS_IS_WINDOWS and not patterns.text_has_patterns(file.group(), self.group_patterns):  # --group
+            return False
+
+        if not patterns.text_has_patterns(file.owner(), self.user_patterns):  # --user
+            return False
+
+        return True
+
+    def file_matches_patterns(self, filename: str, file_path: str) -> bool:
+        """
+        Check whether ``filename`` and ``file_path`` match the name and path patterns.
+
+        :param filename: File name to check.
+        :param file_path: File path to check.
+        :return: True if any pattern is matched.
+        """
+        if not patterns.text_has_patterns(filename, self.name_patterns):  # --name
+            return False
+
+        if not patterns.text_has_patterns(file_path, self.path_patterns):  # --path
+            return False
+
+        return True
+
     def main(self) -> None:
         """
-        Runs the primary function of the program.
+        Run the primary function of the program.
         """
-        # Pre-compile patterns.
-        if self.args.name:  # --name
-            self.name_patterns = patterns.compile_patterns(self.args.name, ignore_case=self.args.ignore_case,
-                                                           on_error=self.print_error_and_exit)
-
-        if self.args.path:  # --path
-            self.path_patterns = patterns.compile_patterns(self.args.path, ignore_case=self.args.ignore_case,
-                                                           on_error=self.print_error_and_exit)
+        self.precompile_patterns()
 
         if terminal.input_is_redirected():
             for directory in sys.stdin:
@@ -170,9 +205,29 @@ class Seek(CLIProgram):
             for directory in dirs:
                 self.print_files(directory)
 
+    def precompile_patterns(self) -> None:
+        """
+        Pre-compiles patterns.
+        """
+        if self.args.group:  # --group
+            self.group_patterns = patterns.compile_patterns(self.args.group, ignore_case=self.args.ignore_case,
+                                                            on_error=self.print_error_and_exit)
+
+        if self.args.name:  # --name
+            self.name_patterns = patterns.compile_patterns(self.args.name, ignore_case=self.args.ignore_case,
+                                                           on_error=self.print_error_and_exit)
+
+        if self.args.path:  # --path
+            self.path_patterns = patterns.compile_patterns(self.args.path, ignore_case=self.args.ignore_case,
+                                                           on_error=self.print_error_and_exit)
+
+        if self.args.user:  # --user
+            self.user_patterns = patterns.compile_patterns(self.args.user, ignore_case=self.args.ignore_case,
+                                                           on_error=self.print_error_and_exit)
+
     def print_file(self, file: pathlib.Path) -> None:
         """
-        Prints the file.
+        Print ``file``.
 
         :param file: File to print.
         """
@@ -185,13 +240,11 @@ class Seek(CLIProgram):
         if self.args.max_depth < len(file.parts):  # --max-depth
             return
 
-        if not patterns.text_has_patterns(filename, self.name_patterns) != self.args.invert_match:
-            return
+        # Check if the file matches the search criteria and whether to invert the result:
+        matches = self.file_matches_patterns(filename, file_path) and self.file_matches_owner(
+            file) and self.file_matches_filters(file)
 
-        if not patterns.text_has_patterns(file_path, self.path_patterns) != self.args.invert_match:
-            return
-
-        if not self.file_matches_filters(file):  # --type, --empty, --m-days, --m-hours, or --m-mins
+        if matches == self.args.invert_match:  # --invert-match
             return
 
         self.found_match = True
@@ -223,7 +276,7 @@ class Seek(CLIProgram):
 
     def print_files(self, directory: str) -> None:
         """
-        Prints all the files in the directory hierarchy.
+        Print all files in the directory hierarchy.
 
         :param directory: Directory to traverse.
         """
@@ -243,7 +296,7 @@ class Seek(CLIProgram):
 
     def validate_parsed_arguments(self) -> None:
         """
-        Validates the parsed command-line arguments.
+        Validate the parsed command-line arguments.
         """
         if self.args.max_depth < 1:  # --max-depth
             self.print_error_and_exit("'max-depth' must be >= 1")
