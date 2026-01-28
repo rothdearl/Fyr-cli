@@ -19,26 +19,27 @@ from .ini import (
 
 from .io import (
     FileInfo,
-    print_line,
+    print_normalized_line,
     read_files,
     write_text_to_file
 )
 
 from .patterns import (
-    color_patterns_in_text,
+    color_pattern_matches,
     combine_patterns,
     compile_patterns,
-    text_has_patterns
+    text_matches_patterns
 )
 
 from .terminal import (
     input_is_redirected,
+    input_is_terminal,
     output_is_terminal
 )
 
 from .types import (
     CompiledPatterns,
     ErrorReporter,
-    Json,
-    PatternIterable
+    ErrorReporter,
+    Json
 )

@@ -10,10 +10,10 @@ from .types import ErrorReporter, Json
 # Configuration parser for an INI options file (intentional single global ConfigParser instance).
 _config: configparser.ConfigParser = configparser.ConfigParser()
 
-# List of string values that are considered falsy.
+# Set of string values that are considered falsy.
 _falsy_values: set[str] = {"0", "false", "off", "n", "no"}
 
-# List of string values that are considered truthy.
+# Set of string values that are considered truthy.
 _truthy_values: set[str] = {"1", "on", "true", "y", "yes"}
 
 
@@ -23,7 +23,7 @@ def get_bool_option(section: str, option: str) -> bool | None:
 
     :param section: Section name.
     :param option: Option name.
-    :return: Boolean value or ``None`` if the value is neither truthy nor falsy.
+    :return: Boolean value or ``None`` if the option is present but not truthy or falsy.
     """
     value = get_str_option_with_fallback(section, option, fallback="false").lower()
 
@@ -42,7 +42,7 @@ def get_float_option(section: str, option: str) -> float | None:
 
     :param section: Section name.
     :param option: Option name.
-    :return: Floating point decimal value or ``None`` if the value cannot be parsed.
+    :return: Floating-point value or ``None`` if the value cannot be parsed.
     """
     value = get_str_option_with_fallback(section, option, fallback="0.0")
 
@@ -74,7 +74,7 @@ def get_json_option(section: str, option: str) -> Json | None:
 
     :param section: Section name.
     :param option: Option name.
-    :return: JSON value or ``None`` if the value cannot be parsed.
+    :return: Parsed JSON value or ``None`` if the value cannot be decoded.
     """
     value = get_str_option_with_fallback(section, option, fallback="{}")
 

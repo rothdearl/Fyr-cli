@@ -43,7 +43,7 @@ class CLIProgram(ABC):
     @abstractmethod
     def build_arguments(self) -> argparse.ArgumentParser:
         """
-        Build an argument parser.
+        Build and return an argument parser.
 
         :return: An argument parser.
         """
@@ -68,7 +68,7 @@ class CLIProgram(ABC):
     @final
     def parse_arguments(self) -> None:
         """
-        Parse command line arguments to initialize program options.
+        Parse command-line arguments to initialize program options.
         """
         self.args = self.build_arguments().parse_args()
 
@@ -79,7 +79,7 @@ class CLIProgram(ABC):
     @final
     def print_error(self, error_message: str) -> None:
         """
-        Set the error flag and print the message to standard error unless ``args.no_messages`` is set.
+        Set the error flag and print the message to standard error unless ``args.no_messages`` is set (if present).
 
         :param error_message: Error message to print.
         """
@@ -94,6 +94,7 @@ class CLIProgram(ABC):
         Print the error message to standard error and exit with ``error_exit_code``.
 
         :param error_message: Error message to print.
+        :raises SystemExit: Always.
         """
         print(f"{self.name}: error: {error_message}", file=sys.stderr)
         raise SystemExit(self.error_exit_code)

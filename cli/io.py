@@ -14,8 +14,8 @@ class FileInfo(NamedTuple):
     Immutable container for information about a file being read.
 
     :ivar file_index: Position of the file name in the input sequence.
-    :ivar file_name: File name as provided.
-    :ivar text: Open text stream for the file.
+    :ivar file_name: Normalized file name.
+    :ivar text: Open text stream for the file, valid until the next iteration.
     """
     file_index: int
     file_name: str
@@ -33,12 +33,12 @@ def print_normalized_line(line: str) -> None:
 
 def read_files(files: Iterable[str] | TextIO, encoding: str, *, on_error: ErrorReporter) -> Iterator[FileInfo]:
     """
-    Open files for reading in text mode and yield FileInfo objects, with errors reported via on_error.
+    Open files for reading in text mode and yield ``FileInfo`` objects.
 
-    :param files: Iterable of file names or a text stream containing file names.
+    :param files: Iterable of file names or a text stream yielding file names.
     :param encoding: Text encoding.
     :param on_error: Callback invoked with an error message for file-related errors.
-    :return: Iterator yielding ``FileInfo`` objects.
+    :return: Iterator yielding ``FileInfo`` objects, where the text stream is only valid until the next iteration.
     """
     for file_index, file_name in enumerate(files):
         file_name = file_name.strip()
@@ -46,9 +46,10 @@ def read_files(files: Iterable[str] | TextIO, encoding: str, *, on_error: ErrorR
         try:
             if os.path.isdir(file_name):
                 on_error(f"{file_name}: is a directory")
-            else:
-                with open(file_name, "rt", encoding=encoding) as text:
-                    yield FileInfo(file_index, file_name, text)
+                continue
+
+            with open(file_name, "rt", encoding=encoding) as text:
+                yield FileInfo(file_index, file_name, text)
         except FileNotFoundError:
             file_name = file_name or '""'
             on_error(f"{file_name}: no such file or directory")

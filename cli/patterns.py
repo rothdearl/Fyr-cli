@@ -11,18 +11,18 @@ from .types import CompiledPatterns, ErrorReporter, PatternGroups
 
 def color_pattern_matches(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
     """
-    Color all pattern matches in the text.
+    Color all matches of the given patterns in the text.
 
     :param text: Text to color.
-    :param patterns: Compiled patterns to match.
+    :param patterns: Compiled regular expression patterns to match.
     :param color: Color to use.
-    :return: Formatted text with all patterns colored.
+    :return: Text with all matched regions wrapped in color codes.
     """
     slices = []
 
     # Get slices for each match.
-    for group in patterns:
-        for match in group.finditer(text):
+    for pattern in patterns:
+        for match in pattern.finditer(text):
             slices.append((match.start(), match.end()))
 
     # Merge overlapping slices.
@@ -53,7 +53,7 @@ def color_pattern_matches(text: str, patterns: Iterable[re.Pattern[str]], *, col
 
 def combine_patterns(patterns: PatternGroups, *, ignore_case: bool) -> re.Pattern[str]:
     """
-    Combine all patterns into a single compiled OR-pattern.
+    Combine patterns into a single compiled OR-pattern.
 
     :param patterns: Iterable of compiled patterns.
     :param ignore_case: Whether to ignore case.
@@ -67,7 +67,7 @@ def combine_patterns(patterns: PatternGroups, *, ignore_case: bool) -> re.Patter
 
 def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: ErrorReporter) -> CompiledPatterns:
     """
-    Compile all patterns into OR-groups implementing AND-of-OR matching, where each pattern represents one OR-group.
+    Compile patterns into OR groups implementing AND-of-OR matching.
 
     :param patterns: Patterns to compile.
     :param ignore_case: Whether to ignore case.
@@ -91,7 +91,7 @@ def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: Er
 
 def text_matches_patterns(text: str, patterns: PatternGroups) -> bool:
     """
-    Check whether the text matches all pattern groups.
+    Check whether the text matches every pattern group.
 
     :param text: Text to search.
     :param patterns: Patterns to match.
