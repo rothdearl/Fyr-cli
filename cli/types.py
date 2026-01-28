@@ -1,5 +1,5 @@
 """
-Module for defining type aliases used throughout the command-line interface package.
+Type aliases used throughout the command-line interface package.
 """
 
 import re
@@ -9,4 +9,4 @@ from typing import Any, TypeAlias
 CompiledPatterns: TypeAlias = list[re.Pattern[str]]
 ErrorReporter: TypeAlias = Callable[[str], None]
 Json: TypeAlias = dict[str, Any]
-PatternIterable: TypeAlias = Iterable[re.Pattern[str]]
+PatternGroups: TypeAlias = Iterable[re.Pattern[str]]

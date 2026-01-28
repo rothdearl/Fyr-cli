@@ -1,5 +1,5 @@
 """
-ABC base class for command-line programs.
+Abstract base class (ABC) for command-line programs.
 """
 
 import argparse
@@ -13,24 +13,24 @@ from .terminal import output_is_terminal
 
 class CLIProgram(ABC):
     """
-    ABC base class for command-line programs.
+    Abstract base class (ABC) for command-line programs.
 
-    :ivar argparse.Namespace args: Parsed command-line arguments.
-    :ivar str encoding: Encoding for reading and writing to files.
-    :ivar int error_exit_code: Exit code when an error occurs (default: 1).
-    :ivar bool has_errors: Whether the program has encountered errors.
-    :ivar str name: Program name.
-    :ivar bool print_color: Whether color output is enabled.
-    :ivar str version: Program version.
+    :ivar args: Parsed command-line arguments.
+    :ivar encoding: Encoding for reading and writing to files.
+    :ivar error_exit_code: Exit code when an error occurs (default: ``1``).
+    :ivar has_errors: Whether the program has encountered errors.
+    :ivar name: Name of the program.
+    :ivar print_color: Whether color output is enabled.
+    :ivar version: Program version.
     """
 
     def __init__(self, *, name: str, version: str, error_exit_code: int = 1) -> None:
         """
-        Initialize a new instance.
+        Initialize a new CLIProgram instance.
 
-        :param name: Program name.
+        :param name: Name of the program.
         :param version: Program version.
-        :param error_exit_code: Exit code when an error occurs (default: 1).
+        :param error_exit_code: Exit code when an error occurs (default: ``1``).
         """
         self.args: argparse.Namespace | None = None
         self.encoding: str | None = None
@@ -51,9 +51,9 @@ class CLIProgram(ABC):
 
     def check_for_errors(self) -> None:
         """
-        Raise a SystemExit if there are any errors.
+        Raise SystemExit if there are any errors.
 
-        :raises SystemExit: Request to exit from the interpreter if there are any errors.
+        :raises SystemExit: If ``has_errors`` is set.
         """
         if self.has_errors:
             raise SystemExit(self.error_exit_code)
@@ -68,16 +68,18 @@ class CLIProgram(ABC):
     @final
     def parse_arguments(self) -> None:
         """
-        Parse the command line arguments to get the program options.
+        Parse command line arguments to initialize program options.
         """
         self.args = self.build_arguments().parse_args()
+
+        # Set default values for encoding and print_color.
         self.encoding = "iso-8859-1" if getattr(self.args, "latin1", False) else "utf-8"  # --latin1
         self.print_color = getattr(self.args, "color", "off") == "on" and output_is_terminal()  # --color
 
     @final
     def print_error(self, error_message: str) -> None:
         """
-        Set the error flag to True and print the error message to standard error if the argument no_messages = False.
+        Set the error flag and print the message to standard error unless ``args.no_messages`` is set.
 
         :param error_message: Error message to print.
         """
@@ -89,7 +91,7 @@ class CLIProgram(ABC):
     @final
     def print_error_and_exit(self, error_message: str) -> None:
         """
-        Print the error message to standard error and raise a SystemExit.
+        Print the error message to standard error and exit with ``error_exit_code``.
 
         :param error_message: Error message to print.
         """
@@ -99,7 +101,7 @@ class CLIProgram(ABC):
     @final
     def run(self) -> None:
         """
-        Setup and run the program.
+        Set up the environment, parse and validate arguments, run the program, and handle errors.
         """
         keyboard_interrupt_error_code = 130
 

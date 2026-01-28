@@ -1,5 +1,5 @@
 """
-Module for file-related functions.
+File-related helper functions.
 """
 
 import os
@@ -13,18 +13,18 @@ class FileInfo(NamedTuple):
     """
     Immutable container for information about a file being read.
 
-    :ivar int file_index: Position of the file name in the input sequence.
-    :ivar str filename: File name as provided.
-    :ivar TextIO text: Open text stream for the file.
+    :ivar file_index: Position of the file name in the input sequence.
+    :ivar file_name: File name as provided.
+    :ivar text: Open text stream for the file.
     """
     file_index: int
-    filename: str
+    file_name: str
     text: TextIO
 
 
-def print_line(line: str) -> None:
+def print_normalized_line(line: str) -> None:
     """
-    Print a line, ensuring exactly one trailing newline (e.g., for input from files or standard input).
+    Print a line of text, ensuring exactly one trailing newline.
 
     :param line: Line to print.
     """
@@ -33,48 +33,48 @@ def print_line(line: str) -> None:
 
 def read_files(files: Iterable[str] | TextIO, encoding: str, *, on_error: ErrorReporter) -> Iterator[FileInfo]:
     """
-    Open ``files`` for reading in text mode and return an iterator yielding FileInfo objects.
+    Open files for reading in text mode and yield FileInfo objects, with errors reported via on_error.
 
-    :param files: List of file names or a text stream containing file names (e.g. standard input).
+    :param files: Iterable of file names or a text stream containing file names.
     :param encoding: Text encoding.
     :param on_error: Callback invoked with an error message for file-related errors.
-    :return: Iterator yielding FileInfo objects.
+    :return: Iterator yielding ``FileInfo`` objects.
     """
-    for file_index, filename in enumerate(files):
-        filename = filename.strip()
+    for file_index, file_name in enumerate(files):
+        file_name = file_name.strip()
 
         try:
-            if os.path.isdir(filename):
-                on_error(f"{filename}: is a directory")
+            if os.path.isdir(file_name):
+                on_error(f"{file_name}: is a directory")
             else:
-                with open(filename, "rt", encoding=encoding) as text:
-                    yield FileInfo(file_index, filename, text)
+                with open(file_name, "rt", encoding=encoding) as text:
+                    yield FileInfo(file_index, file_name, text)
         except FileNotFoundError:
-            filename = filename or '""'
-            on_error(f"{filename}: no such file or directory")
+            file_name = file_name or '""'
+            on_error(f"{file_name}: no such file or directory")
         except PermissionError:
-            on_error(f"{filename}: permission denied")
+            on_error(f"{file_name}: permission denied")
         except OSError:
-            on_error(f"{filename}: unable to read file")
+            on_error(f"{file_name}: unable to read file")
 
 
-def write_text_to_file(filename: str, text: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> None:
+def write_text_to_file(file_name: str, text: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> None:
     """
-    Write text lines to the file in text mode where each output line is written with exactly one trailing newline.
+    Write text lines to a file, ensuring exactly one trailing newline per line.
 
-    :param filename: File name.
+    :param file_name: File name.
     :param text: Iterable of strings (e.g., list, generator, or text stream).
     :param encoding: Text encoding.
     :param on_error: Callback invoked with an error message for file-related errors.
     """
     try:
-        with open(filename, "wt", encoding=encoding) as f:
+        with open(file_name, "wt", encoding=encoding) as f:
             for line in text:
                 line = line.rstrip("\n")
                 f.write(f"{line}\n")
     except PermissionError:
-        on_error(f"{filename}: permission denied")
+        on_error(f"{file_name}: permission denied")
     except OSError:
-        on_error(f"{filename}: unable to write file")
+        on_error(f"{file_name}: unable to write file")
     except UnicodeEncodeError:
-        on_error(f"{filename}: unable to write with {encoding}")
+        on_error(f"{file_name}: unable to write with {encoding}")

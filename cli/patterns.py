@@ -1,22 +1,22 @@
 """
-Module for pattern-related functions.
+Pattern-related helper functions.
 """
 
 import re
 from collections.abc import Iterable
 
 from .colors import RESET
-from .types import CompiledPatterns, ErrorReporter, PatternIterable
+from .types import CompiledPatterns, ErrorReporter, PatternGroups
 
 
-def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
+def color_pattern_matches(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
     """
-    Color all patterns in ``text``.
+    Color all pattern matches in the text.
 
     :param text: Text to color.
-    :param patterns: Compiled patterns to find.
+    :param patterns: Compiled patterns to match.
     :param color: Color to use.
-    :return: Text with all patterns colored.
+    :return: Formatted text with all patterns colored.
     """
     slices = []
 
@@ -51,11 +51,11 @@ def color_patterns_in_text(text: str, patterns: Iterable[re.Pattern[str]], *, co
     return "".join(colored_text)
 
 
-def combine_patterns(patterns: PatternIterable, *, ignore_case: bool) -> re.Pattern[str]:
+def combine_patterns(patterns: PatternGroups, *, ignore_case: bool) -> re.Pattern[str]:
     """
-    Combine all ``patterns`` into a single compiled OR-pattern.
+    Combine all patterns into a single compiled OR-pattern.
 
-    :param patterns: List of compiled pattern groups.
+    :param patterns: Iterable of compiled patterns.
     :param ignore_case: Whether to ignore case.
     :return: Compiled regular expression matching any pattern.
     """
@@ -67,7 +67,7 @@ def combine_patterns(patterns: PatternIterable, *, ignore_case: bool) -> re.Patt
 
 def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: ErrorReporter) -> CompiledPatterns:
     """
-    Compile ``patterns`` into OR-groups implementing AND-of-OR matching.
+    Compile all patterns into OR-groups implementing AND-of-OR matching, where each pattern represents one OR-group.
 
     :param patterns: Patterns to compile.
     :param ignore_case: Whether to ignore case.
@@ -89,13 +89,13 @@ def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: Er
     return compiled
 
 
-def text_has_patterns(text: str, patterns: PatternIterable) -> bool:
+def text_matches_patterns(text: str, patterns: PatternGroups) -> bool:
     """
-    Check whether ``text`` matches all ``patterns``.
+    Check whether the text matches all pattern groups.
 
     :param text: Text to search.
     :param patterns: Patterns to match.
-    :return: True if ``text`` matches all ``patterns``.
+    :return: ``True`` if the text matches all pattern groups.
     """
     for group in patterns:
         if not group.search(text):
