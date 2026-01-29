@@ -19,8 +19,7 @@ from typing import Final, TextIO, TypeAlias, final
 from cli import CLIProgram, ansi, io, terminal
 
 # Define type aliases.
-Counts: TypeAlias = tuple[int, int, int, int]
-Totals: TypeAlias = list[int]
+Counts: TypeAlias = tuple[int, int, int, int]  # (LINES, WORDS, CHARACTERS, MAX_LINE_LENGTH)
 
 
 class Colors(StrEnum):
@@ -48,14 +47,14 @@ class Tally(CLIProgram):
     A program to print line, word, and character counts in files.
 
     :cvar COUNT_FLAGS: Flags for determining if a count will be printed.
-    :cvar TOTALS: Total of all counts.
+    :cvar TOTALS: Total counts across all files.
     :cvar WORD_PATTERN: Pattern for splitting lines into words.
     :ivar files_counted: Number of files counted.
     :ivar flag_count: Number of flags provided as arguments.
     """
 
-    COUNT_FLAGS: Final[list[bool]] = [False, False, False, False]
-    TOTALS: Final[Totals] = [0, 0, 0, 0]
+    COUNT_FLAGS: Final[list[bool]] = [False, False, False, False]  # [LINES, WORDS, CHARACTERS, MAX_LINE_LENGTH]
+    TOTALS: Final[list[int]] = [0, 0, 0, 0]  # [LINES, WORDS, CHARACTERS, MAX_LINE_LENGTH]
     WORD_PATTERN: Final[str] = r"\b\w+\b"
 
     def __init__(self) -> None:
@@ -74,11 +73,11 @@ class Tally(CLIProgram):
 
         :param counts: Count information.
         """
-        Tally.TOTALS[CountIndex.LINES] += counts[CountIndex.LINES]
-        Tally.TOTALS[CountIndex.WORDS] += counts[CountIndex.WORDS]
-        Tally.TOTALS[CountIndex.CHARACTERS] += counts[CountIndex.CHARACTERS]
-        Tally.TOTALS[CountIndex.MAX_LINE_LENGTH] = max(Tally.TOTALS[CountIndex.MAX_LINE_LENGTH],
-                                                       counts[CountIndex.MAX_LINE_LENGTH])
+        for index in CountIndex:
+            if index is CountIndex.MAX_LINE_LENGTH:
+                Tally.TOTALS[index] = max(Tally.TOTALS[index], counts[index])
+            else:
+                Tally.TOTALS[index] += counts[index]
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
@@ -87,13 +86,14 @@ class Tally(CLIProgram):
         :return: An argument parser.
         """
         parser = argparse.ArgumentParser(allow_abbrev=False,
-                                         description="print line, word and character counts in FILES",
+                                         description="print line, word, and character counts in FILES",
                                          epilog="with no FILES, read standard input", prog=self.name)
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-c", "--chars", action="store_true", help="print the character counts")
         parser.add_argument("-l", "--lines", action="store_true", help="print the line counts")
-        parser.add_argument("-L", "--max-line-length", action="store_true", help="print the maximum line length")
+        parser.add_argument("-L", "--max-line-length", action="store_true",
+                            help="print the maximum line length in characters")
         parser.add_argument("-t", "--tab-width", default=8,
                             help="use N spaces for tabs when computing line length (default: 8; N >= 1)", metavar="N",
                             type=int)
@@ -104,20 +104,22 @@ class Tally(CLIProgram):
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
         parser.add_argument("--total", choices=("auto", "on", "off"), default="auto",
-                            help="print a line with total counts")
+                            help="print a line with total counts across all FILES")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 
-    def get_counts(self, text: Iterable[str] | TextIO, *, has_newlines: bool) -> Counts:
+    def calculate_counts(self, text: Iterable[str] | TextIO, *, has_newlines: bool) -> Counts:
         """
-        Return counts for the lines, words, characters, and the maximum line length in the text.
+        Calculate the counts for the lines, words, characters, and the maximum line length in the text.
 
         :param text: Text to count.
         :param has_newlines: Whether the text has newlines.
         :return: Count information.
         """
         character_count, line_count, max_line_length, words = 0, 0, 0, 0
+
+        # Account for newline handling differences between file input and stdin.
         display_width_offset = -1 if has_newlines else 0
         line_length_offset = 0 if has_newlines else 1
 
@@ -141,7 +143,7 @@ class Tally(CLIProgram):
                 self.print_counts_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
-                    counts = self.get_counts(standard_input, has_newlines=True)
+                    counts = self.calculate_counts(standard_input, has_newlines=True)
 
                     self.files_counted += 1
                     self.add_counts_to_totals(counts)
@@ -192,7 +194,7 @@ class Tally(CLIProgram):
         """
         for file_info in io.read_files(files, self.encoding, on_error=self.print_error):
             try:
-                counts = self.get_counts(file_info.text, has_newlines=True)
+                counts = self.calculate_counts(file_info.text, has_newlines=True)
 
                 self.files_counted += 1
                 self.add_counts_to_totals(counts)
@@ -204,7 +206,7 @@ class Tally(CLIProgram):
         """
         Prints counts from standard input until EOF is entered.
         """
-        counts = self.get_counts(sys.stdin.read().splitlines(), has_newlines=False)
+        counts = self.calculate_counts(sys.stdin.read().splitlines(), has_newlines=False)
 
         self.add_counts_to_totals(counts)
         self.print_counts(counts, count_origin="")
