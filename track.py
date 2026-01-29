@@ -67,12 +67,12 @@ class Track(CLIProgram):
 
         return parser
 
-    def follow_file(self, file: str, print_name: bool, polling_interval: float = .5) -> None:
+    def follow_file(self, file: str, print_file_name: bool, polling_interval: float = .5) -> None:
         """
         Follow the file for new lines.
 
         :param file: File to follow.
-        :param print_name: Whether to print the file name with each update.
+        :param print_file_name: Whether to print the file name with each update.
         :param polling_interval: Duration between each check.
         """
         try:
@@ -97,7 +97,7 @@ class Track(CLIProgram):
                         else:
                             print(f"data modified in: {file}")
 
-                        if print_name:
+                        if print_file_name:
                             self.print_file_header(file)
 
                         io.print_normalized_line(next_content[print_index:])
@@ -108,24 +108,6 @@ class Track(CLIProgram):
             self.print_error(f"{file} has been deleted")
         except (OSError, UnicodeDecodeError):
             self.print_error(f"{file} is no longer accessible")
-
-    def follow_files(self, files: Collection[str]) -> list[Thread]:
-        """
-        Follow the files for new lines.
-
-        :param files: Files to follow.
-        :return: List of threads that are following files.
-        """
-        print_file_name = len(files) > 1
-        threads = []
-
-        for file in files:
-            thread = Thread(target=self.follow_file, args=(file, print_file_name))
-            thread.daemon = True
-            thread.start()
-            threads.append(thread)
-
-        return threads
 
     def main(self) -> None:
         """
@@ -153,7 +135,7 @@ class Track(CLIProgram):
             self.print_lines_from_input()
 
         if self.args.follow and files_printed:  # --follow
-            for thread in self.follow_files(files_printed):
+            for thread in self.start_following_threads(files_printed, print_file_name=len(files_printed) > 1):
                 thread.join()
 
     def print_file_header(self, file: str) -> None:
@@ -226,6 +208,24 @@ class Track(CLIProgram):
                 # --follow on standard input is an infinite loop until Ctrl-C.
                 if not self.args.follow:
                     eof = True
+
+    def start_following_threads(self, files: Collection[str], *, print_file_name: bool) -> list[Thread]:
+        """
+        Start a thread for each file and return the started ``Thread`` objects.
+
+        :param files: Files to follow.
+        :param print_file_name: Whether to print the file name with each update.
+        :return: List of started threads that are following files.
+        """
+        threads = []
+
+        for file_name in files:
+            thread = Thread(target=self.follow_file, args=(file_name, print_file_name), name=f"follow-{file_name}")
+            thread.daemon = True
+            thread.start()
+            threads.append(thread)
+
+        return threads
 
     def validate_parsed_arguments(self) -> None:
         """

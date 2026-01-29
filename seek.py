@@ -249,8 +249,8 @@ class Seek(CLIProgram):
             self.print_file(directory_hierarchy)
 
             try:
-                for file in directory_hierarchy.rglob("*"):
-                    self.print_file(file)
+                for file_name in directory_hierarchy.rglob("*"):
+                    self.print_file(file_name)
             except PermissionError as error:
                 self.print_error(f"{error.filename}: permission denied")
         else:
