@@ -86,7 +86,7 @@ class Glue(CLIProgram):
 
     def main(self) -> None:
         """
-        Run the primary function of the program.
+        Run the program logic.
         """
         if terminal.input_is_redirected():
             if self.args.stdin_files:  # --stdin-files

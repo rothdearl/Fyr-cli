@@ -85,7 +85,7 @@ class Show(CLIProgram):
 
     def main(self) -> None:
         """
-        Run the primary function of the program.
+        Run the program logic.
         """
         # Set --no-file-header to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:

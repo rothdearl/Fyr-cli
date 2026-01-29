@@ -93,7 +93,7 @@ class Scan(CLIProgram):
 
     def main(self) -> None:
         """
-        Run the primary function of the program.
+        Run the program logic.
         """
         # Pre-compile --find patterns.
         self.patterns = patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,

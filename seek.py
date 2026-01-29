@@ -160,7 +160,7 @@ class Seek(CLIProgram):
 
     def main(self) -> None:
         """
-        Run the primary function of the program.
+        Run the program logic.
         """
         self.precompile_patterns()
 
