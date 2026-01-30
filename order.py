@@ -71,7 +71,7 @@ class Order(CLIProgram):
         sort_group.add_argument("-d", "--dictionary-sort", action="store_true",
                                 help="compare lines using dictionary order")
         sort_group.add_argument("-D", "--date-sort", action="store_true", help="compare dates from newest to oldest")
-        sort_group.add_argument("-k", "--key-pattern", help="split lines using PATTERN to generate sort keys",
+        sort_group.add_argument("-k", "--key-pattern", help="generate sort keys by splitting lines on PATTERN",
                                 metavar="PATTERN")
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="compare words alphabetically and numbers numerically")
