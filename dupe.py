@@ -290,7 +290,6 @@ class Dupe(CLIProgram):
         self.skip_chars = self.args.skip_chars if self.args.skip_chars is not None else 0  # --skip-chars
         self.skip_fields = self.args.skip_fields if self.args.skip_fields is not None else 0  # --skip-fields
 
-        # Validate match values.
         if self.skip_fields < 0:
             self.print_error_and_exit("'skip-fields' must be >= 0")
 
