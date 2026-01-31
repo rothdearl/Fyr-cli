@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import unittest
 from typing import final
 
@@ -22,8 +19,16 @@ class ANSITest(unittest.TestCase):
         self.assertEqual(len(ansi.COLORS_256), 256)
 
         # Verify normalized indexes.
-        self.assertEqual(ansi.foreground_color_16(1000), ansi.COLORS_16[0])
+        self.assertEqual(ansi.background_color_16(-1000), ansi.BG_COLORS_16[0])
+        self.assertEqual(ansi.background_color_16(1000), ansi.BG_COLORS_16[0])
+        self.assertEqual(ansi.background_color_256(-1000), ansi.BG_COLORS_256[0])
+        self.assertEqual(ansi.background_color_256(1000), ansi.BG_COLORS_256[0])
         self.assertEqual(ansi.foreground_color_16(-1000), ansi.COLORS_16[0])
+        self.assertEqual(ansi.foreground_color_16(1000), ansi.COLORS_16[0])
+        self.assertEqual(ansi.foreground_color_256(-1000), ansi.COLORS_256[0])
+        self.assertEqual(ansi.foreground_color_256(1000), ansi.COLORS_256[0])
+        self.assertEqual(ansi.text_attribute(-1000), ansi.TEXT_ATTRIBUTES[0])
+        self.assertEqual(ansi.text_attribute(1000), ansi.TEXT_ATTRIBUTES[0])
 
         # Print the ANSI text attributes.
         print(f"ANSI text attributes")

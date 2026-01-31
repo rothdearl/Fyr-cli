@@ -94,7 +94,7 @@ class INITest(unittest.TestCase):
         self.assertEqual(ini.get_json_option("missing_section", "valid_object"), {})
 
         # Invalid.
-        self.assertIsNone(ini.get_int_option("json_options", "invalid_value"))
+        self.assertIsNone(ini.get_json_option("json_options", "invalid_value"))
 
     def test_values_string(self) -> None:
         # Valid.
