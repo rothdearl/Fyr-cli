@@ -4,7 +4,7 @@
 """
 Filename: when.py
 Author: Roth Earl
-Version: 1.0.2
+Version: 1.0.3
 Description: A program to display the current calendar, with optional date and time.
 License: GNU GPLv3
 """
@@ -88,7 +88,7 @@ def get_reverse_color(value: str) -> str:
     :param value: Value to format.
     :return: Formatted color string.
     """
-    return f"{ansi.REVERSE}{value}{ansi.RESET}"
+    return f"{ansi.text_attribute(6)}{value}{ansi.RESET}"
 
 
 def print_month(date: datetime.date) -> None:
@@ -199,7 +199,7 @@ class When:
 
     DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p" if OS_IS_POSIX else "%a %b %d %I:%M%p"
     NAME: Final[str] = "when"
-    VERSION: Final[str] = "1.0.2"
+    VERSION: Final[str] = "1.0.3"
 
     def __init__(self) -> None:
         """

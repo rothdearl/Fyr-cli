@@ -4,7 +4,7 @@
 """
 Filename: show.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to print files to standard output.
 License: GNU GPLv3
 """
@@ -23,12 +23,12 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COLON = ansi.BRIGHT_CYAN
-    EOL = ansi.BRIGHT_BLUE
-    FILE_NAME = ansi.BRIGHT_MAGENTA
-    LINE_NUMBER = ansi.BRIGHT_GREEN
-    SPACE = ansi.BRIGHT_CYAN
-    TAB = ansi.BRIGHT_CYAN
+    COLON = ansi.foreground_color_16(14)  # Bright Cyan
+    EOL = ansi.foreground_color_16(12)  # Bright Blue
+    FILE_NAME = ansi.foreground_color_16(13)  # Bright Magenta
+    LINE_NUMBER = ansi.foreground_color_16(10)  # Bright Green
+    SPACE = ansi.foreground_color_16(14)  # Bright Cyan
+    TAB = ansi.foreground_color_16(14)  # Bright Cyan
 
 
 class Whitespace(StrEnum):
@@ -51,7 +51,7 @@ class Show(CLIProgram):
         """
         Initialize a new ``Show`` instance.
         """
-        super().__init__(name="show", version="1.3.8")
+        super().__init__(name="show", version="1.3.9")
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """

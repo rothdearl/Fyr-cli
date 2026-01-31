@@ -2,7 +2,20 @@
 Initialization file for the command-line interface package.
 """
 
-from .ansi import *
+from .ansi import (
+    BG_COLORS_16,
+    BG_COLORS_256,
+    COLORS_16,
+    COLORS_256,
+    RESET,
+    TEXT_ATTRIBUTES,
+    background_color_16,
+    background_color_256,
+    foreground_color_16,
+    foreground_color_256,
+    text_attribute
+)
+
 from .cli_program import CLIProgram
 from .constants import *
 

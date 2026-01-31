@@ -4,7 +4,7 @@
 """
 Filename: tally.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to print line, word, and character counts in files.
 License: GNU GPLv3
 """
@@ -26,9 +26,9 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COUNT = ansi.BRIGHT_CYAN
-    COUNT_ORIGIN = ansi.BRIGHT_MAGENTA
-    COUNT_TOTAL = ansi.BRIGHT_YELLOW
+    COUNT = ansi.foreground_color_16(14)  # Bright Cyan
+    COUNT_ORIGIN = ansi.foreground_color_16(13)  # Bright Magenta
+    COUNT_TOTAL = ansi.foreground_color_16(11)  # Bright Yellow
 
 
 class CountIndex(IntEnum):
@@ -61,7 +61,7 @@ class Tally(CLIProgram):
         """
         Initialize a new ``Tally`` instance.
         """
-        super().__init__(name="tally", version="1.3.8")
+        super().__init__(name="tally", version="1.3.9")
 
         self.files_counted: int = 0
         self.flag_count: int = 0

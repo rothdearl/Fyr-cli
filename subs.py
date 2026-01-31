@@ -4,7 +4,7 @@
 """
 Filename: subs.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to replace text in files.
 License: GNU GPLv3
 """
@@ -24,8 +24,8 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COLON = ansi.BRIGHT_CYAN
-    FILE_NAME = ansi.BRIGHT_MAGENTA
+    COLON = ansi.foreground_color_16(14)  # Bright Cyan
+    FILE_NAME = ansi.foreground_color_16(13)  # Bright Magenta
 
 
 @final
@@ -40,7 +40,7 @@ class Subs(CLIProgram):
         """
         Initialize a new Subs instance.
         """
-        super().__init__(name="subs", version="1.3.8")
+        super().__init__(name="subs", version="1.3.9")
 
         self.pattern: re.Pattern[str] | None = None
 

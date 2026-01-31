@@ -4,7 +4,7 @@
 """
 Filename: seek.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to search for files in a directory hierarchy.
 License: GNU GPLv3
 """
@@ -24,7 +24,7 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    MATCH = ansi.BRIGHT_RED
+    MATCH = ansi.foreground_color_16(9)  # Bright Red
 
 
 @final
@@ -41,7 +41,7 @@ class Seek(CLIProgram):
         """
         Initialize a new Seek instance.
         """
-        super().__init__(name="seek", version="1.3.8", error_exit_code=2)
+        super().__init__(name="seek", version="1.3.9", error_exit_code=2)
 
         self.found_match: bool = False
         self.name_patterns: CompiledPatterns = []

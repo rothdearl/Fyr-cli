@@ -1,61 +1,98 @@
 """
-Constants for ANSI escape sequences used for terminal text attributes and color output.
+Constants and functions for ANSI escape sequences used for terminal text attributes and color output.
 """
 
-from typing import Final as _Final
+from typing import Final
 
 # Escape with the Control Sequence Introducer.
-_CSI: _Final[str] = "\x1b["
+_CSI: Final[str] = "\x1b["
 
 # Controls.
-RESET: _Final[str] = f"{_CSI}0m"
-REVERSE: _Final[str] = f"{_CSI}7m"
+RESET: Final[str] = f"{_CSI}0m"
 
 # Text attributes.
-BLINK: _Final[str] = f"{_CSI}5m"
-BOLD: _Final[str] = f"{_CSI}1m"
-DIM: _Final[str] = f"{_CSI}2m"
-INVISIBLE: _Final[str] = f"{_CSI}8m"
-ITALICS: _Final[str] = f"{_CSI}3m"
-STRIKETHROUGH: _Final[str] = f"{_CSI}9m"
-UNDERLINE: _Final[str] = f"{_CSI}4m"
+TEXT_ATTRIBUTES: Final[list[str]] = [f"{_CSI}{code}m" for code in range(1, 10)]
 
-# Foreground colors.
-BLACK: _Final[str] = f"{_CSI}30m"
-BLUE: _Final[str] = f"{_CSI}34m"
-BRIGHT_BLACK: _Final[str] = f"{_CSI}90m"
-BRIGHT_BLUE: _Final[str] = f"{_CSI}94m"
-BRIGHT_CYAN: _Final[str] = f"{_CSI}96m"
-BRIGHT_GREEN: _Final[str] = f"{_CSI}92m"
-BRIGHT_MAGENTA: _Final[str] = f"{_CSI}95m"
-BRIGHT_RED: _Final[str] = f"{_CSI}91m"
-BRIGHT_WHITE: _Final[str] = f"{_CSI}97m"
-BRIGHT_YELLOW: _Final[str] = f"{_CSI}93m"
-CYAN: _Final[str] = f"{_CSI}36m"
-GREEN: _Final[str] = f"{_CSI}32m"
-MAGENTA: _Final[str] = f"{_CSI}35m"
-RED: _Final[str] = f"{_CSI}31m"
-WHITE: _Final[str] = f"{_CSI}37m"
-YELLOW: _Final[str] = f"{_CSI}33m"
+# 16-color palettes.
+BG_COLORS_16: Final[list[str]] = [f"{_CSI}{code}m" for code in (*range(40, 48), *range(100, 108))]
+COLORS_16: Final[list[str]] = [f"{_CSI}{code}m" for code in (*range(30, 38), *range(90, 98))]
 
-# Background colors.
-BG_BLACK: _Final[str] = f"{_CSI}40m"
-BG_BLUE: _Final[str] = f"{_CSI}44m"
-BG_BRIGHT_BLACK: _Final[str] = f"{_CSI}100m"
-BG_BRIGHT_BLUE: _Final[str] = f"{_CSI}104m"
-BG_BRIGHT_CYAN: _Final[str] = f"{_CSI}106m"
-BG_BRIGHT_GREEN: _Final[str] = f"{_CSI}102m"
-BG_BRIGHT_MAGENTA: _Final[str] = f"{_CSI}105m"
-BG_BRIGHT_RED: _Final[str] = f"{_CSI}101m"
-BG_BRIGHT_WHITE: _Final[str] = f"{_CSI}107m"
-BG_BRIGHT_YELLOW: _Final[str] = f"{_CSI}103m"
-BG_CYAN: _Final[str] = f"{_CSI}46m"
-BG_GREEN: _Final[str] = f"{_CSI}42m"
-BG_MAGENTA: _Final[str] = f"{_CSI}45m"
-BG_RED: _Final[str] = f"{_CSI}41m"
-BG_WHITE: _Final[str] = f"{_CSI}47m"
-BG_YELLOW: _Final[str] = f"{_CSI}43m"
+# 256-color palettes (xterm-compatible).
+BG_COLORS_256: Final[list[str]] = [f"{_CSI}48;5;{code}m" for code in range(256)]
+COLORS_256: Final[list[str]] = [f"{_CSI}38;5;{code}m" for code in range(256)]
 
-# ANSI 256-color palette (xterm-compatible).
-BG_COLORS_256: _Final[list[str]] = [f"{_CSI}48;5;{i}m" for i in range(256)]
-COLORS_256: _Final[list[str]] = [f"{_CSI}38;5;{i}m" for i in range(256)]
+
+def _normalize_index(index: int, max_index: int) -> int:
+    """
+    Normalize an index to a valid range, defaulting to ``0`` if the index is out of range.
+
+    :param index: Index to normalize.
+    :param max_index: Exclusive upper bound for valid indices.
+    :return: A normalized index.
+    """
+    return index if 0 <= index < max_index else 0
+
+
+def text_attribute(index: int) -> str:
+    """
+    Return a text attribute, defaulting to ``0`` if the index is out of range.
+
+    :param index: Index of the text attribute.
+    :return: Text attribute.
+    """
+    return TEXT_ATTRIBUTES[_normalize_index(index, len(TEXT_ATTRIBUTES))]
+
+
+def background_color_16(index: int) -> str:
+    """
+    Return a background color from the 16-color palette, defaulting to ``0`` if the index is out of range.
+
+    :param index: Index of the background color.
+    :return: Background color.
+    """
+    return BG_COLORS_16[_normalize_index(index, len(BG_COLORS_16))]
+
+
+def background_color_256(index: int) -> str:
+    """
+    Return a background color from the 256-color palette, defaulting to ``0`` if the index is out of range.
+
+    :param index: Index of the background color.
+    :return: Background color.
+    """
+    return BG_COLORS_256[_normalize_index(index, len(BG_COLORS_256))]
+
+
+def foreground_color_16(index: int) -> str:
+    """
+    Return a foreground color from the 16-color palette, defaulting to ``0`` if the index is out of range.
+
+    :param index: Index of the foreground color.
+    :return: Foreground color.
+    """
+    return COLORS_16[_normalize_index(index, len(COLORS_16))]
+
+
+def foreground_color_256(index: int) -> str:
+    """
+    Return a foreground color from the 256-color palette, defaulting to ``0`` if the index is out of range.
+
+    :param index: Index of the foreground color.
+    :return: Foreground color.
+    """
+    return COLORS_256[_normalize_index(index, len(COLORS_256))]
+
+
+__all__ = [
+    "BG_COLORS_16",
+    "BG_COLORS_256",
+    "COLORS_16",
+    "COLORS_256",
+    "RESET",
+    "TEXT_ATTRIBUTES",
+    "background_color_16",
+    "background_color_256",
+    "foreground_color_16",
+    "foreground_color_256",
+    "text_attribute"
+]

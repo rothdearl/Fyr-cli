@@ -4,7 +4,7 @@
 """
 Filename: dupe.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to filter duplicate or unique lines in files.
 License: GNU GPLv3
 """
@@ -24,9 +24,9 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COLON = ansi.BRIGHT_CYAN
-    FILE_NAME = ansi.BRIGHT_MAGENTA
-    GROUP_COUNT = ansi.BRIGHT_GREEN
+    COLON = ansi.foreground_color_16(14)  # Bright Cyan
+    FILE_NAME = ansi.foreground_color_16(13)  # Bright Magenta
+    GROUP_COUNT = ansi.foreground_color_16(10)  # Bright Green
 
 
 @final
@@ -46,7 +46,7 @@ class Dupe(CLIProgram):
         """
         Initialize a new ``Dupe`` instance.
         """
-        super().__init__(name="dupe", version="1.3.8")
+        super().__init__(name="dupe", version="1.3.9")
 
         self.max_chars: int = 0
         self.skip_chars: int = 0

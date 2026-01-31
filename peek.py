@@ -4,7 +4,7 @@
 """
 Filename: peek.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to print the first part of files.
 License: GNU GPLv3
 """
@@ -24,8 +24,8 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COLON = ansi.BRIGHT_CYAN
-    FILE_NAME = ansi.BRIGHT_MAGENTA
+    COLON = ansi.foreground_color_16(14)  # Bright Cyan
+    FILE_NAME = ansi.foreground_color_16(13)  # Bright Magenta
 
 
 @final
@@ -38,7 +38,7 @@ class Peek(CLIProgram):
         """
         Initialize a new ``Peek`` instance.
         """
-        super().__init__(name="peek", version="1.3.8")
+        super().__init__(name="peek", version="1.3.9")
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """

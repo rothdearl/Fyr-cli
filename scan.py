@@ -4,7 +4,7 @@
 """
 Filename: scan.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to print lines that match patterns in files.
 License: GNU GPLv3
 """
@@ -23,10 +23,10 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COLON = ansi.BRIGHT_CYAN
-    FILE_NAME = ansi.BRIGHT_MAGENTA
-    LINE_NUMBER = ansi.BRIGHT_GREEN
-    MATCH = ansi.BRIGHT_RED
+    COLON = ansi.foreground_color_16(14)  # Bright Cyan
+    FILE_NAME = ansi.foreground_color_16(13)  # Bright Magenta
+    LINE_NUMBER = ansi.foreground_color_16(10)  # Bright Green
+    MATCH = ansi.foreground_color_16(9)  # Bright Red
 
 
 @final
@@ -43,7 +43,7 @@ class Scan(CLIProgram):
         """
         Initialize a new ``Scan`` instance.
         """
-        super().__init__(name="scan", version="1.3.8", error_exit_code=2)
+        super().__init__(name="scan", version="1.3.9", error_exit_code=2)
 
         self.found_match: bool = False
         self.line_number: int = 0

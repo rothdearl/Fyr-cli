@@ -4,7 +4,7 @@
 """
 Filename: order.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to sort and print files to standard output.
 License: GNU GPLv3
 """
@@ -26,8 +26,8 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COLON = ansi.BRIGHT_CYAN
-    FILE_NAME = ansi.BRIGHT_MAGENTA
+    COLON = ansi.foreground_color_16(14)  # Bright Cyan
+    FILE_NAME = ansi.foreground_color_16(13)  # Bright Magenta
 
 
 class FieldPatterns(StrEnum):
@@ -51,7 +51,7 @@ class Order(CLIProgram):
         """
         Initialize a new ``Order`` instance.
         """
-        super().__init__(name="order", version="1.3.8")
+        super().__init__(name="order", version="1.3.9")
 
         self.skip_fields: int = 0
 
@@ -93,9 +93,9 @@ class Order(CLIProgram):
 
     def generate_date_sort_key(self, line: str) -> str:
         """
-        Return a date sort key.
+        Return a sort key derived from the first parseable date in the line.
 
-        :param line: Line to generate key from.
+        :param line: Line to derive key from.
         :return: Date sort key.
         """
         fields = self.split_line(line, FieldPatterns.DATES, strip_number_separators=False)
@@ -109,36 +109,36 @@ class Order(CLIProgram):
 
     def generate_default_sort_key(self, line: str) -> list[str]:
         """
-        Return a default sort key.
+        Return a sort key derived from the line by splitting on whitespace.
 
-        :param line: Line to generate key from.
+        :param line: Line to derive key from.
         :return: Default sort key.
         """
         return self.split_line(line, FieldPatterns.WHITESPACE, strip_number_separators=False)
 
     def generate_dictionary_sort_key(self, line: str) -> list[str]:
         """
-        Return a dictionary sort key.
+        Return a sort key derived from the line by splitting on whitespace and non-word characters.
 
-        :param line: Line to generate key from.
+        :param line: Line to derive key from.
         :return: Dictionary sort key.
         """
         return self.split_line(line, FieldPatterns.WORDS, strip_number_separators=False)
 
     def generate_key_pattern_sort_key(self, line: str) -> list[str]:
         """
-        Return a key pattern sort key.
+        Return a sort key derived from the line by splitting on a user-defined field pattern.
 
-        :param line: Line to generate key from.
+        :param line: Line to derive key from.
         :return: Key pattern sort key.
         """
         return self.split_line(line, self.args.key_pattern, strip_number_separators=False)
 
     def generate_natural_sort_key(self, line: str) -> list[str]:
         """
-        Return a natural sort key.
+        Return a sort key derived from the line using natural ordering of text and numbers.
 
-        :param line: Line to generate key from.
+        :param line: Line to derive key from.
         :return: Natural sort key.
         """
         digits = []
@@ -245,7 +245,7 @@ class Order(CLIProgram):
 
     def split_line(self, line: str, field_pattern: str, *, strip_number_separators: bool) -> list[str]:
         """
-        Split the line into a list of fields.
+        Split the line into sortable fields according to command-line options.
 
         :param line: Line to split.
         :param field_pattern: Pattern for getting fields.

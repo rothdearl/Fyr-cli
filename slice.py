@@ -4,7 +4,7 @@
 """
 Filename: slice.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to split lines in files into shell-style fields.
 License: GNU GPLv3
 """
@@ -24,10 +24,10 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    COLON = ansi.BRIGHT_CYAN
-    COUNT = ansi.BRIGHT_GREEN
-    COUNT_TOTAL = ansi.BRIGHT_YELLOW
-    FILE_NAME = ansi.BRIGHT_MAGENTA
+    COLON = ansi.foreground_color_16(14)  # Bright Cyan
+    COUNT = ansi.foreground_color_16(10)  # Bright Green
+    COUNT_TOTAL = ansi.foreground_color_16(11)  # Bright Yellow
+    FILE_NAME = ansi.foreground_color_16(13)  # Bright Magenta
 
 
 @final
@@ -42,7 +42,7 @@ class Slice(CLIProgram):
         """
         Initialize a new ``Slice`` instance.
         """
-        super().__init__(name="slice", version="1.3.8")
+        super().__init__(name="slice", version="1.3.9")
 
         self.fields_to_print: list[int] = []
 
@@ -86,18 +86,18 @@ class Slice(CLIProgram):
 
         if terminal.input_is_redirected():
             if self.args.stdin_files:  # --stdin-files
-                self.print_sliced_lines_from_files(sys.stdin)
+                self.print_split_lines_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
-                    self.print_sliced_lines(standard_input)
+                    self.print_split_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                self.print_sliced_lines_from_files(self.args.files)
+                self.print_split_lines_from_files(self.args.files)
         elif self.args.files:
-            self.print_sliced_lines_from_files(self.args.files)
+            self.print_split_lines_from_files(self.args.files)
         else:
-            self.print_sliced_lines_from_input()
+            self.print_split_lines_from_input()
 
     def print_file_header(self, file_name: str) -> None:
         """
@@ -115,17 +115,17 @@ class Slice(CLIProgram):
 
             print(file_name)
 
-    def print_sliced_lines(self, lines: Iterable[str] | TextIO) -> None:
+    def print_split_lines(self, lines: Iterable[str] | TextIO) -> None:
         """
-        Print the lines sliced.
+        Print the lines split.
 
-        :param lines: Lines to slice.
+        :param lines: Lines to split.
         """
         quote = "\"" if self.args.quotes == "d" else "'" if self.args.quotes == "s" else ""  # --quotes
         separator = self.args.separator if self.args.separator is not None else "\t"  # --separator
 
         for line in lines:
-            fields = self.slice_line(line)
+            fields = self.split_line(line)
 
             # Do not print blank lines when there are no fields to print.
             if not fields:
@@ -133,30 +133,30 @@ class Slice(CLIProgram):
 
             print(separator.join(f"{quote}{field}{quote}" for field in fields))
 
-    def print_sliced_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_split_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
-        Slice lines into fields from the files.
+        Split lines into fields from the files.
 
-        :param files: Files to slice lines from.
+        :param files: Files to split lines from.
         """
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_file_header(file_info.file_name)
-                self.print_sliced_lines(file_info.text)
+                self.print_split_lines(file_info.text)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
-    def print_sliced_lines_from_input(self) -> None:
+    def print_split_lines_from_input(self) -> None:
         """
-        Slice lines into fields from standard input until EOF is entered.
+        Split lines into fields from standard input until EOF is entered.
         """
-        self.print_sliced_lines(sys.stdin.read().splitlines())
+        self.print_split_lines(sys.stdin.read().splitlines())
 
-    def slice_line(self, line: str) -> list[str]:
+    def split_line(self, line: str) -> list[str]:
         """
-        Slice the line into fields.
+        Split the line into fields.
 
-        :param line: Line to slice.
+        :param line: Line to split.
         :return: List of fields.
         """
         lexer = shlex.shlex(line, posix=True, punctuation_chars=False)

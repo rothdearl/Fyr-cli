@@ -4,7 +4,7 @@
 """
 Filename: glue.py
 Author: Roth Earl
-Version: 1.3.8
+Version: 1.3.9
 Description: A program to concatenate files and standard input to standard output.
 License: GNU GPLv3
 """
@@ -22,9 +22,9 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    EOL = ansi.BRIGHT_BLUE
-    NUMBER = ansi.BRIGHT_GREEN
-    TABS = ansi.BRIGHT_CYAN
+    EOL = ansi.foreground_color_16(12)  # Bright Blue
+    NUMBER = ansi.foreground_color_16(10)  # Bright Green
+    TABS = ansi.foreground_color_16(14)  # Bright Cyan
 
 
 class Whitespace(StrEnum):
@@ -47,7 +47,7 @@ class Glue(CLIProgram):
         """
         Initialize a new ``Glue`` instance.
         """
-        super().__init__(name="glue", version="1.3.8")
+        super().__init__(name="glue", version="1.3.9")
 
         self.line_number: int = 0
 

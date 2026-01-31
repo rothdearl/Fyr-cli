@@ -27,7 +27,7 @@ class INITest(unittest.TestCase):
         self.assertTrue(ini.has_defaults())
         self.assertTrue(ini.has_sections())
 
-    def test_values_booleans(self) -> None:
+    def test_values_bool(self) -> None:
         # Truthy.
         self.assertTrue(ini.get_bool_option("bool_options", "truthy_1"))
         self.assertTrue(ini.get_bool_option("bool_options", "truthy_on"))
@@ -49,3 +49,33 @@ class INITest(unittest.TestCase):
 
         # Invalid.
         self.assertIsNone(ini.get_bool_option("bool_options", "invalid_value"))
+
+    def test_values_float(self) -> None:
+        # Valid.
+        self.assertEqual(ini.get_float_option("float_options", "valid_float"), 3.14159)
+        self.assertEqual(ini.get_float_option("float_options", "valid_int_like"), 10.0)
+        self.assertEqual(ini.get_float_option("float_options", "negative_float"), -2.5)
+        self.assertEqual(ini.get_float_option("float_options", "scientific"), 1000.0)
+
+        # Fallback.
+        self.assertEqual(ini.get_float_option("float_options", "empty_value"), 0.0)
+        self.assertEqual(ini.get_float_option("float_options", "missing_value"), 0.0)
+        self.assertEqual(ini.get_float_option("missing_section", "valid_float"), 0.0)
+
+        # Invalid.
+        self.assertIsNone(ini.get_float_option("float_options", "invalid_value"))
+
+    def test_values_int(self) -> None:
+        # Valid.
+        self.assertEqual(ini.get_int_option("int_options", "valid_int"), 42)
+        self.assertEqual(ini.get_int_option("int_options", "negative_int"), -7)
+        self.assertEqual(ini.get_int_option("int_options", "zero"), 0)
+
+        # Fallback.
+        self.assertEqual(ini.get_int_option("int_options", "empty_value"), 0.0)
+        self.assertEqual(ini.get_int_option("int_options", "missing_value"), 0.0)
+        self.assertEqual(ini.get_int_option("missing_section", "valid_int"), 0.0)
+
+        # Invalid.
+        self.assertIsNone(ini.get_int_option("int_options", "invalid_value"))
+        self.assertIsNone(ini.get_int_option("int_options", "invalid_string"))
