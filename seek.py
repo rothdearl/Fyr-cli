@@ -70,7 +70,7 @@ class Seek(CLIProgram):
         parser.add_argument("--abs", action="store_true", help="print absolute file paths")
         parser.add_argument("--color", choices=("on", "off"), default="on", help="use color for matches (default: on)")
         parser.add_argument("--dot", action="store_true", help="include dot (.) files in output")
-        parser.add_argument("--empty", choices=("y", "n"), help="print only empty files")
+        parser.add_argument("--empty-only", action="store_true", help="print only empty files")
         modified_group.add_argument("--m-days",
                                     help="print files modified less than or more than N days ago (use +N or -N)",
                                     metavar="N", type=int)
@@ -115,14 +115,11 @@ class Seek(CLIProgram):
                 else:
                     matches_filters = not is_dir
 
-            if matches_filters and self.args.empty:  # --empty
+            if matches_filters and self.args.empty_only:  # --empty-only
                 if file.is_dir():
                     matches_filters = not os.listdir(file)
                 else:
                     matches_filters = not file.lstat().st_size
-
-                if self.args.empty == "n":
-                    matches_filters = not matches_filters
 
             # --m-days, --m-hours, or --m-mins
             if matches_filters and any((self.args.m_days, self.args.m_hours, self.args.m_mins)):
