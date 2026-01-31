@@ -92,12 +92,12 @@ class Dupe(CLIProgram):
 
         return parser
 
-    def get_character_compare_sequence(self, line: str) -> str:
+    def get_compare_key(self, line: str) -> str:
         """
-        Return a character sequence derived from the line for comparison.
+        Return a normalized comparison key derived from the line, applying rules according to command-line options.
 
         :param line: Line to process.
-        :return: Character sequence for comparison.
+        :return: Normalized comparison key.
         """
         if self.args.skip_whitespace:  # --skip-whitespace
             line = line.strip()
@@ -118,7 +118,7 @@ class Dupe(CLIProgram):
 
     def group_adjacent_matching_lines(self, lines: Iterable[str] | TextIO) -> list[list[str]]:
         """
-        Group adjacent lines that match.
+        Group adjacent lines whose comparison keys match.
 
         :param lines: Lines to group.
         :return: Lists of lines where the first element is the group and subsequent elements are matching lines.
@@ -128,7 +128,7 @@ class Dupe(CLIProgram):
         previous_line = None
 
         for line in lines:
-            next_line = self.get_character_compare_sequence(line)
+            next_line = self.get_compare_key(line)
 
             if self.args.skip_blank and (not next_line or next_line == "\n"):  # --skip-blank
                 continue
@@ -145,9 +145,9 @@ class Dupe(CLIProgram):
 
         return group_list
 
-    def group_all_matching_lines(self, lines: Iterable[str] | TextIO) -> dict[str, list[str]]:
+    def group_lines_by_key(self, lines: Iterable[str] | TextIO) -> dict[str, list[str]]:
         """
-        Group all lines that match.
+        Group all lines globally by their comparison keys.
 
         :param lines: Lines to group.
         :return: Mapping of lines where the key is the group and the values are matching lines.
@@ -155,7 +155,7 @@ class Dupe(CLIProgram):
         group_map = {}
 
         for line in lines:
-            key = self.get_character_compare_sequence(line)
+            key = self.get_compare_key(line)
 
             if self.args.skip_blank and (not key or key == "\n"):  # --skip-blank
                 continue
@@ -179,17 +179,17 @@ class Dupe(CLIProgram):
 
         if terminal.input_is_redirected():
             if self.args.stdin_files:  # --stdin-files
-                self.print_matching_lines_from_files(sys.stdin)
+                self.print_grouped_lines_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
-                    self.print_matching_lines(standard_input, origin_file="")
+                    self.print_grouped_lines(standard_input, origin_file="")
 
             if self.args.files:  # Process any additional files.
-                self.print_matching_lines_from_files(self.args.files)
+                self.print_grouped_lines_from_files(self.args.files)
         elif self.args.files:
-            self.print_matching_lines_from_files(self.args.files)
+            self.print_grouped_lines_from_files(self.args.files)
         else:
-            self.print_matching_lines_from_input()
+            self.print_grouped_lines_from_input()
 
     def print_file_header(self, file_name: str) -> None:
         """
@@ -207,11 +207,11 @@ class Dupe(CLIProgram):
 
             print(file_name)
 
-    def print_matching_lines(self, lines: Iterable[str] | TextIO, *, origin_file) -> None:
+    def print_grouped_lines(self, lines: Iterable[str] | TextIO, *, origin_file) -> None:
         """
-        Print lines that match.
+        Print lines based on grouping and filtering rules.
 
-        :param lines: Lines to print.
+        :param lines: Lines to group and filter.
         :param origin_file: File where the lines originated from.
         """
         file_header_printed = False
@@ -220,7 +220,7 @@ class Dupe(CLIProgram):
         if self.args.adjacent:
             groups = self.group_adjacent_matching_lines(lines)
         else:
-            groups = self.group_all_matching_lines(lines).values()
+            groups = self.group_lines_by_key(lines).values()
 
         # Print groups.
         last_group_index = len(groups) - 1
@@ -263,23 +263,23 @@ class Dupe(CLIProgram):
             if self.args.group and group_index < last_group_index:  # --group
                 print()
 
-    def print_matching_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_grouped_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
         """
-        Print lines that match from the files.
+        Print grouped and filtered lines from files.
 
-        :param files: Files to search.
+        :param files: Files to group and filter lines from.
         """
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
-                self.print_matching_lines(file_info.text, origin_file=file_info.file_name)
+                self.print_grouped_lines(file_info.text, origin_file=file_info.file_name)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
-    def print_matching_lines_from_input(self) -> None:
+    def print_grouped_lines_from_input(self) -> None:
         """
-        Print lines that match from standard input until EOF is entered.
+        Print grouped and filtered lines from standard input until EOF is entered.
         """
-        self.print_matching_lines(sys.stdin.read().splitlines(), origin_file="")
+        self.print_grouped_lines(sys.stdin.read().splitlines(), origin_file="")
 
     def validate_parsed_arguments(self) -> None:
         """
