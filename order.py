@@ -67,7 +67,7 @@ class Order(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading blanks in lines")
-        sort_group.add_argument("-d", "--dictionary-sort", action="store_true",
+        sort_group.add_argument("-d", "--dictionary-order", action="store_true",
                                 help="sort lines using dictionary order")
         sort_group.add_argument("-D", "--date-sort", action="store_true", help="sort lines by date")
         sort_group.add_argument("-k", "--key-pattern", help="generate sort keys by splitting lines on regex PATTERN",
@@ -173,8 +173,8 @@ class Order(CLIProgram):
         """
         Run the program logic.
         """
-        # Set --ignore-case to True if --dictionary-sort=True or --natural-sort=True.
-        if self.args.dictionary_sort or self.args.natural_sort:
+        # Set --ignore-case to True if --dictionary-order=True or --natural-sort=True.
+        if self.args.dictionary_order or self.args.natural_sort:
             self.args.ignore_case = True
 
         # Set --no-file-name to True if there are no files and --stdin-files=False.
@@ -206,7 +206,7 @@ class Order(CLIProgram):
 
         if self.args.date_sort:  # --date-sort
             lines.sort(key=self.generate_date_sort_key, reverse=reverse)
-        elif self.args.dictionary_sort:  # --dictionary-sort
+        elif self.args.dictionary_order:  # --dictionary-order
             lines.sort(key=self.generate_dictionary_sort_key, reverse=reverse)
         elif self.args.key_pattern:  # --key-pattern
             lines.sort(key=self.generate_key_pattern_sort_key, reverse=reverse)

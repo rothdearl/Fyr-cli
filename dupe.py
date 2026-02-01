@@ -68,7 +68,7 @@ class Dupe(CLIProgram):
         parser.add_argument("-c", "--count", action="store_true", help="prefix lines with the number of occurrences")
         print_group.add_argument("-d", "--repeated", action="store_true",
                                  help="print only duplicate lines, one per group")
-        print_group.add_argument("-D", "--duplicate", action="store_true", help="print all duplicate lines")
+        print_group.add_argument("-D", "--all-repeated", action="store_true", help="print all duplicate lines")
         print_group.add_argument("-g", "--group", action="store_true",
                                  help="show all lines, separating groups with an empty line")
         print_group.add_argument("-u", "--unique", action="store_true", help="only print unique lines")
@@ -217,7 +217,7 @@ class Dupe(CLIProgram):
         file_header_printed = False
 
         # Group matches.
-        if self.args.adjacent:
+        if self.args.adjacent:  # --adjacent
             groups = self.group_adjacent_matching_lines(lines)
         else:
             groups = self.group_lines_by_key(lines).values()
@@ -245,7 +245,7 @@ class Dupe(CLIProgram):
                         space = " "
                         group_count_str = f"{space:>{padding}} "
 
-                if self.args.duplicate or self.args.repeated:  # --duplicate or --repeated
+                if self.args.all_repeated or self.args.repeated:  # --all-repeated or --repeated
                     can_print = group_count > 1
                 elif self.args.unique:  # --unique
                     can_print = group_count == 1
@@ -257,7 +257,7 @@ class Dupe(CLIProgram):
 
                     io.print_normalized_line(f"{group_count_str}{line}")
 
-                    if not (self.args.duplicate or self.args.group):  # --duplicate or --group
+                    if not (self.args.all_repeated or self.args.group):  # --all-repeated or --group
                         break
 
             if self.args.group and group_index < last_group_index:  # --group
