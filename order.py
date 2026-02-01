@@ -67,6 +67,7 @@ class Order(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading blanks in lines")
+        parser.add_argument("-B", "--no-blank", action="store_true", help="suppress all blank lines")
         sort_group.add_argument("-d", "--dictionary-order", action="store_true",
                                 help="sort lines using dictionary order")
         sort_group.add_argument("-D", "--date-sort", action="store_true", help="sort lines by date")
@@ -80,7 +81,6 @@ class Order(CLIProgram):
         parser.add_argument("-H", "--no-file-name", action="store_true", help="do not prefix output with file names")
         parser.add_argument("-i", "--ignore-case", action="store_true",
                             help="ignore differences in case when comparing")
-        parser.add_argument("-I", "--ignore-blank-lines", action="store_true", help="ignore blank lines when comparing")
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file headers (default: on)")
@@ -240,7 +240,7 @@ class Order(CLIProgram):
 
         # Print lines.
         for line in lines:
-            if self.args.ignore_blank_lines and not line.rstrip():  # --ignore-blank-lines
+            if self.args.no_blank and not line.rstrip():  # --no-blank
                 continue
 
             io.print_normalized_line(line)

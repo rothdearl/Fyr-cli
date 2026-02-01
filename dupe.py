@@ -64,7 +64,7 @@ class Dupe(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-a", "--adjacent", action="store_true", help="compare only adjacent lines")
-        parser.add_argument("-b", "--skip-blank", action="store_true", help="ignore blank lines when comparing")
+        parser.add_argument("-b", "--no-blank", action="store_true", help="suppress all blank lines")
         parser.add_argument("-c", "--count", action="store_true", help="prefix lines with the number of occurrences")
         print_group.add_argument("-d", "--repeated", action="store_true",
                                  help="print only duplicate lines, one per group")
@@ -130,7 +130,7 @@ class Dupe(CLIProgram):
         for line in lines:
             next_line = self.get_compare_key(line)
 
-            if self.args.skip_blank and (not next_line or next_line == "\n"):  # --skip-blank
+            if self.args.no_blank and (not next_line or next_line == "\n"):  # --no-blank
                 continue
 
             if previous_line is None:
@@ -157,7 +157,7 @@ class Dupe(CLIProgram):
         for line in lines:
             key = self.get_compare_key(line)
 
-            if self.args.skip_blank and (not key or key == "\n"):  # --skip-blank
+            if self.args.no_blank and (not key or key == "\n"):  # --no-blank
                 continue
 
             if key in group_map:
