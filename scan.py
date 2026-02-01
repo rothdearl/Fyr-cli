@@ -14,7 +14,7 @@ import os
 import sys
 from collections.abc import Iterable
 from enum import StrEnum
-from typing import TextIO, final
+from typing import Final, TextIO, final
 
 from cli import CLIProgram, CompiledPatterns, ansi, io, patterns, terminal
 
@@ -34,10 +34,13 @@ class Scan(CLIProgram):
     """
     A program to print lines that match patterns in files.
 
+    :cvar NO_MATCHES_EXIT_CODE:  Exit code when no matches are found.
     :ivar found_match: Whether a match was found in a file.
     :ivar line_number: Line number for tracking where matches were found.
     :ivar patterns: Compiled patterns to match.
     """
+
+    NO_MATCHES_EXIT_CODE: Final[int] = 1
 
     def __init__(self) -> None:
         """
@@ -88,7 +91,7 @@ class Scan(CLIProgram):
         super().check_for_errors()
 
         if not self.found_match:
-            sys.exit(1)
+            sys.exit(Scan.NO_MATCHES_EXIT_CODE)
 
     def is_printing_counts(self) -> bool:
         """
@@ -222,7 +225,9 @@ class Scan(CLIProgram):
         """
         Validate the parsed command-line arguments.
         """
-        pass
+        # Exit early if no --find patterns are provided.
+        if not self.args.find:
+            sys.exit(Scan.NO_MATCHES_EXIT_CODE)
 
 
 if __name__ == "__main__":
