@@ -4,7 +4,7 @@
 """
 Filename: when.py
 Author: Roth Earl
-Version: 1.0.3
+Version: 1.0.4
 Description: A program to display the current calendar, with optional date and time.
 License: GNU GPLv3
 """
@@ -199,7 +199,7 @@ class When:
 
     DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p" if OS_IS_POSIX else "%a %b %d %I:%M%p"
     NAME: Final[str] = "when"
-    VERSION: Final[str] = "1.0.3"
+    VERSION: Final[str] = "1.0.4"
 
     def __init__(self) -> None:
         """

@@ -10,7 +10,7 @@ type ErrorReporter = Callable[[str], None]
 """Callback for reporting error messages."""
 
 type JsonObject = dict[str, Any]
-"""A JSON object: dictionary with string keys and JSON-compatible values."""
+"""A decoded JSON object represented as a dictionary."""
 
 type Patterns = list[re.Pattern[str]]
 """List of compiled regular expression patterns."""

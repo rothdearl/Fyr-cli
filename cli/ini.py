@@ -1,9 +1,10 @@
 """
-Functions for reading and parsing values from INI configuration files.
+Functions for reading and parsing values from INI configuration files using a single global configuration instance.
 """
 
 import configparser
 import json
+from typing import Final
 
 from .types import ErrorReporter, JsonObject
 
@@ -11,19 +12,19 @@ from .types import ErrorReporter, JsonObject
 _config: configparser.ConfigParser = configparser.ConfigParser()
 
 # Set of string values that are considered falsy.
-_falsy_values: set[str] = {"0", "false", "off", "n", "no"}
+_falsy_values: Final[frozenset[str]] = frozenset({"0", "false", "off", "n", "no"})
 
 # Set of string values that are considered truthy.
-_truthy_values: set[str] = {"1", "on", "true", "y", "yes"}
+_truthy_values: Final[frozenset[str]] = frozenset({"1", "on", "true", "y", "yes"})
 
 
 def get_bool_option(section: str, option: str) -> bool | None:
     """
-    Return a boolean value parsed from the option.
+    Return a boolean value parsed from the option, using ``False`` if the option is missing or empty.
 
     :param section: Section name.
     :param option: Option name.
-    :return: Boolean value or ``None`` if the value is not truthy or falsy.
+    :return: Boolean value, or ``None`` if the value is neither truthy nor falsy.
     """
     value = get_str_option_with_fallback(section, option, fallback="false").lower()
 
@@ -38,11 +39,11 @@ def get_bool_option(section: str, option: str) -> bool | None:
 
 def get_float_option(section: str, option: str) -> float | None:
     """
-    Return a floating-point value parsed from the option.
+    Return a floating-point value parsed from the option, using ``0.0`` if the option is missing or empty.
 
     :param section: Section name.
     :param option: Option name.
-    :return: Floating-point value or ``None`` if the value cannot be parsed.
+    :return: Floating-point value, or ``None`` if the value cannot be parsed.
     """
     value = get_str_option_with_fallback(section, option, fallback="0.0")
 
@@ -54,11 +55,11 @@ def get_float_option(section: str, option: str) -> float | None:
 
 def get_int_option(section: str, option: str) -> int | None:
     """
-    Return an integer value parsed from the option.
+    Return an integer value parsed from the option, using ``0`` if the option is missing or empty.
 
     :param section: Section name.
     :param option: Option name.
-    :return: Integer value or ``None`` if the value cannot be parsed.
+    :return: Integer value, or ``None`` if the value cannot be parsed.
     """
     value = get_str_option_with_fallback(section, option, fallback="0")
 
@@ -70,23 +71,28 @@ def get_int_option(section: str, option: str) -> int | None:
 
 def get_json_option(section: str, option: str) -> JsonObject | None:
     """
-    Return a JSON object value parsed from the option.
+    Return a JSON object parsed from the option, using ``{}`` if the option is missing or empty.
 
     :param section: Section name.
     :param option: Option name.
-    :return: Parsed JSON object value or ``None`` if the value cannot be decoded.
+    :return: JSON object, or ``None`` if decoding fails or the decoded value is not a JSON object.
     """
     value = get_str_option_with_fallback(section, option, fallback="{}")
 
     try:
-        return json.loads(value)
+        decoded_json = json.loads(value)
     except json.JSONDecodeError:
         return None
+
+    if not isinstance(decoded_json, dict):
+        return None
+
+    return decoded_json
 
 
 def get_str_option(section: str, option: str) -> str:
     """
-    Return a string value.
+    Return a string value, using ``""`` if the option is missing or empty.
 
     :param section: Section name.
     :param option: Option name.
@@ -158,9 +164,7 @@ def read_options(path: str, *, clear_previous: bool = True, on_error: ErrorRepor
     :return: ``True`` if the process was successful.
     """
     try:
-        path = path.strip()
-
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             if clear_previous:
                 _config.clear()
 
@@ -176,7 +180,7 @@ def read_options(path: str, *, clear_previous: bool = True, on_error: ErrorRepor
             case OSError():
                 on_error(f"{name}: unable to read file")
             case configparser.Error():
-                on_error(f"{name} is an invalid configuration file")
+                on_error(f"{name}: invalid configuration file")
 
         return False
 
