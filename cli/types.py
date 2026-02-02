@@ -18,5 +18,5 @@ type Patterns = list[re.Pattern[str]]
 __all__ = [
     "ErrorReporter",
     "Json",
-    "Patterns"
+    "Patterns",
 ]

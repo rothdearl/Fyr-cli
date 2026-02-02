@@ -1,39 +1,49 @@
 """
-Predicates for terminal-related state.
+Predicates describing whether standard input and output are attached to a terminal.
 """
 
 import sys
 
 
-def input_is_redirected() -> bool:
+def stdin_is_redirected() -> bool:
     """
-    Return whether input is being redirected.
+    Return whether standard input is redirected.
 
-    :return: ``True`` if input is being redirected.
+    :return: ``True`` if standard input is redirected.
     """
-    return not input_is_terminal()
+    return not stdin_is_terminal()
 
 
-def input_is_terminal() -> bool:
+def stdin_is_terminal() -> bool:
     """
-    Return whether input is to the terminal.
+    Return whether standard input is attached to a terminal.
 
-    :return: ``True`` if input is to the terminal.
+    :return: ``True`` if standard input is attached to a terminal.
     """
     return sys.stdin.isatty()
 
 
-def output_is_terminal() -> bool:
+def stdout_is_redirected() -> bool:
     """
-    Return whether output is to the terminal.
+    Return whether standard output is redirected.
 
-    :return: ``True`` if output is to the terminal.
+    :return: ``True`` if standard output is redirected.
+    """
+    return not stdout_is_terminal()
+
+
+def stdout_is_terminal() -> bool:
+    """
+    Return whether standard output is attached to a terminal.
+
+    :return: ``True`` if standard output is attached to a terminal.
     """
     return sys.stdout.isatty()
 
 
 __all__ = [
-    "input_is_redirected",
-    "input_is_terminal",
-    "output_is_terminal"
+    "stdin_is_redirected",
+    "stdin_is_terminal",
+    "stdout_is_redirected",
+    "stdout_is_terminal",
 ]

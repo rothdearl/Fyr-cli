@@ -43,9 +43,10 @@ from .patterns import (
 )
 
 from .terminal import (
-    input_is_redirected,
-    input_is_terminal,
-    output_is_terminal
+    stdin_is_redirected,
+    stdin_is_terminal,
+    stdout_is_redirected,
+    stdout_is_terminal
 )
 
 from .types import (

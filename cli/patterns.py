@@ -108,5 +108,5 @@ __all__ = [
     "color_pattern_matches",
     "compile_combined_patterns",
     "compile_patterns",
-    "matches_all_patterns"
+    "matches_all_patterns",
 ]

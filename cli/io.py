@@ -85,5 +85,5 @@ __all__ = [
     "FileInfo",
     "print_normalized_line",
     "read_text_files",
-    "write_text_to_file"
+    "write_text_to_file",
 ]

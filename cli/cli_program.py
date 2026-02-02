@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import final
 
 from .constants import OS_IS_WINDOWS
-from .terminal import output_is_terminal
+from .terminal import stdout_is_terminal
 
 
 class CLIProgram(ABC):
@@ -74,7 +74,7 @@ class CLIProgram(ABC):
 
         # Set default values for encoding and print_color.
         self.encoding = "iso-8859-1" if getattr(self.args, "latin1", False) else "utf-8"  # --latin1
-        self.print_color = getattr(self.args, "color", "off") == "on" and output_is_terminal()  # --color
+        self.print_color = getattr(self.args, "color", "off") == "on" and stdout_is_terminal()  # --color
 
     @final
     def print_error(self, error_message: str) -> None:

@@ -16,5 +16,5 @@ __all__ = [
     "OS_IS_LINUX",
     "OS_IS_MAC",
     "OS_IS_POSIX",
-    "OS_IS_WINDOWS"
+    "OS_IS_WINDOWS",
 ]

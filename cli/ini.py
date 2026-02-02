@@ -194,5 +194,5 @@ __all__ = [
     "has_defaults",
     "has_sections",
     "is_empty",
-    "read_options"
+    "read_options",
 ]
