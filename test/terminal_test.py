@@ -11,6 +11,7 @@ class TerminalTest(unittest.TestCase):
     """
 
     def test_terminal_predicates(self) -> None:
-        self.assertFalse(terminal.input_is_redirected())
-        self.assertTrue(terminal.input_is_terminal())
-        self.assertTrue(terminal.output_is_terminal())
+        self.assertFalse(terminal.stdin_is_redirected())
+        self.assertTrue(terminal.stdin_is_terminal())
+        self.assertFalse(terminal.stdout_is_redirected())
+        self.assertTrue(terminal.stdout_is_terminal())

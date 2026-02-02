@@ -185,8 +185,7 @@ class Scan(CLIProgram):
                     raise SystemExit(0)
 
                 if self.print_color and not self.args.invert_match:  # --invert-match
-                    line = patterns.color_pattern_matches(line, self.patterns,
-                                                          color=Colors.MATCH) if self.patterns else line
+                    line = patterns.color_pattern_matches(line, self.patterns, color=Colors.MATCH)
 
                 matches.append((self.line_number, line))
 

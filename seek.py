@@ -220,10 +220,8 @@ class Seek(CLIProgram):
             raise SystemExit(0)
 
         if self.print_color and not self.args.invert_match:  # --invert-match
-            file_name = patterns.color_pattern_matches(file_name, self.name_patterns,
-                                                       color=Colors.MATCH) if self.name_patterns else file_name
-            file_path = patterns.color_pattern_matches(file_path, self.path_patterns,
-                                                       color=Colors.MATCH) if self.path_patterns else file_path
+            file_name = patterns.color_pattern_matches(file_name, self.name_patterns, color=Colors.MATCH)
+            file_path = patterns.color_pattern_matches(file_path, self.path_patterns, color=Colors.MATCH)
 
         if self.args.abs:  # --abs
             if file.name:  # Do not join the current working directory with the dot file.

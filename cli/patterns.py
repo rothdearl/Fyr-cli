@@ -1,44 +1,48 @@
 """
-Functions for pattern-related operations.
+Provide utilities for compiling, matching, and coloring regular expression patterns in text.
 """
 
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 from .ansi import RESET
 from .types import ErrorReporter, Patterns
 
 
-def color_pattern_matches(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
+def color_pattern_matches(text: str, patterns: Sequence[re.Pattern[str]], *, color: str) -> str:
     """
-    Color all matches of the given patterns in the text.
+    Color all regions of the text that match any of the given patterns.
 
     :param text: Text to color.
-    :param patterns: Pattern groups to match.
+    :param patterns: Patterns to match.
     :param color: Color to use.
     :return: Text with all matched regions wrapped in color codes.
     """
-    slices = []
+    # Return early if no patterns are provided.
+    if not patterns:
+        return text
 
-    # Get slices for each match.
+    # Get ranges for each match.
+    ranges = []
+
     for pattern in patterns:
         for match in pattern.finditer(text):
-            slices.append((match.start(), match.end()))
+            ranges.append((match.start(), match.end()))
 
-    # Merge overlapping slices.
-    merged_slices = []
+    # Merge overlapping ranges.
+    merged_ranges = []
 
-    for start, end in sorted(slices):
-        if merged_slices and start <= merged_slices[-1][1]:
-            merged_slices[-1] = (merged_slices[-1][0], max(merged_slices[-1][1], end))
+    for start, end in sorted(ranges):
+        if merged_ranges and start <= merged_ranges[-1][1]:
+            merged_ranges[-1] = (merged_ranges[-1][0], max(merged_ranges[-1][1], end))
         else:
-            merged_slices.append((start, end))
+            merged_ranges.append((start, end))
 
-    # Color slices.
+    # Color ranges.
     colored_text = []
     prev_end = 0
 
-    for start, end in merged_slices:
+    for start, end in merged_ranges:
         if prev_end < start:
             colored_text.append(text[prev_end:start])
 
@@ -51,16 +55,16 @@ def color_pattern_matches(text: str, patterns: Iterable[re.Pattern[str]], *, col
     return "".join(colored_text)
 
 
-def compile_combined_patterns(patterns: Iterable[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
+def compile_combined_patterns(patterns: Sequence[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
     """
     Combine patterns into a single compiled OR-pattern.
 
-    :param patterns: Pattern groups to combine.
+    :param patterns: Patterns to combine.
     :param ignore_case: Whether to ignore case.
     :return: Compiled regular expression matching any pattern.
     """
     flags = re.IGNORECASE if ignore_case else re.NOFLAG
-    sources = [group.pattern for group in patterns]
+    sources = [f"(?:{group.pattern})" for group in patterns]
 
     return re.compile("|".join(sources), flags=flags)
 
@@ -89,19 +93,15 @@ def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: Er
     return compiled
 
 
-def matches_all_patterns(text: str, patterns: Iterable[re.Pattern[str]]) -> bool:
+def matches_all_patterns(text: str, patterns: Sequence[re.Pattern[str]]) -> bool:
     """
     Return whether the text matches all pattern groups.
 
     :param text: Text to search.
-    :param patterns: Pattern groups to match.
+    :param patterns: Patterns to match.
     :return: ``True`` if the text matches all pattern groups.
     """
-    for group in patterns:
-        if not group.search(text):
-            return False
-
-    return True
+    return all(group.search(text) for group in patterns)
 
 
 __all__ = [
