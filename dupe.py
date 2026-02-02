@@ -15,7 +15,7 @@ import re
 import sys
 from collections.abc import Iterable
 from enum import StrEnum
-from typing import Final, TextIO, final
+from typing import Final, final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -85,6 +85,8 @@ class Dupe(CLIProgram):
                             help="skip leading and trailing whitespace when comparing")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for counts and file headers (default: on)")
+        parser.add_argument("--count-width", default=4, help="pad occurrence counts to width N (default: 4; N >= 1)",
+                            metavar="N", type=int)
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
@@ -125,7 +127,7 @@ class Dupe(CLIProgram):
 
         return line
 
-    def group_adjacent_matching_lines(self, lines: Iterable[str] | TextIO) -> list[list[str]]:
+    def group_adjacent_matching_lines(self, lines: Iterable[str]) -> list[list[str]]:
         """
         Group adjacent lines whose comparison keys match.
 
@@ -154,7 +156,7 @@ class Dupe(CLIProgram):
 
         return group_list
 
-    def group_lines_by_key(self, lines: Iterable[str] | TextIO) -> dict[str, list[str]]:
+    def group_lines_by_key(self, lines: Iterable[str]) -> dict[str, list[str]]:
         """
         Group all lines globally by their comparison keys.
 
@@ -214,7 +216,7 @@ class Dupe(CLIProgram):
 
             print(file_name)
 
-    def print_grouped_lines(self, lines: Iterable[str] | TextIO, *, origin_file) -> None:
+    def print_grouped_lines(self, lines: Iterable[str], *, origin_file) -> None:
         """
         Print lines based on grouping and filtering rules.
 
@@ -240,17 +242,15 @@ class Dupe(CLIProgram):
                 group_count_str = ""
 
                 if self.args.count:  # --count
-                    padding = 7
-
                     # Only print the group count for the first line.
                     if line_index == 0:
                         if self.print_color:
-                            group_count_str = f"{Colors.GROUP_COUNT}{group_count:>{padding},}{Colors.COLON}:{ansi.RESET}"
+                            group_count_str = f"{Colors.GROUP_COUNT}{group_count:>{self.args.count_width},}{Colors.COLON}:{ansi.RESET}"
                         else:
-                            group_count_str = f"{group_count:>{padding},}:"
+                            group_count_str = f"{group_count:>{self.args.count_width},}:"
                     else:
                         space = " "
-                        group_count_str = f"{space:>{padding}} "
+                        group_count_str = f"{space:>{self.args.number_width}} "
 
                 if self.args.all_repeated or self.args.repeated:  # --all-repeated or --repeated
                     can_print = group_count > 1
@@ -262,7 +262,7 @@ class Dupe(CLIProgram):
                         self.print_file_header(origin_file)
                         file_header_printed = True
 
-                    io.print_normalized_line(f"{group_count_str}{line}")
+                    io.print_line_normalized(f"{group_count_str}{line}")
 
                     if not (self.args.all_repeated or self.args.group):  # --all-repeated or --group
                         break
@@ -270,7 +270,7 @@ class Dupe(CLIProgram):
             if self.args.group and group_index < last_group_index:  # --group
                 print()
 
-    def print_grouped_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_grouped_lines_from_files(self, files: Iterable[str]) -> None:
         """
         Print grouped and filtered lines from files.
 
@@ -296,14 +296,17 @@ class Dupe(CLIProgram):
         self.skip_chars = self.args.skip_chars if self.args.skip_chars is not None else 0  # --skip-chars
         self.skip_fields = self.args.skip_fields if self.args.skip_fields is not None else 0  # --skip-fields
 
-        if self.skip_fields < 0:
-            self.print_error_and_exit("'skip-fields' must be >= 0")
+        if self.args.count_width < 1:  # --count-width
+            self.print_error_and_exit("'count-width' must be >= 1")
+
+        if self.max_chars < 1:
+            self.print_error_and_exit("'max-chars' must be >= 1")
 
         if self.skip_chars < 0:
             self.print_error_and_exit("'skip-chars' must be >= 0")
 
-        if self.max_chars < 1:
-            self.print_error_and_exit("'max-chars' must be >= 1")
+        if self.skip_fields < 0:
+            self.print_error_and_exit("'skip-fields' must be >= 0")
 
 
 if __name__ == "__main__":

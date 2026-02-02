@@ -14,7 +14,7 @@ import os
 import sys
 from collections.abc import Collection, Iterable
 from enum import StrEnum
-from typing import TextIO, final
+from typing import final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -138,9 +138,9 @@ class Show(CLIProgram):
                 line = self.show_tabs(line) if self.args.tabs else line  # --tabs
                 line = self.show_ends(line) if self.args.ends else line  # --ends
                 line = self.show_line_number(line, index, padding) if self.args.line_numbers else line  # --line-numbers
-                io.print_normalized_line(line)
+                io.print_line_normalized(line)
 
-    def print_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_lines_from_files(self, files: Iterable[str]) -> None:
         """
         Print lines from the files (formatting specified from the command-line arguments).
 

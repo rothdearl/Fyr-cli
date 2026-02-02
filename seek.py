@@ -255,8 +255,8 @@ class Seek(CLIProgram):
             except PermissionError as error:
                 self.print_error(f"{error.filename}: permission denied")
         else:
-            directory = directory or '""'
-            self.print_error(f"{directory}: no such file or directory")
+            name = directory or '""'
+            self.print_error(f"{name}: no such file or directory")
 
     def validate_parsed_arguments(self) -> None:
         """

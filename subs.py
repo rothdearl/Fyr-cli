@@ -15,7 +15,7 @@ import re
 import sys
 from collections.abc import Iterable
 from enum import StrEnum
-from typing import TextIO, final
+from typing import final
 
 from cli import CLIProgram, ansi, io, patterns, terminal
 
@@ -144,7 +144,7 @@ class Subs(CLIProgram):
         :param lines: Lines to replace matches in.
         """
         for line in self.iterate_replaced_lines(lines):
-            io.print_normalized_line(line)
+            io.print_line_normalized(line)
 
     def print_replaced_lines_from_input(self) -> None:
         """
@@ -152,7 +152,7 @@ class Subs(CLIProgram):
         """
         self.print_replaced_lines(sys.stdin.read().splitlines())
 
-    def process_files(self, files: Iterable[str] | TextIO) -> None:
+    def process_files(self, files: Iterable[str]) -> None:
         """
         Process files by replacing matches and printing results or writing changes in place.
 

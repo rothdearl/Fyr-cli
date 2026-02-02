@@ -16,7 +16,7 @@ import time
 from collections.abc import Collection, Iterable
 from enum import StrEnum
 from threading import Thread
-from typing import TextIO, final
+from typing import final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -99,7 +99,7 @@ class Track(CLIProgram):
                         if print_file_name:
                             self.print_file_header(file_name)
 
-                        io.print_normalized_line(next_content[print_index:])
+                        io.print_line_normalized(next_content[print_index:])
                         previous_content = next_content
 
                 time.sleep(polling_interval)
@@ -169,9 +169,9 @@ class Track(CLIProgram):
 
         for index, line in enumerate(lines, start=1):
             if index > skip_to_line:
-                io.print_normalized_line(line)
+                io.print_line_normalized(line)
 
-    def print_lines_from_files(self, files: Iterable[str] | TextIO) -> list[str]:
+    def print_lines_from_files(self, files: Iterable[str]) -> list[str]:
         """
         Print lines from the files.
 

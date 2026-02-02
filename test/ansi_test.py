@@ -23,7 +23,7 @@ class ANSITest(unittest.TestCase):
 
         print()
 
-        # Print the forground colors.
+        # Print the foreground colors.
         print(f"ANSI 16-color palette foreground colors")
 
         for fg_color in ansi.Colors16:

@@ -13,7 +13,7 @@ import argparse
 import sys
 from collections.abc import Collection, Iterable
 from enum import StrEnum
-from typing import TextIO, final
+from typing import final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -76,7 +76,7 @@ class Glue(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for whitespace and numbers (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
-        parser.add_argument("--number-width", default=7, help="pad line numbers to width N (default: 7; N >= 1)",
+        parser.add_argument("--number-width", default=6, help="pad line numbers to width N (default: 6; N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
@@ -101,7 +101,7 @@ class Glue(CLIProgram):
         else:
             self.print_lines_from_input()
 
-    def print_lines(self, lines: Iterable[str] | TextIO) -> None:
+    def print_lines(self, lines: Iterable[str]) -> None:
         """
         Print the lines (formatting specified from the command-line arguments).
 
@@ -152,7 +152,7 @@ class Glue(CLIProgram):
                 else:
                     line = f"{self.line_number:>{self.args.number_width}} {line}"
 
-            io.print_normalized_line(line)
+            io.print_line_normalized(line)
 
     def print_lines_from_files(self, files: Collection[str]) -> None:
         """

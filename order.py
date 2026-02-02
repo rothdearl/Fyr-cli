@@ -243,7 +243,7 @@ class Order(CLIProgram):
             if self.args.no_blank and not line.rstrip():  # --no-blank
                 continue
 
-            io.print_normalized_line(line)
+            io.print_line_normalized(line)
 
     def sort_lines_from_files(self, files: TextIO | list[str]) -> None:
         """

@@ -14,7 +14,7 @@ import os
 import sys
 from collections.abc import Iterable
 from enum import StrEnum
-from typing import Final, TextIO, final
+from typing import Final, final
 
 from cli import CLIProgram, Patterns, ansi, io, patterns, terminal
 
@@ -125,7 +125,7 @@ class Scan(CLIProgram):
             self.args.no_file_name = True  # No file header if no files
             self.print_matches_in_input()
 
-    def print_matches_in_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_matches_in_files(self, files: Iterable[str]) -> None:
         """
         Print matches found in the files.
 
@@ -159,7 +159,7 @@ class Scan(CLIProgram):
         if self.is_printing_counts():
             self.print_matches_in_lines(lines, origin_file="")
 
-    def print_matches_in_lines(self, lines: Iterable[str] | TextIO, *, origin_file: str,
+    def print_matches_in_lines(self, lines: Iterable[str], *, origin_file: str,
                                reset_line_number=True) -> None:
         """
         Print matches found in the lines.
@@ -218,7 +218,7 @@ class Scan(CLIProgram):
                     else:
                         print(f"{line_number:>{padding}}:", end="")
 
-                io.print_normalized_line(line)
+                io.print_line_normalized(line)
 
     def validate_parsed_arguments(self) -> None:
         """

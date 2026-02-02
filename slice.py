@@ -15,7 +15,7 @@ import shlex
 import sys
 from collections.abc import Iterable
 from enum import StrEnum
-from typing import TextIO, final
+from typing import final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -113,7 +113,7 @@ class Slice(CLIProgram):
 
             print(file_name)
 
-    def print_split_lines(self, lines: Iterable[str] | TextIO) -> None:
+    def print_split_lines(self, lines: Iterable[str]) -> None:
         """
         Print the lines split.
 
@@ -131,7 +131,7 @@ class Slice(CLIProgram):
 
             print(separator.join(f"{quote}{field}{quote}" for field in fields))
 
-    def print_split_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_split_lines_from_files(self, files: Iterable[str]) -> None:
         """
         Split lines into fields from the files.
 

@@ -24,14 +24,14 @@ class TestColorPatternMatches(unittest.TestCase):
         self.assertEqual(result, f"{color}hello{ansi.RESET} {color}world{ansi.RESET}", )
 
     def test_overlapping_matches_are_merged(self):
-        text = "abcabc"
-        test_patterns = [re.compile(r"abc"), re.compile(r"bc")]
+        text = "apple"
+        test_patterns = [re.compile(r"app"), re.compile(r"le")]
         color = "\033[31m"
 
         result = patterns.color_pattern_matches(text, test_patterns, color=color)
 
         # Entire string should be colored once due to overlap
-        self.assertEqual(result, f"{color}abcabc{ansi.RESET}")
+        self.assertEqual(result, f"{color}apple{ansi.RESET}")
 
     def test_no_matches_returns_original_text(self):
         text = "hello world"

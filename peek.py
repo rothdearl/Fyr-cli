@@ -15,7 +15,7 @@ import sys
 from collections import deque
 from collections.abc import Iterable
 from enum import StrEnum
-from typing import TextIO, final
+from typing import final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -102,7 +102,7 @@ class Peek(CLIProgram):
 
             print(file_name)
 
-    def print_lines(self, lines: Iterable[str] | TextIO) -> None:
+    def print_lines(self, lines: Iterable[str]) -> None:
         """
         Print the lines.
 
@@ -114,7 +114,7 @@ class Peek(CLIProgram):
                 if index >= self.args.lines:
                     break
 
-                io.print_normalized_line(line)
+                io.print_line_normalized(line)
 
             return
 
@@ -123,11 +123,11 @@ class Peek(CLIProgram):
 
         for line in lines:
             if len(buffer) == buffer.maxlen:
-                io.print_normalized_line(buffer.popleft())
+                io.print_line_normalized(buffer.popleft())
 
             buffer.append(line)
 
-    def print_lines_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_lines_from_files(self, files: Iterable[str]) -> None:
         """
         Print lines from the files.
 

@@ -14,7 +14,7 @@ import re
 import sys
 from collections.abc import Iterable
 from enum import IntEnum, StrEnum
-from typing import Final, TextIO, TypeAlias, final
+from typing import Final, TypeAlias, final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -100,6 +100,8 @@ class Tally(CLIProgram):
         parser.add_argument("-w", "--words", action="store_true", help="print the word counts")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for counts and file names (default: on)")
+        parser.add_argument("--count-width", default=8, help="pad counts to width N (default: 8; N >= 1)", metavar="N",
+                            type=int)
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
@@ -109,7 +111,7 @@ class Tally(CLIProgram):
 
         return parser
 
-    def calculate_counts(self, text: Iterable[str] | TextIO, *, has_newlines: bool) -> Counts:
+    def calculate_counts(self, text: Iterable[str], *, has_newlines: bool) -> Counts:
         """
         Calculate the counts for the lines, words, characters, and the maximum line length in the text.
 
@@ -171,22 +173,22 @@ class Tally(CLIProgram):
 
         for index, count in enumerate(counts):
             if Tally.COUNT_FLAGS[index]:
-                width = 12 if self.flag_count > 1 or count_origin else 0
+                padding = self.args.count_width if self.flag_count > 1 or count_origin else 0
 
                 if self.print_color:
-                    print(f"{count_color}{count:>{width},}{ansi.RESET}", end="")
+                    print(f"{count_color}{count:>{padding},}{ansi.RESET}", end="")
                 else:
-                    print(f"{count:>{width},}", end="")
+                    print(f"{count:>{padding},}", end="")
 
         if count_origin:
             if self.print_color:
-                print(f"\t{count_origin_color}{count_origin}{ansi.RESET}")
+                print(f" {count_origin_color}{count_origin}{ansi.RESET}")
             else:
-                print(f"\t{count_origin}")
+                print(f" {count_origin}")
         else:
             print()
 
-    def print_counts_from_files(self, files: Iterable[str] | TextIO) -> None:
+    def print_counts_from_files(self, files: Iterable[str]) -> None:
         """
         Print counts from the files.
 
@@ -215,7 +217,10 @@ class Tally(CLIProgram):
         """
         Validate the parsed command-line arguments.
         """
-        if self.args.tab_width < 1:
+        if self.args.count_width < 1:  # --count-width
+            self.print_error_and_exit("'count-width' must be >= 1")
+
+        if self.args.tab_width < 1:  # --tab-width
             self.print_error_and_exit("'tab-width' must be >= 1")
 
         # -1 one for the tab character.
