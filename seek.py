@@ -167,7 +167,7 @@ class Seek(CLIProgram):
         """
         self.precompile_patterns()
 
-        if terminal.input_is_redirected():
+        if terminal.stdin_is_redirected():
             for directory in sys.stdin:
                 self.print_files(directory.rstrip())
 

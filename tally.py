@@ -138,7 +138,7 @@ class Tally(CLIProgram):
         """
         Run the program logic.
         """
-        if terminal.input_is_redirected():
+        if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
                 self.print_counts_from_files(sys.stdin)
             else:

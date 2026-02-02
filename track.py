@@ -118,7 +118,7 @@ class Track(CLIProgram):
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_name = True
 
-        if terminal.input_is_redirected():
+        if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
                 files_printed.extend(self.print_lines_from_files(sys.stdin))
             else:

@@ -22,9 +22,9 @@ class Colors(StrEnum):
     """
     Terminal color constants.
     """
-    EOL = ansi.foreground_color_16(12)  # Bright Blue
-    NUMBER = ansi.foreground_color_16(10)  # Bright Green
-    TABS = ansi.foreground_color_16(14)  # Bright Cyan
+    EOL = ansi.Colors16.BRIGHT_BLUE
+    NUMBER = ansi.Colors16.BRIGHT_GREEN
+    TABS = ansi.Colors16.BRIGHT_CYAN
 
 
 class Whitespace(StrEnum):
@@ -88,7 +88,7 @@ class Glue(CLIProgram):
         """
         Run the program logic.
         """
-        if terminal.input_is_redirected():
+        if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
                 self.print_lines_from_files(sys.stdin.readlines())
             else:

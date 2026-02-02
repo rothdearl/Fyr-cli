@@ -110,7 +110,7 @@ class Scan(CLIProgram):
             self.patterns = patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
                                                       on_error=self.print_error_and_exit)
 
-        if terminal.input_is_redirected():
+        if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
                 self.print_matches_in_files(sys.stdin)
             elif standard_input := sys.stdin.readlines():
