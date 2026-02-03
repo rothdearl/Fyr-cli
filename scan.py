@@ -127,7 +127,7 @@ class Scan(CLIProgram):
 
     def print_matches_in_files(self, files: Iterable[str]) -> None:
         """
-        Print matches found in the files.
+        Print matches found in files.
 
         :param files: Files to search.
         """
@@ -139,7 +139,7 @@ class Scan(CLIProgram):
 
     def print_matches_in_input(self) -> None:
         """
-        Print matches found in standard input until EOF is entered.
+        Print matches found in standard input until EOF.
         """
         eof = False
         lines = []
@@ -162,7 +162,7 @@ class Scan(CLIProgram):
     def print_matches_in_lines(self, lines: Iterable[str], *, origin_file: str,
                                reset_line_number=True) -> None:
         """
-        Print matches found in the lines.
+        Print matches found in lines.
 
         :param lines: Lines to search.
         :param origin_file: File where the lines originated from.

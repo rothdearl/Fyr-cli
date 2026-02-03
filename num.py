@@ -14,7 +14,7 @@ import os
 import sys
 from collections.abc import Collection, Iterable
 from enum import StrEnum
-from typing import final
+from typing import Final, final
 
 from cli import CLIProgram, ansi, io, terminal
 
@@ -32,7 +32,11 @@ class Colors(StrEnum):
 class Num(CLIProgram):
     """
     A program to number output lines from files to standard output.
+
+    :cvar FORMAT_PREFIXES: Mapping of short format keys to format-spec prefixes used when formatting line numbers.
     """
+
+    FORMAT_PREFIXES: Final[dict[str, str]] = {"ln": "<", "rn": ">", "rz": "0>"}
 
     def __init__(self) -> None:
         """
@@ -65,8 +69,8 @@ class Num(CLIProgram):
                             help="format line numbers (ln=left, rn=right, rz=zero-padded; default: rn)")
         parser.add_argument("--number-separator", default="\t",
                             help="separate line numbers and output lines with SEP (default: <tab>)", metavar="SEP")
-        parser.add_argument("--starting-number", default=1, help="start numbering at N (default: 1; N >= 0)",
-                            metavar="N", type=int)
+        parser.add_argument("--number-start", default=1, help="start numbering at N (default: 1; N >= 0)", metavar="N",
+                            type=int)
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
@@ -118,8 +122,8 @@ class Num(CLIProgram):
 
         :param lines: Lines to print.
         """
-        line_number = self.args.starting_number - 1  # --starting-line-number
-        number_format = {"ln": "<", "rn": ">", "rz": "0>"}[self.args.number_format]  # --number-format
+        format_prefix = Num.FORMAT_PREFIXES[self.args.number_format]  # --number-format
+        line_number = self.args.number_start - 1  # --number-start
         repeated_blank_lines = 0
 
         for line in lines:
@@ -143,9 +147,9 @@ class Num(CLIProgram):
                 line_number += 1
 
                 if self.print_color:
-                    line = f"{Colors.LINE_NUMBER}{line_number:{number_format}{self.args.number_width}}{ansi.RESET}{self.args.number_separator}{line}"
+                    line = f"{Colors.LINE_NUMBER}{line_number:{format_prefix}{self.args.number_width}}{ansi.RESET}{self.args.number_separator}{line}"
                 else:
-                    line = f"{line_number:{number_format}{self.args.number_width}}{self.args.number_separator}{line}"
+                    line = f"{line_number:{format_prefix}{self.args.number_width}}{self.args.number_separator}{line}"
 
             io.print_line_normalized(line)
 
@@ -172,11 +176,11 @@ class Num(CLIProgram):
         """
         Validate the parsed command-line arguments.
         """
+        if self.args.number_start < 0:  # --number-start
+            self.print_error_and_exit("'--number-start' must be >= 0")
+
         if self.args.number_width < 1:  # --number-width
             self.print_error_and_exit("'number-width' must be >= 1")
-
-        if self.args.starting_number < 0:  # --starting-number
-            self.print_error_and_exit("'--starting-number' must be >= 0")
 
 
 if __name__ == "__main__":

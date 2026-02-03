@@ -104,7 +104,7 @@ class Peek(CLIProgram):
 
     def print_lines(self, lines: Iterable[str]) -> None:
         """
-        Print the lines.
+        Print lines.
 
         :param lines: Lines to print.
         """
@@ -129,7 +129,7 @@ class Peek(CLIProgram):
 
     def print_lines_from_files(self, files: Iterable[str]) -> None:
         """
-        Print lines from the files.
+        Print lines from files.
 
         :param files: Files to print lines from.
         """
@@ -142,7 +142,7 @@ class Peek(CLIProgram):
 
     def print_lines_from_input(self) -> None:
         """
-        Print lines from standard input until EOF is entered.
+        Print lines from standard input until EOF.
         """
         self.print_lines(sys.stdin.read().splitlines())
 

@@ -43,8 +43,6 @@ class FieldPatterns(StrEnum):
 class Order(CLIProgram):
     """
     A program to sort and print files to standard output.
-
-    :ivar skip_fields: Number of fields to skip at the beginning of each line.
     """
 
     def __init__(self) -> None:
@@ -52,8 +50,6 @@ class Order(CLIProgram):
         Initialize a new ``Order`` instance.
         """
         super().__init__(name="order", version="1.3.10")
-
-        self.skip_fields: int = 0
 
     def build_arguments(self) -> argparse.ArgumentParser:
         """
@@ -67,7 +63,6 @@ class Order(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading blanks in lines")
-        parser.add_argument("-B", "--no-blank", action="store_true", help="suppress all blank lines")
         sort_group.add_argument("-d", "--dictionary-order", action="store_true",
                                 help="sort lines using dictionary order")
         sort_group.add_argument("-D", "--date-sort", action="store_true", help="sort lines by date")
@@ -76,8 +71,8 @@ class Order(CLIProgram):
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="sort alphabetically, treating numbers numerically")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="sort lines in random order")
-        parser.add_argument("-f", "--skip-fields", help="skip the first N fields when sorting (N >= 0)", metavar="N",
-                            type=int)
+        parser.add_argument("-f", "--skip-fields", default=0, help="skip the first N fields when sorting (N >= 0)",
+                            metavar="N", type=int)
         parser.add_argument("-H", "--no-file-name", action="store_true", help="do not prefix output with file names")
         parser.add_argument("-i", "--ignore-case", action="store_true",
                             help="ignore differences in case when comparing")
@@ -85,6 +80,7 @@ class Order(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file headers (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
+        parser.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
@@ -167,18 +163,18 @@ class Order(CLIProgram):
 
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
-                self.sort_lines_from_files(sys.stdin)
+                self.sort_and_print_lines_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
-                    self.sort_lines(standard_input)
+                    self.sort_and_print_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                self.sort_lines_from_files(self.args.files)
+                self.sort_and_print_lines_from_files(self.args.files)
         elif self.args.files:
-            self.sort_lines_from_files(self.args.files)
+            self.sort_and_print_lines_from_files(self.args.files)
         else:
-            self.sort_lines_from_input()
+            self.sort_and_print_lines_from_input()
 
     def normalize_line(self, line: str, *, strip_number_separators: bool) -> str:
         """
@@ -217,9 +213,9 @@ class Order(CLIProgram):
 
             print(file_name)
 
-    def sort_lines(self, lines: list[str]) -> None:
+    def sort_and_print_lines(self, lines: list[str]) -> None:
         """
-        Sort the lines.
+        Sort lines and print.
 
         :param lines: Lines to sort.
         """
@@ -245,24 +241,24 @@ class Order(CLIProgram):
 
             io.print_line_normalized(line)
 
-    def sort_lines_from_files(self, files: TextIO | list[str]) -> None:
+    def sort_and_print_lines_from_files(self, files: TextIO | list[str]) -> None:
         """
-        Sort lines from files.
+        Sort lines from files and print.
 
         :param files: Files to sort lines from.
         """
         for _, file, text in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_file_header(file)
-                self.sort_lines(text.readlines())
+                self.sort_and_print_lines(text.readlines())
             except UnicodeDecodeError:
                 self.print_error(f"{file}: unable to read with {self.encoding}")
 
-    def sort_lines_from_input(self) -> None:
+    def sort_and_print_lines_from_input(self) -> None:
         """
-        Sort lines from standard input until EOF is entered.
+        Sort lines from standard input until EOF and print.
         """
-        self.sort_lines(sys.stdin.read().splitlines())
+        self.sort_and_print_lines(sys.stdin.read().splitlines())
 
     def split_line(self, line: str, field_pattern: str, *, strip_number_separators: bool) -> list[str]:
         """
@@ -280,7 +276,7 @@ class Order(CLIProgram):
 
         try:
             for index, field in enumerate(re.split(field_pattern, line)):
-                if field and index >= self.skip_fields:
+                if field and index >= self.args.skip_fields:
                     fields.append(field)
         except re.error:
             self.print_error_and_exit(f"invalid regex pattern: {field_pattern}")
@@ -291,9 +287,7 @@ class Order(CLIProgram):
         """
         Validate the parsed command-line arguments.
         """
-        self.skip_fields = self.args.skip_fields if self.args.skip_fields is not None else 0  # --skip-fields
-
-        if self.skip_fields < 0:
+        if self.args.skip_fields < 0:  # --skip-fields
             self.print_error_and_exit("'skip-fields' must be >= 0")
 
 

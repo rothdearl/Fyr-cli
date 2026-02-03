@@ -66,15 +66,15 @@ class Glue(CLIProgram):
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         number_group.add_argument("-b", "--number-nonblank", action="store_true", help="number nonblank output lines")
         number_group.add_argument("-n", "--number", action="store_true", help="number output lines")
-        blank_group.add_argument("-B", "--no-blank", action="store_true", help="suppress all blank lines")
+        blank_group.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
         blank_group.add_argument("-s", "--squeeze-blank", action="store_true", help="suppress repeated blank lines")
         parser.add_argument("-E", "--show-ends", action="store_true",
                             help=f"display '{Whitespace.EOL}' at end of each line")
-        parser.add_argument("-g", "--group", action="store_true", help="separate FILES with a blank line")
         parser.add_argument("-T", "--show-tabs", action="store_true",
                             help=f"display tab characters as '{Whitespace.TAB}'")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for whitespace and numbers (default: on)")
+        parser.add_argument("--group", action="store_true", help="separate FILES with a blank line")
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
         parser.add_argument("--number-width", default=6, help="pad line numbers to width N (default: 6; N >= 1)",
                             metavar="N", type=int)
@@ -103,7 +103,7 @@ class Glue(CLIProgram):
 
     def print_lines(self, lines: Iterable[str]) -> None:
         """
-        Print the lines (formatting specified from the command-line arguments).
+        Print lines using formatting specified by command-line arguments.
 
         :param lines: Lines to print.
         """
@@ -111,8 +111,6 @@ class Glue(CLIProgram):
         repeated_blank_lines = 0
 
         for line in lines:
-            self.line_number += 1
-
             if self.args.number or self.args.number_nonblank:  # --number or --number-nonblank
                 print_number = True
 
@@ -120,7 +118,6 @@ class Glue(CLIProgram):
                 repeated_blank_lines += 1
 
                 if self.args.number_nonblank:  # --number-nonblank
-                    self.line_number -= 1
                     print_number = False
 
                 if self.args.no_blank and repeated_blank_lines:  # --no-blank
@@ -147,6 +144,8 @@ class Glue(CLIProgram):
                     line = f"{line[:end_index]}{Whitespace.EOL}{newline}"
 
             if print_number:
+                self.line_number += 1
+
                 if self.print_color:
                     line = f"{Colors.NUMBER}{self.line_number:>{self.args.number_width}}{ansi.RESET} {line}"
                 else:
@@ -156,7 +155,7 @@ class Glue(CLIProgram):
 
     def print_lines_from_files(self, files: Collection[str]) -> None:
         """
-        Print lines from the files (formatting specified from the command-line arguments).
+        Print lines from files using formatting specified by command-line arguments.
 
         :param files: Files to print lines from.
         """
@@ -173,7 +172,7 @@ class Glue(CLIProgram):
 
     def print_lines_from_input(self) -> None:
         """
-        Print lines from standard input until EOF is entered (formatting specified from the command-line arguments).
+        Print lines from standard input until EOF using formatting specified by command-line arguments.
         """
         eof = False
 

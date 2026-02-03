@@ -55,7 +55,8 @@ class Slice(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-H", "--no-file-name", action="store_true", help="do not prefix output with file names")
-        parser.add_argument("-s", "--separator", help="use SEP to separate output fields (default: tab)", metavar="SEP")
+        parser.add_argument("-s", "--separator", default="\t", help="use SEP to separate output fields (default: tab)",
+                            metavar="SEP")
         parser.add_argument("-u", "--unique", action="store_true",
                             help="print each field only once, in ascending order")
         parser.add_argument("--color", choices=("on", "off"), default="on",
@@ -84,18 +85,18 @@ class Slice(CLIProgram):
 
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
-                self.print_split_lines_from_files(sys.stdin)
+                self.split_and_print_lines_from_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
-                    self.print_split_lines(standard_input)
+                    self.split_and_print_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                self.print_split_lines_from_files(self.args.files)
+                self.split_and_print_lines_from_files(self.args.files)
         elif self.args.files:
-            self.print_split_lines_from_files(self.args.files)
+            self.split_and_print_lines_from_files(self.args.files)
         else:
-            self.print_split_lines_from_input()
+            self.split_and_print_lines_from_input()
 
     def print_file_header(self, file_name: str) -> None:
         """
@@ -113,14 +114,14 @@ class Slice(CLIProgram):
 
             print(file_name)
 
-    def print_split_lines(self, lines: Iterable[str]) -> None:
+    def split_and_print_lines(self, lines: Iterable[str]) -> None:
         """
-        Print the lines split.
+        Split lines into fields and print.
 
         :param lines: Lines to split.
         """
         quote = "\"" if self.args.quotes == "d" else "'" if self.args.quotes == "s" else ""  # --quotes
-        separator = self.args.separator if self.args.separator is not None else "\t"  # --separator
+        separator = self.args.separator  # --separator
 
         for line in lines:
             fields = self.split_line(line)
@@ -131,24 +132,24 @@ class Slice(CLIProgram):
 
             print(separator.join(f"{quote}{field}{quote}" for field in fields))
 
-    def print_split_lines_from_files(self, files: Iterable[str]) -> None:
+    def split_and_print_lines_from_files(self, files: Iterable[str]) -> None:
         """
-        Split lines into fields from the files.
+        Split lines into fields from files and print.
 
         :param files: Files to split lines from.
         """
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_file_header(file_info.file_name)
-                self.print_split_lines(file_info.text)
+                self.split_and_print_lines(file_info.text)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
-    def print_split_lines_from_input(self) -> None:
+    def split_and_print_lines_from_input(self) -> None:
         """
-        Split lines into fields from standard input until EOF is entered.
+        Split lines into fields from standard input until EOF and print.
         """
-        self.print_split_lines(sys.stdin.read().splitlines())
+        self.split_and_print_lines(sys.stdin.read().splitlines())
 
     def split_line(self, line: str) -> list[str]:
         """

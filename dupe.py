@@ -64,7 +64,6 @@ class Dupe(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-a", "--adjacent", action="store_true", help="compare only adjacent lines")
-        parser.add_argument("-b", "--no-blank", action="store_true", help="suppress all blank lines")
         parser.add_argument("-c", "--count", action="store_true", help="prefix lines with the number of occurrences")
         print_group.add_argument("-d", "--repeated", action="store_true",
                                  help="print only duplicate lines, one per group")
@@ -88,6 +87,7 @@ class Dupe(CLIProgram):
         parser.add_argument("--count-width", default=4, help="pad occurrence counts to width N (default: 4; N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
+        parser.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
@@ -218,9 +218,9 @@ class Dupe(CLIProgram):
 
     def print_grouped_lines(self, lines: Iterable[str], *, origin_file) -> None:
         """
-        Print lines based on grouping and filtering rules.
+        Print lines using rules specified by command-line arguments.
 
-        :param lines: Lines to group and filter.
+        :param lines: Lines to print.
         :param origin_file: File where the lines originated from.
         """
         file_header_printed = False
@@ -272,9 +272,9 @@ class Dupe(CLIProgram):
 
     def print_grouped_lines_from_files(self, files: Iterable[str]) -> None:
         """
-        Print grouped and filtered lines from files.
+        Print lines from files using rules specified by command-line arguments.
 
-        :param files: Files to group and filter lines from.
+        :param files: Files to print lines from.
         """
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
@@ -284,7 +284,7 @@ class Dupe(CLIProgram):
 
     def print_grouped_lines_from_input(self) -> None:
         """
-        Print grouped and filtered lines from standard input until EOF is entered.
+        Print lines from standard input until EOF using rules specified by command-line arguments.
         """
         self.print_grouped_lines(sys.stdin.read().splitlines(), origin_file="")
 

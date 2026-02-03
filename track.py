@@ -156,7 +156,7 @@ class Track(CLIProgram):
 
     def print_lines(self, lines: Collection[str]) -> None:
         """
-        Print the lines.
+        Print lines.
 
         :param lines: Lines to print.
         """
@@ -173,7 +173,7 @@ class Track(CLIProgram):
 
     def print_lines_from_files(self, files: Iterable[str]) -> list[str]:
         """
-        Print lines from the files.
+        Print lines from files.
 
         :param files: Files to print lines from.
         :return: List of the files printed.
@@ -192,7 +192,7 @@ class Track(CLIProgram):
 
     def print_lines_from_input(self) -> None:
         """
-        Print lines from standard input until EOF is entered.
+        Print lines from standard input until EOF.
         """
         eof = False
         lines = []

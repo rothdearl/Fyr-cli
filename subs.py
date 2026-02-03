@@ -139,7 +139,7 @@ class Subs(CLIProgram):
 
     def print_replaced_lines(self, lines: Iterable[str]) -> None:
         """
-        Print replaced matches in the lines.
+        Print replaced matches in lines.
 
         :param lines: Lines to replace matches in.
         """
@@ -148,7 +148,7 @@ class Subs(CLIProgram):
 
     def print_replaced_lines_from_input(self) -> None:
         """
-        Print replaced matches in lines from standard input until EOF is entered.
+        Print replaced matches in lines from standard input until EOF.
         """
         self.print_replaced_lines(sys.stdin.read().splitlines())
 

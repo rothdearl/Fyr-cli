@@ -123,7 +123,7 @@ class Show(CLIProgram):
 
     def print_lines(self, lines: Collection[str]) -> None:
         """
-        Print the lines (formatting specified from the command-line arguments).
+        Print lines using formatting specified by command-line arguments.
 
         :param lines: Lines to print.
         """
@@ -142,7 +142,7 @@ class Show(CLIProgram):
 
     def print_lines_from_files(self, files: Iterable[str]) -> None:
         """
-        Print lines from the files (formatting specified from the command-line arguments).
+        Print lines from files using formatting specified by command-line arguments.
 
         :param files: Files to print lines from.
         """
@@ -155,7 +155,7 @@ class Show(CLIProgram):
 
     def print_lines_from_input(self) -> None:
         """
-        Print lines from standard input until EOF is entered (formatting specified from the command-line arguments).
+        Print lines from standard input until EOF using formatting specified by command-line arguments.
         """
         self.print_lines(sys.stdin.read().splitlines())
 

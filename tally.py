@@ -163,7 +163,7 @@ class Tally(CLIProgram):
 
     def print_counts(self, counts: Iterable, *, count_origin: str) -> None:
         """
-        Print the counts.
+        Print counts.
 
         :param counts: Count information.
         :param count_origin: Where the counts originated from.
@@ -190,7 +190,7 @@ class Tally(CLIProgram):
 
     def print_counts_from_files(self, files: Iterable[str]) -> None:
         """
-        Print counts from the files.
+        Print counts from files.
 
         :param files: Files to count.
         """
@@ -206,7 +206,7 @@ class Tally(CLIProgram):
 
     def print_counts_from_input(self) -> None:
         """
-        Prints counts from standard input until EOF is entered.
+        Prints counts from standard input until EOF.
         """
         counts = self.calculate_counts(sys.stdin.read().splitlines(), has_newlines=False)
 
