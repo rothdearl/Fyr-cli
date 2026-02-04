@@ -4,7 +4,7 @@
 """
 Filename: order.py
 Author: Roth Earl
-Version: 1.3.10
+Version: 1.3.11
 Description: A program to sort and print files to standard output.
 License: GNU GPLv3
 """
@@ -52,7 +52,7 @@ class Order(CLIProgram):
         """
         Initialize a new ``Order`` instance.
         """
-        super().__init__(name="order", version="1.3.10")
+        super().__init__(name="order", version="1.3.11")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:

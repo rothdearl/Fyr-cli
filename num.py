@@ -4,7 +4,7 @@
 """
 Filename: num.py
 Author: Roth Earl
-Version: 1.3.10
+Version: 1.3.11
 Description: A program to number output lines from files to standard output.
 License: GNU GPLv3
 """
@@ -52,7 +52,7 @@ class Num(CLIProgram):
         """
         Initialize a new ``Num`` instance.
         """
-        super().__init__(name="num", version="1.3.10")
+        super().__init__(name="num", version="1.3.11")
 
         self.format_prefix: str = ""
 

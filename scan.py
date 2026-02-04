@@ -4,7 +4,7 @@
 """
 Filename: scan.py
 Author: Roth Earl
-Version: 1.3.10
+Version: 1.3.11
 Description: A program to print lines that match patterns in files.
 License: GNU GPLv3
 """
@@ -52,7 +52,7 @@ class Scan(CLIProgram):
         """
         Initialize a new ``Scan`` instance.
         """
-        super().__init__(name="scan", version="1.3.10", error_exit_code=2)
+        super().__init__(name="scan", version="1.3.11", error_exit_code=2)
 
         self.found_match: bool = False
         self.line_number: int = 0

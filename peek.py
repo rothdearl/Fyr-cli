@@ -4,7 +4,7 @@
 """
 Filename: peek.py
 Author: Roth Earl
-Version: 1.3.10
+Version: 1.3.11
 Description: A program to print the first part of files.
 License: GNU GPLv3
 """
@@ -42,7 +42,7 @@ class Peek(CLIProgram):
         """
         Initialize a new ``Peek`` instance.
         """
-        super().__init__(name="peek", version="1.3.10")
+        super().__init__(name="peek", version="1.3.11")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:

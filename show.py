@@ -4,7 +4,7 @@
 """
 Filename: show.py
 Author: Roth Earl
-Version: 1.3.10
+Version: 1.3.11
 Description: A program to print files to standard output.
 License: GNU GPLv3
 """
@@ -65,7 +65,7 @@ class Show(CLIProgram):
         """
         Initialize a new ``Show`` instance.
         """
-        super().__init__(name="show", version="1.3.10")
+        super().__init__(name="show", version="1.3.11")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -188,10 +188,10 @@ class Show(CLIProgram):
 
     def show_ends(self, line: str) -> str:
         """
-        Append the EOL character to the end of the line.
+        Append a visible end-of-line marker to the line.
 
-        :param line: Line to append.
-        :return: Line with the EOL character appended.
+        :param line: Line to transform.
+        :return: Line with a visible end-of-line marker appended.
         """
         end_index = -1 if line.endswith("\n") else len(line)
         newline = "\n" if end_index == -1 else ""
@@ -203,12 +203,12 @@ class Show(CLIProgram):
 
     def show_line_number(self, line: str, line_number: int, padding: int) -> str:
         """
-        Prepend the line with the line number.
+        Prefix the line with a line number, right-aligned to the specified padding.
 
-        :param line: Line to prepend.
+        :param line: Line to transform.
         :param line_number: Line number.
-        :param padding: Line number padding.
-        :return: Line with a line number prepended.
+        :param padding: Width to pad the line number.
+        :return: Line prefixed with the formatted line number.
         """
         if self.print_color:
             return f"{Colors.LINE_NUMBER}{line_number:>{padding}}{Colors.COLON}{ansi.RESET} {line}"
@@ -217,10 +217,10 @@ class Show(CLIProgram):
 
     def show_spaces(self, line: str) -> str:
         """
-        Replace spaces with Whitespace.SPACE or Whitespace.TRAILING_SPACE in the line.
+        Replace spaces and trailing spaces with visible markers.
 
-        :param line: Line to replace spaces.
-        :return: Line with spaces replaced.
+        :param line: Line to transform.
+        :return: Line with spaces replaced by visible markers.
         """
         has_newline = line.endswith("\n")
         trailing_count = len(line) - len(line.rstrip())  # Count trailing spaces.
@@ -242,10 +242,10 @@ class Show(CLIProgram):
 
     def show_tabs(self, line: str) -> str:
         """
-        Replace tabs with Whitespace.TAB in the line.
+        Replace tabs with visible markers.
 
-        :param line: Line to replace tabs.
-        :return: Line with tabs replaced.
+        :param line: Line to transform.
+        :return: Line with tabs replaced by visible markers.
         """
         if self.print_color:
             return line.replace("\t", f"{Colors.TAB}{Whitespace.TAB}{ansi.RESET}")
