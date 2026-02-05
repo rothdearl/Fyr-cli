@@ -150,7 +150,7 @@ class Order(CLIProgram):
 
         for field in self.split_line(line, Order.WHITESPACE_PATTERN):
             try:
-                number = float(field.replace(",", ""))  # Strip commas.
+                number = float(field.replace(",", ""))  # Strip commas before parsing.
                 natural_key.append((1, number))
             except ValueError:
                 natural_key.append((0, field))
