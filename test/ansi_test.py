@@ -10,34 +10,50 @@ class ANSITest(unittest.TestCase):
     Tests the ansi module.
     """
 
-    def test_256_color_palette(self) -> None:
+    def test_16_color_palette(self) -> None:
         # Verify lengths.
-        self.assertEqual(len(ansi.BG_COLORS_256), 256)
-        self.assertEqual(len(ansi.COLORS_256), 256)
+        bg_colors = [name for name, value in ansi.BgColors.__dict__.items() if
+                     not name.startswith("__") and isinstance(value, str)]
+        colors = [name for name, value in ansi.Colors.__dict__.items() if
+                  not name.startswith("__") and isinstance(value, str)]
+        test_attr = [name for name, value in ansi.TextAttributes.__dict__.items() if
+                     not name.startswith("__") and isinstance(value, str)]
 
-        # Print the ANSI text attributes.
-        print(f"ANSI text attributes")
+        self.assertEqual(len(bg_colors), 16)
+        self.assertEqual(len(colors), 16)
+        self.assertEqual(len(test_attr), 8)
 
-        for attribute in ansi.TextAttributes:
-            print(f"[{attribute.name:<13}]: {attribute}The quick brown fox jumps over the lazy dog{ansi.RESET}")
+        # Print the text attributes.
+        print(f"Text attribute constants.")
+
+        for name, color in ansi.TextAttributes.__dict__.items():
+            if not name.startswith("__"):
+                print(f"[{name:<13}]: {color}The quick brown fox jumps over the lazy dog{ansi.RESET}")
 
         print()
 
         # Print the foreground colors.
-        print(f"ANSI 16-color palette foreground colors")
+        print(f"Foreground color constants for the standard 16-color ANSI palette.")
 
-        for fg_color in ansi.Colors16:
-            print(f"[{fg_color.name:<14}]: {fg_color}The quick brown fox jumps over the lazy dog{ansi.RESET}")
+        for name, color in ansi.Colors.__dict__.items():
+            if not name.startswith("__"):
+                print(f"[{name:<14}]: {color}The quick brown fox jumps over the lazy dog{ansi.RESET}")
 
         print()
 
         # Print the background colors.
-        print(f"ANSI 16-color palette background colors")
+        print(f"Background color constants for the standard 16-color ANSI palette.")
 
-        for bg_color in ansi.BGColors16:
-            print(f"[{bg_color.name:<17}]: {bg_color}The quick brown fox jumps over the lazy dog{ansi.RESET}")
+        for name, color in ansi.BgColors.__dict__.items():
+            if not name.startswith("__"):
+                print(f"[{name:<17}]: {color}The quick brown fox jumps over the lazy dog{ansi.RESET}")
 
         print()
+
+    def test_256_color_palette(self) -> None:
+        # Verify lengths.
+        self.assertEqual(len(ansi.BG_COLORS_256), 256)
+        self.assertEqual(len(ansi.COLORS_256), 256)
 
         # Print the ANSI 256-colors.
         print("ANSI 256-color palette (xterm-compatible)")
