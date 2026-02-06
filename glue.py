@@ -4,14 +4,14 @@
 """
 Filename: glue.py
 Author: Roth Earl
-Version: 1.3.11
+Version: 1.3.12
 Description: A program to concatenate files and standard input to standard output.
 License: GNU GPLv3
 """
 
 import argparse
 import sys
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable
 from typing import Final, override
 
 from cli import CLIProgram, ansi, io, terminal
@@ -49,20 +49,14 @@ class Glue(CLIProgram):
     """
 
     def __init__(self) -> None:
-        """
-        Initialize a new ``Glue`` instance.
-        """
-        super().__init__(name="glue", version="1.3.11")
+        """Initialize a new ``Glue`` instance."""
+        super().__init__(name="glue", version="1.3.12")
 
         self.line_number: int = 0
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
-        """
-        Build and return an argument parser.
-
-        :return: An argument parser.
-        """
+        """Build and return an argument parser."""
         parser = argparse.ArgumentParser(allow_abbrev=False,
                                          description="concatenate FILES and standard input to standard output",
                                          epilog="if no FILES are specified, read from standard input", prog=self.name)
@@ -80,8 +74,7 @@ class Glue(CLIProgram):
                             help=f"display tab characters as '{Whitespace.TAB}'")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for numbers and whitespace (default: on)")
-        parser.add_argument("--group", action="store_true", help="separate FILES with a blank line")
-        parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
+        parser.add_argument("--latin1", action="store_true", help="read FILES using latin-1 (default: utf-8)")
         parser.add_argument("--number-width", default=6, help="pad line numbers to width N (default: 6; N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--stdin-files", action="store_true",
@@ -92,17 +85,13 @@ class Glue(CLIProgram):
 
     @override
     def check_parsed_arguments(self) -> None:
-        """
-        Validate parsed command-line arguments.
-        """
+        """Validate parsed command-line arguments."""
         if self.args.number_width < 1:  # --number-width
-            self.print_error_and_exit("'number-width' must be >= 1")
+            self.print_error_and_exit("--number-width must be >= 1")
 
     @override
     def main(self) -> None:
-        """
-        Run the program logic.
-        """
+        """Run the program logic."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
                 self.print_lines_from_files(sys.stdin)
@@ -117,11 +106,7 @@ class Glue(CLIProgram):
             self.print_lines_from_input()
 
     def print_lines(self, lines: Iterable[str]) -> None:
-        """
-        Print lines to standard output applying numbering and whitespace rendering and blank-line suppression.
-
-        :param lines: Iterable of lines to print.
-        """
+        """Print lines to standard output applying numbering and whitespace rendering and blank-line suppression."""
         blank_line_count = 0
         number_lines = self.args.number or self.args.number_nonblank  # --number or --number-nonblank
 
@@ -131,7 +116,7 @@ class Glue(CLIProgram):
             if line == "\n":  # Blank line?
                 blank_line_count += 1
 
-                if self.should_skip_line(blank_line_count):
+                if self.should_skip_blank_line(blank_line_count):
                     continue
 
                 if self.args.number_nonblank:  # --number-nonblank
@@ -145,50 +130,29 @@ class Glue(CLIProgram):
                 self.line_number += 1
                 line = self.render_number(line)
 
-            io.print_line_normalized(line)
+            io.print_line(line)
 
-    def print_lines_from_files(self, files: Collection[str]) -> None:
-        """
-        Read lines from each file and print them.
-
-        :param files: Iterable of files to read.
-        """
-        last_file_index = len(files) - 1
-
+    def print_lines_from_files(self, files: Iterable[str]) -> None:
+        """Read lines from each file and print them."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_lines(file_info.text)
-
-                if self.args.group and file_info.file_index < last_file_index:  # --group
-                    print()
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_lines_from_input(self) -> None:
-        """
-        Read lines from standard input until EOF and print them.
-        """
+        """Read lines from standard input until EOF and print them."""
         self.print_lines(sys.stdin)
 
     def render_number(self, line: str) -> str:
-        """
-        Prefix a formatted line number to the line.
-
-        :param line: Line to format.
-        :return: The line prefixed with a line number.
-        """
+        """Prefix a formatted line number to the line."""
         if self.print_color:
             return f"{Colors.NUMBER}{self.line_number:>{self.args.number_width}}{ansi.RESET} {line}"
 
         return f"{self.line_number:>{self.args.number_width}} {line}"
 
     def render_whitespace(self, line: str) -> str:
-        """
-        Render visible representations of tabs and end-of-line markers.
-
-        :param line: Line to render.
-        :return: The line with tab and end-of-line markers rendered.
-        """
+        """Render visible representations of tabs and end-of-line markers."""
         if self.args.show_tabs:  # --show-tabs
             if self.print_color:
                 line = line.replace("\t", f"{Colors.TAB}{Whitespace.TAB}{ansi.RESET}")
@@ -196,24 +160,23 @@ class Glue(CLIProgram):
                 line = line.replace("\t", Whitespace.TAB)
 
         if self.args.show_ends:  # --show-ends
-            end_index = -1 if line.endswith("\n") else len(line)
-            newline = "\n" if end_index == -1 else ""
+            end_index = -1  # -1 for the newline.
 
             if self.print_color:
-                line = f"{line[:end_index]}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}{newline}"
+                line = f"{line[:end_index]}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}\n"
             else:
-                line = f"{line[:end_index]}{Whitespace.EOL}{newline}"
+                line = f"{line[:end_index]}{Whitespace.EOL}\n"
 
         return line
 
-    def should_skip_line(self, blank_line_count: int) -> bool:
+    def should_skip_blank_line(self, blank_line_count: int) -> bool:
         """
-        Determine whether the current line should be suppressed based on blank-line handling options.
+        Determine whether the blank line should be suppressed based on blank-line handling options.
 
         :param blank_line_count: Number of consecutive blank lines encountered so far, including the current line.
         :return: Return ``True`` if the current blank line should be skipped.
         """
-        if self.args.no_blank and blank_line_count:  # --no-blank
+        if self.args.no_blank:  # --no-blank
             return True
 
         if self.args.squeeze_blank and blank_line_count > 1:  # --squeeze-blank
