@@ -3,13 +3,13 @@ Provide utilities for compiling, matching, and coloring regular expression patte
 """
 
 import re
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable
 
 from .ansi import RESET
 from .types import ErrorReporter, Patterns
 
 
-def color_pattern_matches(text: str, patterns: Collection[re.Pattern[str]], *, color: str) -> str:
+def color_pattern_matches(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
     """
     Color all regions of the text that match any of the given patterns.
 
@@ -55,7 +55,7 @@ def color_pattern_matches(text: str, patterns: Collection[re.Pattern[str]], *, c
     return "".join(colored_text)
 
 
-def compile_combined_patterns(patterns: Collection[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
+def compile_combined_patterns(patterns: Iterable[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
     """
     Combine patterns into a single compiled OR-pattern.
 

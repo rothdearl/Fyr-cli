@@ -17,9 +17,7 @@ COLORS_256: Final[tuple[str, ...]] = tuple(f"{_CSI}38;5;{code}m" for code in ran
 
 @final
 class BgColors:
-    """
-    Namespace for background color constants from the standard 16-color palette (SGR codes 40–47 and 100–107).
-    """
+    """Namespace for background color constants from the standard 16-color palette (SGR codes 40–47 and 100–107)."""
     BLACK: Final[str] = f"{_CSI}40m"
     RED: Final[str] = f"{_CSI}41m"
     GREEN: Final[str] = f"{_CSI}42m"
@@ -40,9 +38,7 @@ class BgColors:
 
 @final
 class Colors:
-    """
-    Namespace for foreground color constants from the standard 16-color palette (SGR codes 30–37 and 90–97).
-    """
+    """Namespace for foreground color constants from the standard 16-color palette (SGR codes 30–37 and 90–97)."""
     BLACK: Final[str] = f"{_CSI}30m"
     RED: Final[str] = f"{_CSI}31m"
     GREEN: Final[str] = f"{_CSI}32m"
@@ -63,9 +59,7 @@ class Colors:
 
 @final
 class TextAttributes:
-    """
-    Namespace for text attribute constants (SGR codes 1–9, excluding 6, which is undefined).
-    """
+    """Namespace for text attribute constants (SGR codes 1–9, excluding 6, which is undefined)."""
     BOLD: Final[str] = f"{_CSI}1m"
     DIM: Final[str] = f"{_CSI}2m"
     ITALIC: Final[str] = f"{_CSI}3m"

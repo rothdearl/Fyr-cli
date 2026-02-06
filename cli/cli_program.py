@@ -87,6 +87,7 @@ class CLIProgram(ABC):
     def run(self) -> None:
         """Set up the environment, parse and validate arguments, execute the program, and handle errors."""
         keyboard_interrupt_error_code = 130
+        sigpipe_exit_code = 141
 
         try:
             if OS_IS_WINDOWS:  # Fix ANSI escape sequences on Windows.
@@ -102,6 +103,8 @@ class CLIProgram(ABC):
             self.check_parsed_arguments()
             self.main()
             self.check_for_errors()
+        except BrokenPipeError:
+            raise SystemExit(self.error_exit_code if OS_IS_WINDOWS else sigpipe_exit_code)
         except KeyboardInterrupt:
             print()  # Add a newline after Ctrl-C.
             raise SystemExit(self.error_exit_code if OS_IS_WINDOWS else keyboard_interrupt_error_code)
