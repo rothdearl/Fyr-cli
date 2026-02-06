@@ -4,7 +4,7 @@
 """
 Filename: dupe.py
 Author: Roth Earl
-Version: 1.3.11
+Version: 1.3.12
 Description: A program to filter duplicate or unique lines in files.
 License: GNU GPLv3
 """
@@ -45,10 +45,8 @@ class Dupe(CLIProgram):
     FIELD_PATTERN: Final[str] = r"\s+|\W+"
 
     def __init__(self) -> None:
-        """
-        Initialize a new ``Dupe`` instance.
-        """
-        super().__init__(name="dupe", version="1.3.11")
+        """Initialize a new ``Dupe`` instance."""
+        super().__init__(name="dupe", version="1.3.12")
 
         self.max_chars: int = 0
         self.skip_chars: int = 0
@@ -56,11 +54,7 @@ class Dupe(CLIProgram):
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
-        """
-        Build and return an argument parser.
-
-        :return: An argument parser.
-        """
+        """Build and return an argument parser."""
         parser = argparse.ArgumentParser(allow_abbrev=False, description="filter duplicate or unique lines in FILES",
                                          epilog="if no FILES are specified, read from standard input", prog=self.name)
         print_group = parser.add_mutually_exclusive_group()
@@ -89,7 +83,7 @@ class Dupe(CLIProgram):
                             help="use color for file names and counts (default: on)")
         parser.add_argument("--count-width", default=4, help="pad occurrence counts to width N (default: 4; N >= 1)",
                             metavar="N", type=int)
-        parser.add_argument("--latin1", action="store_true", help="read FILES using iso-8859-1 (default: utf-8)")
+        parser.add_argument("--latin1", action="store_true", help="read FILES using latin-1 (default: utf-8)")
         parser.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
@@ -108,32 +102,25 @@ class Dupe(CLIProgram):
 
     @override
     def check_parsed_arguments(self) -> None:
-        """
-        Validate parsed command-line arguments.
-        """
+        """Validate parsed command-line arguments."""
         self.max_chars = self.args.max_chars if self.args.max_chars is not None else 1  # --max-chars
         self.skip_chars = self.args.skip_chars if self.args.skip_chars is not None else 0  # --skip-chars
         self.skip_fields = self.args.skip_fields if self.args.skip_fields is not None else 0  # --skip-fields
 
         if self.args.count_width < 1:  # --count-width
-            self.print_error_and_exit("'count-width' must be >= 1")
+            self.print_error_and_exit("--count-width must be >= 1")
 
         if self.max_chars < 1:
-            self.print_error_and_exit("'max-chars' must be >= 1")
+            self.print_error_and_exit("--max-chars must be >= 1")
 
         if self.skip_chars < 0:
-            self.print_error_and_exit("'skip-chars' must be >= 0")
+            self.print_error_and_exit("--skip-chars must be >= 0")
 
         if self.skip_fields < 0:
-            self.print_error_and_exit("'skip-fields' must be >= 0")
+            self.print_error_and_exit("--skip-fields must be >= 0")
 
     def get_compare_key(self, line: str) -> str:
-        """
-        Return a normalized comparison key derived from the line, applying rules according to command-line options.
-
-        :param line: Line to process.
-        :return: Normalized comparison key.
-        """
+        """Return a normalized comparison key derived from the line, applying rules according to command-line options."""
         if self.args.skip_whitespace:  # --skip-whitespace
             line = line.strip()
 
@@ -213,8 +200,9 @@ class Dupe(CLIProgram):
                         else:
                             group_count_str = f"{group_count:>{self.args.count_width},}:"
                     else:
-                        space = " "
-                        group_count_str = f"{space:>{self.args.number_width}} "
+                        empty_space = " "  # Ensure lines align.
+
+                        group_count_str = f"{empty_space:>{self.args.count_width}} "
 
                 if self.args.all_repeated or self.args.repeated:  # --all-repeated or --repeated
                     can_print = group_count > 1
@@ -226,7 +214,7 @@ class Dupe(CLIProgram):
                         self.print_file_header(origin_file)
                         file_header_printed = True
 
-                    io.print_line_normalized(f"{group_count_str}{line}")
+                    io.print_line(f"{group_count_str}{line}")
 
                     if not (self.args.all_repeated or self.args.group):  # --all-repeated or --group
                         break
@@ -235,11 +223,7 @@ class Dupe(CLIProgram):
                 print()
 
     def group_and_print_lines_from_files(self, files: Iterable[str]) -> None:
-        """
-        Read lines from each file and print them.
-
-        :param files: Iterable of files to read.
-        """
+        """Read lines from each file and print them."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.group_and_print_lines(file_info.text, origin_file=file_info.file_name)
@@ -247,9 +231,7 @@ class Dupe(CLIProgram):
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def group_and_print_lines_from_input(self) -> None:
-        """
-        Read lines from standard input until EOF and print them.
-        """
+        """Read lines from standard input until EOF and print them."""
         self.group_and_print_lines(sys.stdin, origin_file="")
 
     def group_lines_by_key(self, lines: Iterable[str]) -> dict[str, list[str]]:
@@ -276,9 +258,7 @@ class Dupe(CLIProgram):
 
     @override
     def main(self) -> None:
-        """
-        Run the program logic.
-        """
+        """Run the program logic."""
         # Set --no-file-name to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_name = True
@@ -298,11 +278,7 @@ class Dupe(CLIProgram):
             self.group_and_print_lines_from_input()
 
     def print_file_header(self, file_name: str) -> None:
-        """
-        Print the file name or "(standard input)" if empty, followed by a colon, unless ``--no-file-name`` is set.
-
-        :param file_name: File name to print.
-        """
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``--no-file-name`` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 
