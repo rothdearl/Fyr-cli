@@ -4,7 +4,7 @@
 """
 Filename: when.py
 Author: Roth Earl
-Version: 1.0.4
+Version: 1.0.5
 Description: A program to display the current calendar, with optional date and time.
 License: GNU GPLv3
 """
@@ -30,11 +30,7 @@ class CalendarQuarterSlice(NamedTuple):
 
 
 def build_arguments() -> argparse.ArgumentParser:
-    """
-    Build and return an argument parser.
-
-    :return: An argument parser.
-    """
+    """Build and return an argument parser."""
     parser = argparse.ArgumentParser(allow_abbrev=False,
                                      description="display the current calendar, with optional date and time",
                                      epilog="datetime format is interpreted using strftime(3)", prog=When.NAME)
@@ -81,12 +77,9 @@ def get_calendar_quarter_slice(date: datetime.date) -> CalendarQuarterSlice:
     return slices[(date.month - 1) % 3]
 
 
-def print_month(date: datetime.date) -> None:
-    """
-    Print the current month.
-
-    :param date: Current date.
-    """
+def print_month() -> None:
+    """Print the current month."""
+    date = datetime.date.today()
     month = calendar.month(date.year, date.month, w=0, l=0).splitlines()
 
     # Print year header and the days of the week.
@@ -105,12 +98,9 @@ def print_month(date: datetime.date) -> None:
         print(output)
 
 
-def print_quarter(date: datetime.date) -> None:
-    """
-    Print all the months in the current quarter.
-
-    :param date: Current date.
-    """
+def print_quarter() -> None:
+    """Print all months in the current quarter."""
+    date = datetime.date.today()
     month_name = calendar.month_name[date.month]
     quarter_slice = get_calendar_quarter_slice(date)
     year = calendar.calendar(date.year, w=2, l=1, c=6, m=3).splitlines()  # Deliberately use defaults for consistency.
@@ -150,12 +140,9 @@ def print_quarter(date: datetime.date) -> None:
         print(output)
 
 
-def print_year(date: datetime.date) -> None:
-    """
-    Print all the months in the current year.
-
-    :param date: Current date.
-    """
+def print_year() -> None:
+    """Print all months in the current year."""
+    date = datetime.date.today()
     month_name = calendar.month_name[date.month]
     quarter_slice = get_calendar_quarter_slice(date)
     year = calendar.calendar(date.year, w=2, l=1, c=6, m=3).splitlines()  # Deliberately use defaults for consistency.
@@ -177,12 +164,7 @@ def print_year(date: datetime.date) -> None:
 
 
 def render_day(day: str) -> str:
-    """
-    Return a formatted color string with the day.
-
-    :param day: Day to format.
-    :return: Formatted color string.
-    """
+    """Return a formatted color string with the day."""
     return f"{ansi.TextAttributes.REVERSE}{day}{ansi.RESET}"
 
 
@@ -198,7 +180,7 @@ class When:
 
     DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p" if OS_IS_POSIX else "%a %b %d %I:%M%p"
     NAME: Final[str] = "when"
-    VERSION: Final[str] = "1.0.4"
+    VERSION: Final[str] = "1.0.5"
 
     def __init__(self) -> None:
         """
@@ -210,18 +192,16 @@ class When:
         """
         Run the program logic.
         """
-        today = datetime.date.today()
-
         if self.args.week_start == "sun":  # --week-start
             calendar.setfirstweekday(calendar.SUNDAY)
 
         match self.args.calendar:  # --calendar
             case "m":
-                print_month(today)
+                print_month()
             case "q":
-                print_quarter(today)
+                print_quarter()
             case _:
-                print_year(today)
+                print_year()
 
         if self.args.datetime:  # --datetime
             date_format = self.args.datetime_format or When.DEFAULT_DATETIME_FORMAT  # --datetime-format
