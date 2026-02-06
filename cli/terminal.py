@@ -6,38 +6,22 @@ import sys
 
 
 def stdin_is_redirected() -> bool:
-    """
-    Return whether standard input is redirected.
-
-    :return: ``True`` if standard input is redirected.
-    """
+    """Return whether standard input is redirected."""
     return not stdin_is_terminal()
 
 
 def stdin_is_terminal() -> bool:
-    """
-    Return whether standard input is attached to a terminal.
-
-    :return: ``True`` if standard input is attached to a terminal.
-    """
+    """Return whether standard input is attached to a terminal."""
     return sys.stdin.isatty()
 
 
 def stdout_is_redirected() -> bool:
-    """
-    Return whether standard output is redirected.
-
-    :return: ``True`` if standard output is redirected.
-    """
+    """Return whether standard output is redirected."""
     return not stdout_is_terminal()
 
 
 def stdout_is_terminal() -> bool:
-    """
-    Return whether standard output is attached to a terminal.
-
-    :return: ``True`` if standard output is attached to a terminal.
-    """
+    """Return whether standard output is attached to a terminal."""
     return sys.stdout.isatty()
 
 
