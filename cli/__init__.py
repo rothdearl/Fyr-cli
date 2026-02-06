@@ -30,7 +30,8 @@ from .ini import (
 
 from .io import (
     FileInfo,
-    print_line_normalized,
+    normalize_file_name,
+    print_line,
     read_text_files,
     write_text_to_file,
 )

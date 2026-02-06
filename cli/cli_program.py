@@ -42,41 +42,27 @@ class CLIProgram(ABC):
 
     @abstractmethod
     def build_arguments(self) -> argparse.ArgumentParser:
-        """
-        Build and return an argument parser.
-
-        :return: An argument parser.
-        """
+        """Build and return an argument parser."""
         ...
 
     def check_for_errors(self) -> None:
-        """
-        Raise ``SystemExit`` if the error flag is set.
-
-        :raises SystemExit: If the error flag is set.
-        """
+        """Raise ``SystemExit`` if the error flag is set."""
         if self.has_errors:
             raise SystemExit(self.error_exit_code)
 
     @abstractmethod
     def check_parsed_arguments(self) -> None:
-        """
-        Validate parsed command-line arguments.
-        """
+        """Validate parsed command-line arguments."""
         ...
 
     @abstractmethod
     def main(self) -> None:
-        """
-        Run the program logic.
-        """
+        """Run the program logic."""
         ...
 
     @final
     def parse_arguments(self) -> None:
-        """
-        Parse command-line arguments to initialize program options.
-        """
+        """Parse command-line arguments to initialize program options."""
         self.args = self.build_arguments().parse_args()
 
         # Set default values for encoding and print_color.
@@ -85,11 +71,7 @@ class CLIProgram(ABC):
 
     @final
     def print_error(self, error_message: str) -> None:
-        """
-        Set the error flag and print the message to standard error unless ``args.no_messages`` is set (if present).
-
-        :param error_message: Error message to print.
-        """
+        """Set the error flag and print the message to standard error unless ``args.no_messages`` is set, if present."""
         self.has_errors = True
 
         if not getattr(self.args, "no_messages", False):
@@ -97,20 +79,13 @@ class CLIProgram(ABC):
 
     @final
     def print_error_and_exit(self, error_message: str) -> None:
-        """
-        Print the error message to standard error and raise ``SystemExit``.
-
-        :param error_message: Error message to print.
-        :raises SystemExit: Always.
-        """
+        """Print the error message to standard error and raise ``SystemExit``."""
         print(f"{self.name}: error: {error_message}", file=sys.stderr)
         raise SystemExit(self.error_exit_code)
 
     @final
     def run(self) -> None:
-        """
-        Set up the environment, parse and validate arguments, execute the program, and handle errors.
-        """
+        """Set up the environment, parse and validate arguments, execute the program, and handle errors."""
         keyboard_interrupt_error_code = 130
 
         try:

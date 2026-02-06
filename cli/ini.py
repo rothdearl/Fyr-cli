@@ -6,6 +6,7 @@ import configparser
 import json
 from typing import Final
 
+from .io import normalize_file_name
 from .types import ErrorReporter, JsonObject
 
 # Configuration parser for an INI options file (intentional single global ConfigParser instance).
@@ -172,8 +173,7 @@ def read_options(path: str, *, clear_previous: bool = True, on_error: ErrorRepor
     except (OSError, configparser.Error) as error:
         match error:
             case FileNotFoundError():
-                name = path or '""'  # Make empty file names visible in errors.
-                on_error(f"{name}: no such file or directory")
+                on_error(f"{normalize_file_name(path)}: no such file or directory")
             case PermissionError():
                 on_error(f"{path}: permission denied")
             case OSError():

@@ -22,13 +22,19 @@ class FileInfo(NamedTuple):
     text: TextIO
 
 
-def print_line_normalized(line: str) -> None:
+def normalize_file_name(file_name: str) -> str:
     """
-    Print a line of text, ensuring exactly one trailing newline.
+    Normalize a file name for consistent handling and error reporting.
 
-    :param line: Line to print.
+    :param file_name: File name to normalize.
+    :return: The file name with trailing newlines removed, or ``""`` if empty.
     """
-    print(line, end="" if line.endswith("\n") else "\n")
+    return file_name.rstrip("\n") or '""'
+
+
+def print_line(line: str) -> None:
+    """Print a line exactly as provided, preserving any existing newline."""
+    print(line, end="")
 
 
 def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> Iterator[FileInfo]:
@@ -41,7 +47,7 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
     :return: Iterator yielding ``FileInfo`` objects, where the text stream is only valid until the next iteration.
     """
     for file_index, file_name in enumerate(files):
-        file_name = file_name.rstrip("\n")  # Normalize file name.
+        file_name = normalize_file_name(file_name)
 
         try:
             if os.path.isdir(file_name):
@@ -51,8 +57,7 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
             with open(file_name, mode="rt", encoding=encoding) as text:
                 yield FileInfo(file_index, file_name, text)
         except FileNotFoundError:
-            name = file_name or '""'  # Make empty file names visible in errors.
-            on_error(f"{name}: no such file or directory")
+            on_error(f"{file_name}: no such file or directory")
         except PermissionError:
             on_error(f"{file_name}: permission denied")
         except OSError:
@@ -82,7 +87,8 @@ def write_text_to_file(file_name: str, text: Iterable[str], encoding: str, *, on
 
 __all__ = [
     "FileInfo",
-    "print_line_normalized",
+    "normalize_file_name",
+    "print_line",
     "read_text_files",
     "write_text_to_file",
 ]
