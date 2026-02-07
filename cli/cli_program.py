@@ -71,7 +71,7 @@ class CLIProgram(ABC):
 
     @final
     def print_error(self, error_message: str) -> None:
-        """Set the error flag and print the message to standard error unless ``args.no_messages`` is set, if present."""
+        """Set the error flag and print the message to standard error unless ``args.no_messages`` is present and set."""
         self.has_errors = True
 
         if not getattr(self.args, "no_messages", False):

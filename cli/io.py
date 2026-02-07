@@ -36,8 +36,8 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
     :param on_error: Callback invoked with an error message for file-related errors.
     :return: Iterator yielding ``FileInfo`` objects, where the text stream is only valid until the next iteration.
     """
-    for file_index, file_name in enumerate(files):
-        file_name = file_name.rstrip("\n")  # Normalize file name.
+    for file_index, raw_name in enumerate(files):
+        file_name = raw_name.rstrip("\n")  # Normalize file name.
 
         try:
             if os.path.isdir(file_name):
@@ -47,8 +47,8 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
             with open(file_name, mode="rt", encoding=encoding) as text:
                 yield FileInfo(file_index, file_name, text)
         except FileNotFoundError:
-            name = file_name or '""'  # Use a visible placeholder for empty file names in messages.
-            on_error(f"{name}: no such file or directory")
+            visible_name = file_name or '""'  # Use a visible placeholder for empty file names in messages.
+            on_error(f"{visible_name}: no such file or directory")
         except PermissionError:
             on_error(f"{file_name}: permission denied")
         except OSError:

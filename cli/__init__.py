@@ -12,7 +12,13 @@ from .ansi import (
 )
 
 from .cli_program import CLIProgram
-from .constants import *
+
+from .constants import (
+    OS_IS_LINUX,
+    OS_IS_MAC,
+    OS_IS_POSIX,
+    OS_IS_WINDOWS,
+)
 
 from .ini import (
     get_bool_option,

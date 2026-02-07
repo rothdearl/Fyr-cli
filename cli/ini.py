@@ -128,29 +128,17 @@ def get_str_options(section: str, option: str, *, separator: str = ",") -> list[
 
 
 def has_defaults() -> bool:
-    """
-    Return whether the DEFAULT section contains any options.
-
-    :return: ``True`` if the DEFAULT section has at least one option.
-    """
+    """Return whether the DEFAULT section contains any options."""
     return bool(_config.defaults())
 
 
 def has_sections() -> bool:
-    """
-    Return whether any non-default sections exist.
-
-    :return: ``True`` if at least one non-default section exists.
-    """
+    """Return whether any non-default sections exist."""
     return bool(_config.sections())
 
 
 def is_empty() -> bool:
-    """
-    Return whether the configuration is empty.
-
-    :return: ``True`` if there are no DEFAULT options and no non-default sections.
-    """
+    """Return whether the configuration is empty."""
     return not has_defaults() and not has_sections()
 
 
@@ -172,8 +160,8 @@ def read_options(path: str, *, clear_previous: bool = True, on_error: ErrorRepor
     except (OSError, configparser.Error) as error:
         match error:
             case FileNotFoundError():
-                name = path or '""'  # Use a visible placeholder for empty file names in messages.
-                on_error(f"{name}: no such file or directory")
+                visible_name = path or '""'  # Use a visible placeholder for empty file names in messages.
+                on_error(f"{visible_name}: no such file or directory")
             case PermissionError():
                 on_error(f"{path}: permission denied")
             case OSError():

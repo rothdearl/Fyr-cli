@@ -1,15 +1,15 @@
 """
-Provide utilities for compiling, matching, and coloring regular expression patterns in text.
+Provides utilities for compiling, matching, and coloring regular expression patterns in text.
 """
 
 import re
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 
 from .ansi import RESET
 from .types import ErrorReporter, Patterns
 
 
-def color_pattern_matches(text: str, patterns: Iterable[re.Pattern[str]], *, color: str) -> str:
+def color_pattern_matches(text: str, patterns: Collection[re.Pattern[str]], *, color: str) -> str:
     """
     Color all regions of the text that match any of the given patterns.
 

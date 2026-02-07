@@ -1,5 +1,5 @@
 """
-Define constants for ANSI escape sequences used for terminal text attributes and color output.
+Defines constants for ANSI escape sequences used for terminal text attributes and color output.
 """
 
 from typing import Final, final
