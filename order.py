@@ -23,12 +23,7 @@ from cli import CLIProgram, ansi, io, terminal
 
 
 class Colors:
-    """
-    Namespace for terminal color constants.
-
-    :cvar COLON: Color used for the colon following a file name.
-    :cvar FILE_NAME: Color used for a file name.
-    """
+    """Namespace for terminal color constants."""
     COLON: Final[str] = ansi.Colors.BRIGHT_CYAN
     FILE_NAME: Final[str] = ansi.Colors.BRIGHT_MAGENTA
 
@@ -132,7 +127,7 @@ class Order(CLIProgram):
 
     @override
     def main(self) -> None:
-        """Run the program logic."""
+        """Run the program."""
         # Set --ignore-case to True if --dictionary-order=True or --natural-sort=True.
         if self.args.dictionary_order or self.args.natural_sort:
             self.args.ignore_case = True

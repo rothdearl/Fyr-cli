@@ -57,7 +57,7 @@ class CLIProgram(ABC):
 
     @abstractmethod
     def main(self) -> None:
-        """Run the program logic."""
+        """Run the program."""
         ...
 
     @final
@@ -90,7 +90,7 @@ class CLIProgram(ABC):
 
         - Configure the environment.
         - Parse and validate arguments.
-        - Run the program logic.
+        - Run the program.
         - Handle errors.
         """
         keyboard_interrupt_error_code = 130

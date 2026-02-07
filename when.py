@@ -5,7 +5,7 @@
 Filename: when.py
 Author: Roth Earl
 Version: 1.0.5
-Description: A program to display the current calendar, with optional date and time.
+Description: A program that displays the current calendar, with optional date and time.
 License: GNU GPLv3
 """
 
@@ -18,13 +18,8 @@ from typing import Final, NamedTuple
 from cli import ansi, OS_IS_POSIX
 
 
-class CalendarQuarterSlice(NamedTuple):
-    """
-    Immutable container for information about a calendar quarter slice.
-
-    :ivar end: End of the quarter slice.
-    :ivar start: Start of the quarter slice.
-    """
+class CalendarQuarterColumnBounds(NamedTuple):
+    """Column bounds for a month within a quarter row from ``calendar.calendar(..., m=3)`` output."""
     start: int
     end: int
 
@@ -47,34 +42,27 @@ def build_arguments() -> argparse.ArgumentParser:
     return parser
 
 
-def color_day_in_week_for_slice(week: str, day: str, quarter_slice: CalendarQuarterSlice) -> str:
-    """
-    Color a day in the week for a calendar quarter slice.
-
-    :param week: Current week.
-    :param day: Current day.
-    :param quarter_slice: Immutable container for information about a calendar quarter slice.
-    :return: Week with the current day colored.
-    """
-    colored_text = week[quarter_slice.start:quarter_slice.end].replace(day, render_day(day))
-
-    return week[:quarter_slice.start] + colored_text + week[quarter_slice.end:]
-
-
-def get_calendar_quarter_slice(date: datetime.date) -> CalendarQuarterSlice:
-    """
-    Return information about a calendar quarter slice for the given date.
-
-    :param date: Current date.
-    :return: Immutable container for information about a calendar quarter slice.
-    """
-    slices = {
-        0: CalendarQuarterSlice(0, 20),
-        1: CalendarQuarterSlice(26, 46),
-        2: CalendarQuarterSlice(52, 72)
+def get_quarter_column_bounds_for_month(month: int) -> CalendarQuarterColumnBounds:
+    """Return character column bounds for ``month`` within a quarter row of ``calendar.calendar(..., m=3)`` output."""
+    bounds_by_index = {
+        0: CalendarQuarterColumnBounds(0, 20),
+        1: CalendarQuarterColumnBounds(26, 46),
+        2: CalendarQuarterColumnBounds(52, 72)
     }
 
-    return slices[(date.month - 1) % 3]
+    return bounds_by_index[(month - 1) % 3]
+
+
+def highlight(text: str) -> str:
+    """Return ``text`` wrapped in reverse-video ANSI escape codes."""
+    return f"{ansi.TextAttributes.REVERSE}{text}{ansi.RESET}"
+
+
+def highlight_day_within_bounds(line: str, day: str, bounds: CalendarQuarterColumnBounds) -> str:
+    """Return ``line`` with ``day`` highlighted only within ``bounds``."""
+    colored_text = line[bounds.start:bounds.end].replace(day, highlight(day))
+
+    return line[:bounds.start] + colored_text + line[bounds.end:]
 
 
 def print_month() -> None:
@@ -92,7 +80,7 @@ def print_month() -> None:
 
     for output in month[2:]:
         if not found_day and day in output:
-            output = output.replace(day, render_day(day))
+            output = output.replace(day, highlight(day))
             found_day = True
 
         print(output)
@@ -102,7 +90,7 @@ def print_quarter() -> None:
     """Print all months in the current quarter."""
     date = datetime.date.today()
     month_name = calendar.month_name[date.month]
-    quarter_slice = get_calendar_quarter_slice(date)
+    quarter_bounds = get_quarter_column_bounds_for_month(date.month)
     year = calendar.calendar(date.year, w=2, l=1, c=6, m=3).splitlines()  # Deliberately use defaults for consistency.
 
     # Print year header.
@@ -119,13 +107,13 @@ def print_quarter() -> None:
         quarter_start += 1
 
     # Highlight current month name.
-    year[quarter_start] = year[quarter_start].replace(month_name, render_day(month_name))
+    year[quarter_start] = year[quarter_start].replace(month_name, highlight(month_name))
 
     # Print month names and weekdays.
     print(year[quarter_start])
     print(year[quarter_start + 1])
 
-    # Print weeks highlighting the current day of the current month.
+    # Print weeks highlighting the current day of the month.
     day = f"{date.day:>2}"
     found_day = False
 
@@ -133,8 +121,8 @@ def print_quarter() -> None:
         if not output:  # End of quarter?
             break
 
-        if not found_day and day in output[quarter_slice.start:quarter_slice.end]:
-            output = color_day_in_week_for_slice(output, day, quarter_slice)
+        if not found_day and day in output[quarter_bounds.start:quarter_bounds.end]:
+            output = highlight_day_within_bounds(output, day, quarter_bounds)
             found_day = True
 
         print(output)
@@ -144,33 +132,28 @@ def print_year() -> None:
     """Print all months in the current year."""
     date = datetime.date.today()
     month_name = calendar.month_name[date.month]
-    quarter_slice = get_calendar_quarter_slice(date)
+    quarter_bounds = get_quarter_column_bounds_for_month(date.month)
     year = calendar.calendar(date.year, w=2, l=1, c=6, m=3).splitlines()  # Deliberately use defaults for consistency.
 
-    # Print months highlighting the current month and the current day.
+    # Print months highlighting the current month and day.
     day = f"{date.day:>2}"
     found_day, found_month = False, False
 
     for output in year:
         if not found_month and month_name in output:
-            output = output.replace(month_name, render_day(month_name))
+            output = output.replace(month_name, highlight(month_name))
             found_month = True
 
-        if not found_day and found_month and day in output[quarter_slice.start:quarter_slice.end]:
-            output = color_day_in_week_for_slice(output, day, quarter_slice)
+        if not found_day and found_month and day in output[quarter_bounds.start:quarter_bounds.end]:
+            output = highlight_day_within_bounds(output, day, quarter_bounds)
             found_day = True
 
         print(output)
 
 
-def render_day(day: str) -> str:
-    """Return a formatted color string with the day."""
-    return f"{ansi.TextAttributes.REVERSE}{day}{ansi.RESET}"
-
-
 class When:
     """
-    A program to display the current calendar, with optional date and time.
+    A program that displays the current calendar, with optional date and time.
 
     :cvar DEFAULT_DATETIME_FORMAT: Default format for printing the date and time.
     :cvar NAME: Program name.
@@ -183,15 +166,11 @@ class When:
     VERSION: Final[str] = "1.0.5"
 
     def __init__(self) -> None:
-        """
-        Initialize a new ``When`` instance.
-        """
+        """Initialize a new ``When`` instance."""
         self.args: argparse.Namespace = build_arguments().parse_args()
 
     def main(self) -> None:
-        """
-        Run the program logic.
-        """
+        """Run the program."""
         if self.args.week_start == "sun":  # --week-start
             calendar.setfirstweekday(calendar.SUNDAY)
 

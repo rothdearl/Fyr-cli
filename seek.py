@@ -20,11 +20,7 @@ from cli import CLIProgram, Patterns, ansi, patterns, terminal
 
 
 class Colors:
-    """
-    Namespace for terminal color constants.
-
-    :cvar MATCH: Color used for a match.
-    """
+    """Namespace for terminal color constants."""
     MATCH: Final[str] = ansi.Colors.BRIGHT_RED
 
 
@@ -152,7 +148,7 @@ class Seek(CLIProgram):
 
     @override
     def main(self) -> None:
-        """Run the program logic."""
+        """Run the program."""
         self.precompile_patterns()
 
         if terminal.stdin_is_redirected():

@@ -18,13 +18,7 @@ from cli import CLIProgram, ansi, io, terminal
 
 
 class Colors:
-    """
-    Namespace for terminal color constants.
-
-    :cvar EOL: Color used for the EOL replacement.
-    :cvar NUMBER: Color used for numbering lines.
-    :cvar TAB: Color used for the tab replacement.
-    """
+    """Namespace for terminal color constants."""
     EOL: Final[str] = ansi.Colors.BRIGHT_BLUE
     NUMBER: Final[str] = ansi.Colors.BRIGHT_GREEN
     TAB: Final[str] = ansi.Colors.BRIGHT_CYAN
@@ -91,7 +85,7 @@ class Glue(CLIProgram):
 
     @override
     def main(self) -> None:
-        """Run the program logic."""
+        """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
                 self.print_lines_from_files(sys.stdin)

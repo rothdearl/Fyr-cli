@@ -39,7 +39,6 @@ class Tally(CLIProgram):
 
     :cvar WORD_PATTERN: Pattern for splitting lines into words.
     :ivar files_counted: Number of files counted.
-    :ivar flag_count: Number of flags provided as arguments.
     :ivar flags: Flags for determining if a count will be printed.
     :ivar totals: Total counts across all files.
     """
@@ -51,7 +50,6 @@ class Tally(CLIProgram):
         super().__init__(name="tally", version="1.3.12")
 
         self.files_counted: int = 0
-        self.flag_count: int = 0
         self.flags: Final[list[bool]] = [False, False, False, False]  # [Lines, words, characters, max line length]
         self.totals: Counts = Counts(0, 0, 0, 0)
 
@@ -124,20 +122,15 @@ class Tally(CLIProgram):
         for index, flag in enumerate((self.args.lines, self.args.words, self.args.chars, self.args.max_line_length)):
             if flag:
                 self.flags[index] = True
-                self.flag_count += 1
 
         # If no count flags, default to lines (0), words (1), and characters (2).
-        if not self.flag_count:
-            flags = (0, 1, 2)
-
-            for index in flags:
+        if not sum(self.flags):
+            for index in (0, 1, 2):
                 self.flags[index] = True
-
-            self.flag_count = len(flags)
 
     @override
     def main(self) -> None:
-        """Run the program logic."""
+        """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
                 self.print_counts_from_files(sys.stdin)
@@ -163,11 +156,10 @@ class Tally(CLIProgram):
         """Print line, word, and character counts for the given file."""
         count_color = Colors.COUNT_TOTAL if origin_file == "total" else Colors.COUNT
         origin_file_color = Colors.COUNT_TOTAL if origin_file == "total" else Colors.FILE_NAME
+        padding = self.args.count_width if origin_file or sum(self.flags) > 1 else 0  # 0 if standard input or one flag.
 
         for index, count in enumerate(counts):
             if self.flags[index]:
-                padding = self.args.count_width if self.flag_count > 1 or origin_file else 0
-
                 if self.print_color:
                     print(f"{count_color}{count:>{padding},}{ansi.RESET}", end="")
                 else:

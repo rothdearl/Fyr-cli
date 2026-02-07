@@ -19,16 +19,7 @@ from cli import CLIProgram, ansi, io, terminal
 
 
 class Colors:
-    """
-    Namespace for terminal color constants.
-
-    :cvar COLON: Color used for the colon following a file name.
-    :cvar EOL: Color used for the EOL replacement.
-    :cvar FILE_NAME: Color used for a file name.
-    :cvar LINE_NUMBER: Color used for line numbers.
-    :cvar SPACE: Color used for the space replacement.
-    :cvar TAB: Color used for the tab replacement.
-    """
+    """Namespace for terminal color constants."""
     COLON: Final[str] = ansi.Colors.BRIGHT_CYAN
     EOL: Final[str] = ansi.Colors.BRIGHT_BLUE
     FILE_NAME: Final[str] = ansi.Colors.BRIGHT_MAGENTA
@@ -96,7 +87,7 @@ class Show(CLIProgram):
 
     @override
     def main(self) -> None:
-        """Run the program logic."""
+        """Run the program."""
         # Set --no-file-name to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_name = True
