@@ -153,7 +153,7 @@ class Show(CLIProgram):
 
     def print_lines_from_input(self) -> None:
         """Read lines from standard input until EOF and print them."""
-        self.print_lines(sys.stdin)
+        self.print_lines(sys.stdin.readlines())
 
     def render_ends(self, line: str) -> str:
         """Append a visible end-of-line marker to the line."""
