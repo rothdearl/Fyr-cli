@@ -99,7 +99,7 @@ class Track(CLIProgram):
                 time.sleep(polling_interval)
         except FileNotFoundError:
             self.print_error(f"{file_name} has been deleted")
-        except (OSError, UnicodeDecodeError):
+        except (UnicodeDecodeError, OSError):
             self.print_error(f"{file_name} is no longer accessible")
 
     @override
@@ -132,7 +132,7 @@ class Track(CLIProgram):
                 thread.join()
 
     def print_file_header(self, file_name: str) -> None:
-        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``--no-file-name`` is set."""
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 
@@ -158,10 +158,10 @@ class Track(CLIProgram):
 
     def print_lines_from_files(self, files: Iterable[str]) -> list[str]:
         """
-        Read lines from each file and print them.
+        Read and print lines from each file.
 
         :param files: Iterable of files to read.
-        :return: List of file names successfully printed, used to determine which are eligible for ``--follow``.
+        :return: List of file names successfully printed, used to determine which are eligible for following.
         """
         files_printed = []
 
@@ -176,7 +176,7 @@ class Track(CLIProgram):
         return files_printed
 
     def print_lines_from_input(self) -> None:
-        """Read lines from standard input until EOF and print them."""
+        """Read and print lines from standard input until EOF."""
         while True:
             self.print_lines(sys.stdin.readlines())
 

@@ -97,7 +97,7 @@ class Tally(CLIProgram):
 
         for line in text:
             line_length = len(line)
-            max_display_width = len(line) + (line.count("\t") * self.args.tab_width) + 1  # +1 for the newline.
+            max_display_width = len(line) + (line.count("\t") * self.args.tab_width) - 1  # -1 for the newline.
 
             character_count += line_length
             line_count += 1
@@ -174,7 +174,7 @@ class Tally(CLIProgram):
             print()
 
     def print_counts_from_files(self, files: Iterable[str]) -> None:
-        """Read lines from each file, then count and print."""
+        """Read, count, and print from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 counts = self.calculate_counts(file_info.text)
@@ -186,7 +186,7 @@ class Tally(CLIProgram):
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_counts_from_input(self) -> None:
-        """Read lines from standard input until EOF, then count and print."""
+        """Read, count, and print from standard input until EOF."""
         counts = self.calculate_counts(sys.stdin)
 
         self.add_counts_to_totals(counts)

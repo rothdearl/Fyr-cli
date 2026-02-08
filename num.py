@@ -134,7 +134,7 @@ class Num(CLIProgram):
             print(line)
 
     def number_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read lines from each file, then number and print them."""
+        """Read, number, and print lines from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_file_header(file_info.file_name)
@@ -143,11 +143,11 @@ class Num(CLIProgram):
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def number_lines_from_input(self) -> None:
-        """Read lines from standard input until EOF, then number and print them."""
+        """Read, number, and print lines from standard input until EOF."""
         self.number_lines(sys.stdin)
 
     def print_file_header(self, file_name: str) -> None:
-        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``--no-file-name`` is set."""
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name`` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 

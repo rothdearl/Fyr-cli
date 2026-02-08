@@ -77,7 +77,7 @@ class Scan(CLIProgram):
 
     @override
     def check_for_errors(self) -> None:
-        """Raise ``SystemExit(Scan.NO_MATCHES_EXIT_CODE)`` if a match was not found."""
+        """Raise ``SystemExit(NO_MATCHES_EXIT_CODE)`` if a match was not found."""
         super().check_for_errors()
 
         if not self.found_match:
@@ -89,7 +89,7 @@ class Scan(CLIProgram):
         pass
 
     def is_printing_counts(self) -> bool:
-        """Return whether ``--count`` or ``--count-nonzero`` is set."""
+        """Return whether ``args.count`` or ``args.count_nonzero`` is set."""
         return self.args.count or self.args.count_nonzero  # --count or --count-nonzero
 
     @override
@@ -183,7 +183,7 @@ class Scan(CLIProgram):
                 print(line)
 
     def print_matches_from_files(self, files: Iterable[str]) -> None:
-        """Read lines from each file and print matches."""
+        """Read and print matches from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_matches(file_info.text, origin_file=file_info.file_name)
@@ -191,24 +191,11 @@ class Scan(CLIProgram):
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_matches_from_input(self) -> None:
-        """Read lines from standard input until EOF and print matches."""
-        eof = False
-        lines = []
-
-        while not eof:
-            try:
-                line = input()
-
-                # If printing counts, wait until EOF before finding matches.
-                if self.is_printing_counts():
-                    lines.append(line)
-                else:
-                    self.print_matches([line], origin_file="", reset_line_number=False)
-            except EOFError:
-                eof = True
-
+        """Read and print matches from standard input until EOF."""
         if self.is_printing_counts():
-            self.print_matches(lines, origin_file="")
+            self.print_matches(sys.stdin.readlines(), origin_file="")
+        else:
+            self.print_matches(sys.stdin, origin_file="", reset_line_number=False)
 
 
 if __name__ == "__main__":

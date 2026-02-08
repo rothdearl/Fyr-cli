@@ -127,7 +127,7 @@ class Glue(CLIProgram):
             print(line)
 
     def print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read lines from each file and print them."""
+        """Read and print lines from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_lines(file_info.text)
@@ -135,7 +135,7 @@ class Glue(CLIProgram):
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_lines_from_input(self) -> None:
-        """Read lines from standard input until EOF and print them."""
+        """Read and print lines from standard input until EOF."""
         self.print_lines(sys.stdin)
 
     def render_number(self, line: str) -> str:

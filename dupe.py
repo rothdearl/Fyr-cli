@@ -202,7 +202,7 @@ class Dupe(CLIProgram):
                 print()
 
     def group_and_print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read lines from each file and print them."""
+        """Read and print lines from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.group_and_print_lines(file_info.text, origin_file=file_info.file_name)
@@ -210,7 +210,7 @@ class Dupe(CLIProgram):
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def group_and_print_lines_from_input(self) -> None:
-        """Read lines from standard input until EOF and print them."""
+        """Read and print lines from standard input until EOF."""
         self.group_and_print_lines(sys.stdin, origin_file="")
 
     def group_lines_by_key(self, lines: Iterable[str]) -> dict[str, list[str]]:
@@ -252,7 +252,7 @@ class Dupe(CLIProgram):
             self.group_and_print_lines_from_input()
 
     def print_file_header(self, file_name: str) -> None:
-        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``--no-file-name`` is set."""
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name`` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 

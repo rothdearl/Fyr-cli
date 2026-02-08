@@ -84,7 +84,7 @@ class Seek(CLIProgram):
 
     @override
     def check_for_errors(self) -> None:
-        """Raise ``SystemExit(Seek.NO_MATCHES_EXIT_CODE)`` if a match was not found."""
+        """Raise ``SystemExit(NO_MATCHES_EXIT_CODE)`` if a match was not found."""
         super().check_for_errors()
 
         if not self.found_match:

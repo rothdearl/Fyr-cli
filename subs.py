@@ -109,7 +109,7 @@ class Subs(CLIProgram):
             self.pattern = patterns.compile_combined_patterns(compiled, ignore_case=self.args.ignore_case)
 
     def print_file_header(self, file_name: str) -> None:
-        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``--no-file-name`` is set."""
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 
@@ -121,12 +121,12 @@ class Subs(CLIProgram):
             print(file_header)
 
     def print_replaced_lines(self, lines: Iterable[str]) -> None:
-        """Print replaced matches in lines."""
+        """Read, replace, and print lines from each file."""
         for line in self.iterate_replaced_lines(lines):
             print(line)
 
     def print_replaced_lines_from_input(self) -> None:
-        """Print replaced matches in lines from standard input until EOF."""
+        """Read, replace, and print lines from standard input until EOF."""
         self.print_replaced_lines(sys.stdin)
 
     def process_files(self, files: Iterable[str]) -> None:

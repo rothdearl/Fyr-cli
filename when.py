@@ -43,7 +43,7 @@ def build_arguments() -> argparse.ArgumentParser:
 
 
 def get_quarter_column_bounds_for_month(month: int) -> CalendarQuarterColumnBounds:
-    """Return character column bounds for ``month`` within a quarter row of ``calendar.calendar(..., m=3)`` output."""
+    """Return character column bounds for a month within a quarter row of ``calendar.calendar(..., m=3)`` output."""
     bounds_by_index = {
         0: CalendarQuarterColumnBounds(0, 20),
         1: CalendarQuarterColumnBounds(26, 46),
@@ -54,12 +54,12 @@ def get_quarter_column_bounds_for_month(month: int) -> CalendarQuarterColumnBoun
 
 
 def highlight(text: str) -> str:
-    """Return ``text`` wrapped in reverse-video ANSI escape codes."""
+    """Return the text wrapped in reverse-video ANSI escape codes."""
     return f"{ansi.TextAttributes.REVERSE}{text}{ansi.RESET}"
 
 
 def highlight_day_within_bounds(line: str, day: str, bounds: CalendarQuarterColumnBounds) -> str:
-    """Return ``line`` with ``day`` highlighted only within ``bounds``."""
+    """Return the line with a day highlighted only within the bounds."""
     colored_text = line[bounds.start:bounds.end].replace(day, highlight(day))
 
     return line[:bounds.start] + colored_text + line[bounds.end:]

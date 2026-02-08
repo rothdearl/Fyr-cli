@@ -105,7 +105,7 @@ class Slice(CLIProgram):
             self.split_and_print_lines_from_input()
 
     def print_file_header(self, file_name: str) -> None:
-        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``--no-file-name`` is set."""
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 
@@ -131,7 +131,7 @@ class Slice(CLIProgram):
             print(separator.join(f"{quote}{field}{quote}" for field in fields))
 
     def split_and_print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Split lines into fields from files and print."""
+        """Read, split, and print lines from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_file_header(file_info.file_name)
@@ -140,7 +140,7 @@ class Slice(CLIProgram):
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def split_and_print_lines_from_input(self) -> None:
-        """Split lines into fields from standard input until EOF and print."""
+        """Read, split, and print lines from standard input until EOF."""
         self.split_and_print_lines(sys.stdin)
 
     def split_line(self, line: str) -> list[str]:
