@@ -32,12 +32,12 @@ class Order(CLIProgram):
     """
     A program that sorts files and prints them to standard output.
 
-    :cvar DATE_PATTERN: Pattern for splitting lines on all whitespace except spaces.
-    :cvar WHITESPACE_PATTERN: Pattern for splitting lines on all whitespace.
-    :cvar WORD_PATTERN: Pattern for splitting lines on all whitespace and non-words.
+    :cvar NON_SPACE_WHITESPACE_PATTERN: Pattern for splitting lines on all whitespace characters except spaces.
+    :cvar WHITESPACE_PATTERN: Pattern for splitting lines on all whitespace characters.
+    :cvar WORD_PATTERN: Pattern for splitting lines on whitespace and non-word characters.
     """
 
-    DATE_PATTERN: Final[str] = r"[\f\r\n\t\v]"
+    NON_SPACE_WHITESPACE_PATTERN: Final[str] = r"[\f\r\n\t\v]"
     WHITESPACE_PATTERN: Final[str] = r"\s+"
     WORD_PATTERN: Final[str] = r"\s+|\W+"
 
@@ -54,11 +54,10 @@ class Order(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading blanks")
+        sort_group.add_argument("-c", "--currency-sort", action="store_true", help="sort lines by currency value")
         sort_group.add_argument("-d", "--dictionary-order", action="store_true",
                                 help="sort lines using dictionary order")
         sort_group.add_argument("-D", "--date-sort", action="store_true", help="sort lines by date")
-        sort_group.add_argument("-k", "--key-pattern", help="generate sort keys by splitting on regex PATTERN",
-                                metavar="PATTERN")
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="sort alphabetically, treating numbers numerically")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="sort lines in random order")
@@ -70,6 +69,9 @@ class Order(CLIProgram):
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
+        parser.add_argument("--field-pattern",
+                            help="generate sort keys by splitting lines into fields on regex PATTERN",
+                            metavar="PATTERN")
         parser.add_argument("--latin1", action="store_true", help="read FILES using latin-1 (default: utf-8)")
         parser.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
         parser.add_argument("--stdin-files", action="store_true",
@@ -84,9 +86,13 @@ class Order(CLIProgram):
         if self.args.skip_fields < 0:  # --skip-fields
             self.print_error_and_exit("--skip-fields must be >= 0")
 
+    def generate_currency_sort_key(self, line: str) -> list[str]:
+        """Return a sort key that orders fields by currency values, handling symbols and accounting-style negatives."""
+        return self.split_line(line, Order.NON_SPACE_WHITESPACE_PATTERN)
+
     def generate_date_sort_key(self, line: str) -> str:
         """Return a sort key that orders fields by the first parseable date."""
-        fields = self.split_line(line, Order.DATE_PATTERN)
+        fields = self.split_line(line, Order.NON_SPACE_WHITESPACE_PATTERN)
 
         try:
             date_key = str(parse(fields[0])) if fields else line
@@ -102,10 +108,6 @@ class Order(CLIProgram):
     def generate_dictionary_sort_key(self, line: str) -> list[str]:
         """Return a sort key that orders word-like fields lexicographically."""
         return self.split_line(line, Order.WORD_PATTERN)
-
-    def generate_key_pattern_sort_key(self, line: str) -> list[str]:
-        """Return a sort key that orders fields lexicographically using a user-defined pattern."""
-        return self.split_line(line, self.args.key_pattern)
 
     def generate_natural_sort_key(self, line: str) -> list[tuple[int, str | float]]:
         """
@@ -181,9 +183,9 @@ class Order(CLIProgram):
             random.shuffle(lines)
         else:
             key_function = (
+                self.generate_currency_sort_key if self.args.currency_sort else  # --currency-sort
                 self.generate_date_sort_key if self.args.date_sort else  # --date-sort
                 self.generate_dictionary_sort_key if self.args.dictionary_order else  # --dictionary-order
-                self.generate_key_pattern_sort_key if self.args.key_pattern else  # --key-pattern
                 self.generate_natural_sort_key if self.args.natural_sort else  # --natural-sort
                 self.generate_default_sort_key
             )
@@ -192,11 +194,11 @@ class Order(CLIProgram):
             lines.sort(key=key_function, reverse=reverse)
 
         # Print lines.
-        for line in lines:
+        for line in io.normalize_input_lines(lines):
             if self.args.no_blank and not line.rstrip():  # --no-blank
                 continue
 
-            io.print_line(line)
+            print(line)
 
     def sort_and_print_lines_from_files(self, files: Iterable[str]) -> None:
         """Read lines from each file and print them."""
@@ -211,8 +213,9 @@ class Order(CLIProgram):
         """Read lines from standard input until EOF and print them."""
         self.sort_and_print_lines(sys.stdin.readlines())
 
-    def split_line(self, line: str, field_pattern: str) -> list[str]:
+    def split_line(self, line: str, default_field_pattern: str) -> list[str]:
         """Split the line into fields using a regular expression pattern."""
+        field_pattern = self.args.field_pattern or default_field_pattern
         fields = []
 
         # Normalize the line before splitting.
@@ -225,6 +228,7 @@ class Order(CLIProgram):
         except re.error:  # re.PatternError was introduced in Python 3.13; use re.error for Python < 3.13.
             self.print_error_and_exit(f"invalid regex pattern: {field_pattern}")
 
+        print(fields)
         return fields
 
 
