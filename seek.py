@@ -4,7 +4,7 @@
 """
 Filename: seek.py
 Author: Roth Earl
-Version: 1.3.12
+Version: 1.3.13
 Description: A program that searches for files in a directory hierarchy.
 License: GNU GPLv3
 """
@@ -38,7 +38,7 @@ class Seek(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Seek`` instance."""
-        super().__init__(name="seek", version="1.3.12", error_exit_code=2)
+        super().__init__(name="seek", version="1.3.13", error_exit_code=2)
 
         self.found_match: bool = False
         self.name_patterns: Patterns = []

@@ -4,7 +4,7 @@
 """
 Filename: order.py
 Author: Roth Earl
-Version: 1.3.12
+Version: 1.3.13
 Description: A program that sorts files and prints them to standard output.
 License: GNU GPLv3
 """
@@ -47,7 +47,7 @@ class Order(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Order`` instance."""
-        super().__init__(name="order", version="1.3.12")
+        super().__init__(name="order", version="1.3.13")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -80,6 +80,9 @@ class Order(CLIProgram):
         parser.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
+        parser.add_argument("--thousands-sep", default=",",
+                            help="use SEP as the thousands separator when sorting currencies (default: ',')",
+                            metavar="SEP")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
@@ -98,13 +101,16 @@ class Order(CLIProgram):
         :return: ``(0, number)`` when the key parses as a number, otherwise ``(1, text)``.
         """
         key = self.make_sort_key(line, default_field_pattern=FieldPatterns.NON_SPACE_WHITESPACE)
-        negative = key.startswith("-") or key.startswith("(") and key.endswith(")")
+        negative = "-" in key or key.startswith("(") and key.endswith(")")
 
         # Remove non-numeric characters.
         currency = re.sub(r"[^0-9,.]", "", key)
 
         # Remove thousands separator.
-        currency = currency.replace(",", "")
+        currency = currency.replace(self.args.thousands_sep, "")  # --thousands-sep
+
+        # Ensure decimal separator is a period.
+        currency = currency.replace(",", ".")
 
         try:
             return 0, float(currency) * (-1 if negative else 1)  # Convert to float and apply sign.

@@ -4,7 +4,7 @@
 """
 Filename: glue.py
 Author: Roth Earl
-Version: 1.3.12
+Version: 1.3.13
 Description: A program that concatenates files and standard input to standard output.
 License: GNU GPLv3
 """
@@ -44,7 +44,7 @@ class Glue(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Glue`` instance."""
-        super().__init__(name="glue", version="1.3.12")
+        super().__init__(name="glue", version="1.3.13")
 
         self.line_number: int = 0
 

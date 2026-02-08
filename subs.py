@@ -4,7 +4,7 @@
 """
 Filename: subs.py
 Author: Roth Earl
-Version: 1.3.12
+Version: 1.3.13
 Description: A program that replaces text in files.
 License: GNU GPLv3
 """
@@ -34,7 +34,7 @@ class Subs(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Subs`` instance."""
-        super().__init__(name="subs", version="1.3.12")
+        super().__init__(name="subs", version="1.3.13")
 
         self.pattern: re.Pattern[str] | None = None
 

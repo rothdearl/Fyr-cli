@@ -4,7 +4,7 @@
 """
 Filename: slice.py
 Author: Roth Earl
-Version: 1.3.12
+Version: 1.3.13
 Description: A program that splits lines in files into shell-style fields.
 License: GNU GPLv3
 """
@@ -34,7 +34,7 @@ class Slice(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Slice`` instance."""
-        super().__init__(name="slice", version="1.3.12")
+        super().__init__(name="slice", version="1.3.13")
 
         self.fields_to_print: list[int] = []
 

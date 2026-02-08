@@ -4,7 +4,7 @@
 """
 Filename: dupe.py
 Author: Roth Earl
-Version: 1.3.12
+Version: 1.3.13
 Description: A program that filters duplicate or unique lines from files.
 License: GNU GPLv3
 """
@@ -40,7 +40,7 @@ class Dupe(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Dupe`` instance."""
-        super().__init__(name="dupe", version="1.3.12")
+        super().__init__(name="dupe", version="1.3.13")
 
         self.max_chars: int = 0
         self.skip_chars: int = 0
