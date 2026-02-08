@@ -32,7 +32,6 @@ class Scan(CLIProgram):
 
     :cvar NO_MATCHES_EXIT_CODE: Exit code when no matches are found.
     :ivar found_match: Whether a match was found in a file.
-    :ivar line_number: Line number for tracking where matches were found.
     :ivar patterns: Compiled patterns to match.
     """
 
@@ -43,7 +42,6 @@ class Scan(CLIProgram):
         super().__init__(name="scan", version="1.3.13", error_exit_code=2)
 
         self.found_match: bool = False
-        self.line_number: int = 0
         self.patterns: Patterns = []
 
     @override
@@ -118,38 +116,27 @@ class Scan(CLIProgram):
             self.patterns = patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
                                                       on_error=self.print_error_and_exit)
 
-    def print_matches(self, lines: Iterable[str], *, origin_file: str, reset_line_number=True) -> None:
-        """
-        Print matches found in lines.
-
-        :param lines: Iterable of lines to search.
-        :param origin_file: File where the lines originated from.
-        :param reset_line_number: Whether to reset the internal line number (default: ``True``).
-        """
+    def print_matches(self, lines: Iterable[str], *, origin_file: str) -> None:
+        """Print matches found in lines."""
         # Return early if no --find patterns are provided.
         if not self.args.find:
             return
 
         matches = []
 
-        if reset_line_number:
-            self.line_number = 0
-
         # Find matches.
-        for line in io.normalize_input_lines(lines):
-            self.line_number += 1
-
+        for line_number, line in enumerate(io.normalize_input_lines(lines), start=1):
             if patterns.matches_all_patterns(line, self.patterns) != self.args.invert_match:  # --invert-match
                 self.found_match = True
 
-                # If --quiet, exit on first match for performance.
+                # Exit early if --quiet.
                 if self.args.quiet:
                     raise SystemExit(0)
 
                 if self.print_color and not self.args.invert_match:  # --invert-match
                     line = patterns.color_pattern_matches(line, self.patterns, color=Colors.MATCH)
 
-                matches.append((self.line_number, line))
+                matches.append((line_number, line))
 
         # Print matches.
         file_name = ""
@@ -168,7 +155,7 @@ class Scan(CLIProgram):
         if self.is_printing_counts():
             print(f"{file_name}{len(matches)}")
         elif matches:
-            padding = len(str(matches[-1][0])) if reset_line_number else 0
+            padding = len(str(matches[-1][0]))  # Use the line number from the last match to determine pad width.
 
             if file_name:
                 print(file_name)
@@ -195,7 +182,7 @@ class Scan(CLIProgram):
         if self.is_printing_counts():
             self.print_matches(sys.stdin.readlines(), origin_file="")
         else:
-            self.print_matches(sys.stdin, origin_file="", reset_line_number=False)
+            self.print_matches(sys.stdin, origin_file="")
 
 
 if __name__ == "__main__":

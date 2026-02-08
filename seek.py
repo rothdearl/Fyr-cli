@@ -188,7 +188,7 @@ class Seek(CLIProgram):
 
         self.found_match = True
 
-        # If --quiet, exit on first match for performance.
+        # Exit early if --quiet.
         if self.args.quiet:
             raise SystemExit(0)
 

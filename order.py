@@ -58,23 +58,23 @@ class Order(CLIProgram):
 
         parser.add_argument("files", help="input files", metavar="FILES", nargs="*")
         parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading blanks")
-        sort_group.add_argument("-c", "--currency-sort", action="store_true", help="sort lines by currency value")
+        sort_group.add_argument("-c", "--currency-sort", action="store_true",
+                                help="sort lines by numeric currency value")
         sort_group.add_argument("-d", "--dictionary-order", action="store_true",
                                 help="sort lines using dictionary order")
         sort_group.add_argument("-D", "--date-sort", action="store_true", help="sort lines by date")
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="sort alphabetically, treating numbers numerically")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="sort lines in random order")
-        parser.add_argument("-f", "--skip-fields", default=0,
-                            help="skip the first N non-empty fields when sorting (N >= 0)", metavar="N", type=int)
+        parser.add_argument("-f", "--skip-fields", default=0, help="skip the first N non-empty fields (N >= 0)",
+                            metavar="N", type=int)
         parser.add_argument("-H", "--no-file-name", action="store_true", help="do not prefix output with file names")
         parser.add_argument("-i", "--ignore-case", action="store_true",
                             help="ignore differences in case when comparing")
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
-        parser.add_argument("--field-pattern",
-                            help="generate sort keys by splitting lines into fields on regex PATTERN",
+        parser.add_argument("--field-pattern", help="pattern used to split lines into fields (affects --skip-fields)",
                             metavar="PATTERN")
         parser.add_argument("--latin1", action="store_true", help="read FILES using latin-1 (default: utf-8)")
         parser.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
