@@ -95,20 +95,20 @@ class Peek(CLIProgram):
         """Print lines to standard output."""
         # If --lines is positive or zero: print the first N lines.
         if self.args.lines >= 0:
-            for index, line in enumerate(lines):
-                if index >= self.args.lines:
+            for index, line in enumerate(io.normalize_input_lines(lines)):
+                if index == self.args.lines:
                     break
 
-                io.print_line(line)
+                print(line)
 
             return
 
         # --lines is negative: print all but last |N| lines
         buffer = deque(maxlen=-self.args.lines)
 
-        for line in lines:
+        for line in io.normalize_input_lines(lines):
             if len(buffer) == buffer.maxlen:
-                io.print_line(buffer.popleft())
+                print(buffer.popleft())
 
             buffer.append(line)
 

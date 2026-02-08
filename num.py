@@ -113,10 +113,10 @@ class Num(CLIProgram):
         blank_line_count = 0
         line_number = self.args.number_start - 1  # --number-start
 
-        for line in lines:
+        for line in io.normalize_input_lines(lines):
             print_number = True
 
-            if line == "\n":  # Blank line?
+            if not line:  # Blank line?
                 blank_line_count += 1
 
                 if self.should_suppress_blank_line(blank_line_count):
@@ -131,7 +131,7 @@ class Num(CLIProgram):
                 line_number += 1
                 line = self.render_line_number(line, line_number)
 
-            io.print_line(line)
+            print(line)
 
     def number_lines_from_files(self, files: Iterable[str]) -> None:
         """Read lines from each file, then number and print them."""

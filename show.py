@@ -126,7 +126,7 @@ class Show(CLIProgram):
         line_min = min(self.args.print, len(lines)) if self.args.print else len(lines)
         padding = len(str(line_min))
 
-        for line_number, line in enumerate(lines, start=1):
+        for line_number, line in enumerate(io.normalize_input_lines(lines), start=1):
             if line_start <= line_number <= line_end:
                 if self.args.spaces:  # --spaces
                     line = self.render_spaces(line)
@@ -140,7 +140,7 @@ class Show(CLIProgram):
                 if self.args.line_numbers:  # --line-numbers
                     line = self.render_line_number(line, line_number, padding)
 
-                io.print_line(line)
+                print(line)
 
     def print_lines_from_files(self, files: Iterable[str]) -> None:
         """Read lines from each file and print them."""
@@ -157,13 +157,12 @@ class Show(CLIProgram):
 
     def render_ends(self, line: str) -> str:
         """Append a visible end-of-line marker to the line."""
-        end_index = -1 if line.endswith("\n") else len(line)
-        newline = "\n" if end_index == -1 else ""
+        end_index = len(line)
 
         if self.print_color:
-            return f"{line[:end_index]}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}{newline}"
+            return f"{line[:end_index]}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}"
 
-        return f"{line[:end_index]}{Whitespace.EOL}{newline}"
+        return f"{line[:end_index]}{Whitespace.EOL}"
 
     def render_line_number(self, line: str, line_number: int, padding: int) -> str:
         """Prefix the line with a line number, right-aligned to the specified padding."""
@@ -174,13 +173,10 @@ class Show(CLIProgram):
 
     def render_spaces(self, line: str) -> str:
         """Replace spaces and trailing spaces with visible markers."""
-        trailing_count = len(line) - len(line.rstrip(" \n"))  # Count trailing spaces, including the newline.
+        trailing_count = len(line) - len(line.rstrip(" "))  # Count trailing spaces.
 
-        # Truncate trailing spaces, including the newline.
+        # Truncate trailing spaces.
         line = line[:-trailing_count] if trailing_count else line
-
-        # -1 for the newline.
-        trailing_count -= 1
 
         if self.print_color:
             line = line.replace(" ", f"{Colors.SPACE}{Whitespace.SPACE}{ansi.RESET}")
@@ -188,9 +184,6 @@ class Show(CLIProgram):
         else:
             line = line.replace(" ", Whitespace.SPACE)
             line = line + (Whitespace.TRAILING_SPACE * trailing_count)
-
-        # Add back the newline.
-        line = line + "\n"
 
         return line
 

@@ -143,7 +143,7 @@ class Dupe(CLIProgram):
         group_list = []
         previous_line = None
 
-        for line in lines:
+        for line in io.normalize_input_lines(lines):
             next_line = self.get_compare_key(line)
 
             if not self.can_group_key(next_line):
@@ -208,7 +208,7 @@ class Dupe(CLIProgram):
                         self.print_file_header(origin_file)
                         file_header_printed = True
 
-                    io.print_line(f"{group_count_str}{line}")
+                    print(f"{group_count_str}{line}")
 
                     if not (self.args.all_repeated or self.args.group):  # --all-repeated or --group
                         break
@@ -237,7 +237,7 @@ class Dupe(CLIProgram):
         """
         group_map = {}
 
-        for line in lines:
+        for line in io.normalize_input_lines(lines):
             key = self.get_compare_key(line)
 
             if not self.can_group_key(key):

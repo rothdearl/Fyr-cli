@@ -93,7 +93,7 @@ class Track(CLIProgram):
                         if print_file_name:
                             self.print_file_header(file_name)
 
-                        io.print_line(next_content[print_index:])
+                        print(next_content[print_index:])
                         previous_content = next_content
 
                 time.sleep(polling_interval)
@@ -154,7 +154,7 @@ class Track(CLIProgram):
 
         for index, line in enumerate(lines, start=1):
             if index > skip_to_line:
-                io.print_line(line)
+                print(line)
 
     def print_lines_from_files(self, files: Iterable[str]) -> list[str]:
         """

@@ -104,10 +104,10 @@ class Glue(CLIProgram):
         blank_line_count = 0
         number_lines = self.args.number or self.args.number_nonblank  # --number or --number-nonblank
 
-        for line in lines:
+        for line in io.normalize_input_lines(lines):
             print_number = number_lines
 
-            if line == "\n":  # Blank line?
+            if not line:  # Blank line?
                 blank_line_count += 1
 
                 if self.should_suppress_blank_line(blank_line_count):
@@ -124,7 +124,7 @@ class Glue(CLIProgram):
                 self.line_number += 1
                 line = self.render_number(line)
 
-            io.print_line(line)
+            print(line)
 
     def print_lines_from_files(self, files: Iterable[str]) -> None:
         """Read lines from each file and print them."""
@@ -154,12 +154,10 @@ class Glue(CLIProgram):
                 line = line.replace("\t", Whitespace.TAB)
 
         if self.args.show_ends:  # --show-ends
-            end_index = -1  # -1 for the newline.
-
             if self.print_color:
-                line = f"{line[:end_index]}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}\n"
+                line = f"{line}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}"
             else:
-                line = f"{line[:end_index]}{Whitespace.EOL}\n"
+                line = f"{line}{Whitespace.EOL}"
 
         return line
 
