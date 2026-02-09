@@ -1,5 +1,5 @@
 """
-Abstract base class (ABC) for command-line programs to define a standard lifecycle.
+Provides an abstract base class (ABC) for command-line programs, defining a standard program lifecycle.
 """
 
 import argparse
@@ -13,7 +13,7 @@ from .terminal import stdout_is_terminal
 
 class CLIProgram(ABC):
     """
-    Abstract base class (ABC) for command-line programs to define a standard lifecycle.
+    Abstract base class (ABC) for command-line programs, defining a standard program lifecycle.
 
     :ivar args: Parsed command-line arguments.
     :ivar encoding: Encoding for reading and writing to files.
@@ -86,7 +86,7 @@ class CLIProgram(ABC):
     @final
     def run(self) -> None:
         """
-        Run the full program lifecycle and normalize process exit behavior.
+        Run the full program lifecycle and normalize process termination and exit codes.
 
         - Configure the environment.
         - Parse and validate arguments.
