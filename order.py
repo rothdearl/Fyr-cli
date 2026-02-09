@@ -74,7 +74,7 @@ class Order(CLIProgram):
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
-        parser.add_argument("--field-pattern", help="pattern used to split lines into fields (affects --skip-fields)",
+        parser.add_argument("--field-pattern", help="use PATTERN to split lines into fields (affects --skip-fields)",
                             metavar="PATTERN")
         parser.add_argument("--latin1", action="store_true", help="read FILES using latin-1 (default: utf-8)")
         parser.add_argument("--no-blank", action="store_true", help="suppress all blank lines")
