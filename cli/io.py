@@ -1,6 +1,4 @@
-"""
-Provides utilities for reading and writing text files and streams.
-"""
+"""Provides utilities for reading and writing text files and streams."""
 
 import os
 from collections.abc import Iterable, Iterator

@@ -1,6 +1,4 @@
-"""
-Type aliases used throughout the command-line interface package.
-"""
+"""Type aliases used throughout the command-line interface package."""
 
 import re
 from collections.abc import Callable

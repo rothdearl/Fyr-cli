@@ -1,6 +1,4 @@
-"""
-Provides utilities for compiling, matching, and coloring regular expression patterns in text.
-"""
+"""Provides utilities for compiling, matching, and coloring regular expression patterns in text."""
 
 import re
 from collections.abc import Collection, Iterable

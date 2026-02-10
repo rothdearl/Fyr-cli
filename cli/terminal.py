@@ -1,6 +1,4 @@
-"""
-Predicates describing whether standard input and output are attached to a terminal.
-"""
+"""Predicates describing whether standard input and output are attached to a terminal."""
 
 import sys
 

@@ -1,6 +1,4 @@
-"""
-Provides an abstract base class (ABC) for command-line programs, defining a standard program lifecycle.
-"""
+"""Provides an abstract base class (ABC) for command-line programs, defining a standard program lifecycle."""
 
 import argparse
 import sys

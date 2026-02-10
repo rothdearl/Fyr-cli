@@ -48,6 +48,8 @@ from .patterns import (
     matches_all_patterns,
 )
 
+from .regex import Patterns
+
 from .terminal import (
     stdin_is_redirected,
     stdin_is_terminal,

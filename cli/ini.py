@@ -1,6 +1,4 @@
-"""
-Provides utilities for reading values from INI configuration files using a single instance shared across the module.
-"""
+"""Provides utilities for reading values from INI configuration files using a single instance shared across the module."""
 
 import configparser
 import json
