@@ -16,7 +16,7 @@ import sys
 import time
 from typing import Final, override
 
-from cli import CLIProgram, Patterns, ansi, patterns, terminal
+from cli import CLIProgram, CompiledPatterns, ansi, patterns, terminal
 
 
 class Colors:
@@ -41,8 +41,8 @@ class Seek(CLIProgram):
         super().__init__(name="seek", version="1.3.14", error_exit_code=2)
 
         self.found_match: bool = False
-        self.name_patterns: Patterns = []
-        self.path_patterns: Patterns = []
+        self.name_patterns: CompiledPatterns = []
+        self.path_patterns: CompiledPatterns = []
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:

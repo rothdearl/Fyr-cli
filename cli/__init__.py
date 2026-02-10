@@ -56,7 +56,7 @@ from .terminal import (
 )
 
 from .types import (
+    CompiledPatterns,
     ErrorReporter,
     JsonObject,
-    Patterns,
 )

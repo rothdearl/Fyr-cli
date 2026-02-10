@@ -15,7 +15,7 @@ import sys
 from collections.abc import Iterable
 from typing import Final, override
 
-from cli import CLIProgram, Patterns, ansi, io, patterns, terminal
+from cli import CLIProgram, CompiledPatterns, ansi, io, patterns, terminal
 
 
 class Colors:
@@ -42,7 +42,7 @@ class Scan(CLIProgram):
         super().__init__(name="scan", version="1.3.14", error_exit_code=2)
 
         self.found_match: bool = False
-        self.patterns: Patterns = []
+        self.patterns: CompiledPatterns = []
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:

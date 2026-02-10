@@ -6,17 +6,17 @@ import re
 from collections.abc import Callable
 from typing import Any
 
+type CompiledPatterns = list[re.Pattern[str]]
+"""List of compiled regular expression patterns."""
+
 type ErrorReporter = Callable[[str], None]
 """Callback for reporting error messages."""
 
 type JsonObject = dict[str, Any]
 """A decoded JSON object represented as a dictionary."""
 
-type Patterns = list[re.Pattern[str]]
-"""List of compiled regular expression patterns."""
-
 __all__ = [
+    "CompiledPatterns",
     "ErrorReporter",
     "JsonObject",
-    "Patterns",
 ]
