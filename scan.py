@@ -167,7 +167,7 @@ class Scan(CLIProgram):
         """Read and print matches from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
-                self.print_matches(file_info.text, origin_file=file_info.file_name)
+                self.print_matches(file_info.text_stream, origin_file=file_info.file_name)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 

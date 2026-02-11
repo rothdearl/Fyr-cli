@@ -162,7 +162,7 @@ class Track(CLIProgram):
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_file_header(file_info.file_name)
-                self.print_lines(file_info.text.readlines())
+                self.print_lines(file_info.text_stream.readlines())
                 files_printed.append(file_info.file_name)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")

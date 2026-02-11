@@ -170,7 +170,7 @@ class Tally(CLIProgram):
         """Read, count, and print from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
-                counts = self.calculate_counts(file_info.text)
+                counts = self.calculate_counts(file_info.text_stream)
 
                 self.files_counted += 1
                 self.add_counts_to_totals(counts)

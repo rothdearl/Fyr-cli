@@ -186,7 +186,7 @@ class Dupe(CLIProgram):
         """Read and print lines from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
-                self.group_and_print_lines(file_info.text, origin_file=file_info.file_name)
+                self.group_and_print_lines(file_info.text_stream, origin_file=file_info.file_name)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 

@@ -127,12 +127,13 @@ class Subs(CLIProgram):
         """Process files by replacing matches and printing results or writing changes in place."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             if self.args.in_place:  # --in-place
-                io.write_text_to_file(file_info.file_name, self.iterate_replaced_lines(file_info.text.readlines()),
-                                      self.encoding, on_error=self.print_error)
+                io.write_text_to_file(file_info.file_name,
+                                      self.iterate_replaced_lines(file_info.text_stream.readlines()), self.encoding,
+                                      on_error=self.print_error)
             else:
                 try:
                     self.print_file_header(file_info.file_name)
-                    self.print_replaced_lines(file_info.text.readlines())
+                    self.print_replaced_lines(file_info.text_stream.readlines())
                 except UnicodeDecodeError:
                     self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 

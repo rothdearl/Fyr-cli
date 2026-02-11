@@ -123,7 +123,7 @@ class Glue(CLIProgram):
         """Read and print lines from each file."""
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
-                self.print_lines(file_info.text)
+                self.print_lines(file_info.text_stream)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 

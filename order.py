@@ -131,7 +131,7 @@ class Order(CLIProgram):
         return self.get_sort_fields(line)
 
     def generate_dictionary_sort_key(self, line: str) -> list[str]:
-        """Return a sort key that orders lines using dictionary order (case-insensitive, comparing only letters, digits, and spaces)."""
+        """Return a sort key that orders lines using dictionary order (case-insensitive, comparing only Unicode word characters and whitespace)."""
         sort_fields = []
 
         for field in self.get_sort_fields(line):
@@ -263,12 +263,12 @@ class Order(CLIProgram):
 
     def sort_and_print_lines_from_files(self, files: Iterable[str]) -> None:
         """Read, sort, and print lines from each file."""
-        for _, file_name, text in io.read_text_files(files, self.encoding, on_error=self.print_error):
+        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
-                self.print_file_header(file_name)
-                self.sort_and_print_lines(text.readlines())
+                self.print_file_header(file_info.file_name)
+                self.sort_and_print_lines(file_info.text_stream.readlines())
             except UnicodeDecodeError:
-                self.print_error(f"{file_name}: unable to read with {self.encoding}")
+                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def sort_and_print_lines_from_input(self) -> None:
         """Read, sort, and print lines from standard input until EOF."""
