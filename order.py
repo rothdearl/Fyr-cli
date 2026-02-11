@@ -33,10 +33,12 @@ class Order(CLIProgram):
     """
     A program that sorts files and prints them to standard output.
 
-    :cvar DIGITS_REGEX: Matches one or more Unicode decimal digits.
+    :cvar CURRENCY_SANITIZE_REGEX: Matches one or more consecutive characters that are not digits, commas, or periods.
+    :cvar DIGIT_TOKEN_REGEX: Matches (and captures) one or more decimal digits.
     """
 
-    DIGITS_REGEX: Final[str] = r"(\d+)"
+    CURRENCY_SANITIZE_REGEX: Final[str] = r"[^0-9,.]+"
+    DIGIT_TOKEN_REGEX: Final[str] = r"(\d+)"
 
     def __init__(self) -> None:
         """Initialize a new ``Order`` instance."""
@@ -97,7 +99,7 @@ class Order(CLIProgram):
             negative = "-" in field or "(" in field and ")" in field  # Negative if field contains "-" or "(" and ")".
 
             # Remove non-numeric characters and normalize.
-            number = self.normalize_number(re.sub(pattern=r"[^0-9,.]", repl="", string=field))
+            number = self.normalize_number(re.sub(pattern=Order.CURRENCY_SANITIZE_REGEX, repl="", string=field))
 
             try:
                 segments.append((0, float(number) * (-1 if negative else 1)))  # Convert to float and apply sign.
@@ -111,7 +113,7 @@ class Order(CLIProgram):
 
     def generate_date_sort_key(self, line: str) -> list[tuple[int, datetime.datetime | str]]:
         """
-        Return a sort key that compares date-like values chronologically when possible.
+        Return a sort key that orders date-like values chronologically when possible.
 
         :param line: Line to derive key from.
         :return: A list of tuples containing ``(0, date)`` when text parses as a date, otherwise ``(1, text)``.
@@ -139,7 +141,7 @@ class Order(CLIProgram):
 
     def generate_natural_sort_key(self, line: str) -> list[tuple[int, float | str]]:
         """
-        Return a sort key that orders text lexicographically and numbers numerically.
+        Return a sort key that orders text lexicographically and numbers numerically when possible.
 
         :param line: Line to derive key from.
         :return: A list of tuples containing ``(0, number)`` when text parses as a number, otherwise ``(1, text)``.
@@ -153,7 +155,8 @@ class Order(CLIProgram):
             except ValueError:
                 pass
 
-            for chunk in re.split(pattern=Order.DIGITS_REGEX, string=field):
+            # Split field into chunks and check for digits.
+            for chunk in re.split(pattern=Order.DIGIT_TOKEN_REGEX, string=field):
                 if not chunk:  # Skip empty chunks.
                     continue
 
