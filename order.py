@@ -38,7 +38,7 @@ class Order(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Order`` instance."""
-        super().__init__(name="order", version="1.3.14")
+        super().__init__(name="order", version="1.3.15")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -131,7 +131,7 @@ class Order(CLIProgram):
         return self.get_sort_fields(line)
 
     def generate_dictionary_sort_key(self, line: str) -> list[str]:
-        """Return a sort key that orders lines using dictionary order (case-insensitive, comparing only Unicode word characters and whitespace)."""
+        """Return a sort key that implements case-insensitive dictionary order while ignoring punctuation."""
         sort_fields = []
 
         for field in self.get_sort_fields(line):

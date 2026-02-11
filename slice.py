@@ -28,7 +28,7 @@ class Slice(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Slice`` instance."""
-        super().__init__(name="slice", version="1.3.14")
+        super().__init__(name="slice", version="1.3.15")
 
         self.fields_to_print: list[int] = []
 
