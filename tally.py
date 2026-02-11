@@ -15,7 +15,7 @@ import sys
 from collections.abc import Iterable
 from typing import Final, NamedTuple, override
 
-from cli import CLIProgram, ansi, io, regex, terminal
+from cli import CLIProgram, ansi, io, terminal
 
 
 class Colors:
@@ -37,10 +37,13 @@ class Tally(CLIProgram):
     """
     A program that counts lines, words, and characters in files.
 
+    :cvar WORD_REGEX: Matches a whole word token.
     :ivar files_counted: Number of files counted.
     :ivar flags: Flags for determining if a count will be printed.
     :ivar totals: Total counts across all files.
     """
+
+    WORD_REGEX: Final[str] = r"\b\w+\b"
 
     def __init__(self) -> None:
         """Initialize a new ``Tally`` instance."""
@@ -98,7 +101,7 @@ class Tally(CLIProgram):
             character_count += line_length
             line_count += 1
             max_line_length = max(max_display_width, max_line_length)
-            words += len(re.findall(regex.Patterns.WORD, line))
+            words += len(re.findall(pattern=Tally.WORD_REGEX, string=line))
 
         return Counts(line_count, words, character_count, max_line_length)
 

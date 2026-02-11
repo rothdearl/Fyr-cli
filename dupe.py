@@ -99,10 +99,9 @@ class Dupe(CLIProgram):
             line = line.strip()
 
         if self.args.skip_fields:  # --skip-fields
-            field_separator = self.args.field_separator  # --field-separator
-            fields = [field for field in line.split(field_separator) if field]
+            fields = [field for field in line.split(self.args.field_separator) if field]  # Collect non-empty fields.
 
-            line = field_separator.join(fields[self.args.skip_fields:])
+            line = self.args.field_separator.join(fields[self.args.skip_fields:])
 
         if self.args.max_chars or self.args.skip_chars:  # --max_chars or --skip_chars
             start_index = self.args.skip_chars or 0
