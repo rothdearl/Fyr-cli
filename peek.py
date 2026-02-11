@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: peek.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that prints the first part of files.
-License: GNU GPLv3
-"""
+"""A program that prints the first part of files."""
 
 import argparse
 import os

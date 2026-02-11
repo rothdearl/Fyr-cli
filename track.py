@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: track.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that prints the last part of files, optionally following new lines.
-License: GNU GPLv3
-"""
+"""A program that prints the last part of files, optionally following new lines."""
 
 import argparse
 import os

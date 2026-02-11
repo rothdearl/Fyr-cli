@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: scan.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that prints lines that match patterns in files.
-License: GNU GPLv3
-"""
+"""A program that prints lines that match patterns in files."""
 
 import argparse
 import os

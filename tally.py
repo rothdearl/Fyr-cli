@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: tally.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that counts lines, words, and characters in files.
-License: GNU GPLv3
-"""
+"""A program that counts lines, words, and characters in files."""
 
 import argparse
 import re

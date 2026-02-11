@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: slice.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that splits lines in files into shell-style fields.
-License: GNU GPLv3
-"""
+"""A program that splits lines in files into shell-style fields."""
 
 import argparse
 import os
@@ -53,7 +47,7 @@ class Slice(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
         parser.add_argument("--fields", action="extend",
-                            help="print only the specified fields (counting from 1; duplicates allowed)", metavar="N",
+                            help="print only the specified fields (numbered from 1; duplicates allowed)", metavar="N",
                             nargs='+', type=int)
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
         parser.add_argument("--literal-quotes", action="store_true",

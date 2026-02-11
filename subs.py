@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: subs.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that replaces text in files.
-License: GNU GPLv3
-"""
+"""A program that replaces text in files."""
 
 import argparse
 import os

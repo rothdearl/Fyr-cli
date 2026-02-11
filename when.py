@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: when.py
-Author: Roth Earl
-Version: 1.0.6
-Description: A program that displays the current calendar, with optional date and time.
-License: GNU GPLv3
-"""
+"""A program that displays the current calendar, with optional date and time."""
 
 import argparse
 import calendar

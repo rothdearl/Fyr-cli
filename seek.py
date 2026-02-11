@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: seek.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that searches for files in a directory hierarchy.
-License: GNU GPLv3
-"""
+"""A program that searches for files in a directory hierarchy."""
 
 import argparse
 import os

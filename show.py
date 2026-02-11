@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: show.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that prints files to standard output.
-License: GNU GPLv3
-"""
+"""A program that prints files to standard output."""
 
 import argparse
 import os

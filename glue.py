@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: glue.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that concatenates files and standard input to standard output.
-License: GNU GPLv3
-"""
+"""A program that concatenates files and standard input to standard output."""
 
 import argparse
 import sys

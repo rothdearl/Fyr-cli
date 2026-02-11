@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: order.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that sorts files and prints them to standard output.
-License: GNU GPLv3
-"""
+"""A program that sorts files and prints them to standard output."""
 
 import argparse
 import datetime
@@ -35,10 +29,12 @@ class Order(CLIProgram):
 
     :cvar CURRENCY_SANITIZE_REGEX: Matches one or more consecutive characters that are not digits, commas, or periods.
     :cvar DIGIT_TOKEN_REGEX: Matches (and captures) one or more decimal digits.
+    :cvar NON_WORD_OR_WHITESPACE_REGEX: Matches one or more consecutive characters that are not Unicode word characters or whitespace.
     """
 
     CURRENCY_SANITIZE_REGEX: Final[str] = r"[^0-9,.]+"
     DIGIT_TOKEN_REGEX: Final[str] = r"(\d+)"
+    NON_WORD_OR_WHITESPACE_REGEX: Final[str] = r"[^\w\s]+"
 
     def __init__(self) -> None:
         """Initialize a new ``Order`` instance."""
@@ -59,9 +55,8 @@ class Order(CLIProgram):
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="sort lines in natural order (numbers numeric)")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="sort lines in random order")
-        parser.add_argument("-f", "--skip-fields",
-                            help="skip the first N fields when comparing (counting from 1; N >= 1)", metavar="N",
-                            type=int)
+        parser.add_argument("-f", "--skip-fields", help="skip the first N non-empty fields when comparing (N >= 1)",
+                            metavar="N", type=int)
         parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
@@ -98,7 +93,7 @@ class Order(CLIProgram):
         for field in self.get_sort_fields(line):
             negative = "-" in field or "(" in field and ")" in field  # Negative if field contains "-" or "(" and ")".
 
-            # Remove non-numeric characters and normalize.
+            # Remove non-numeric characters.
             number = self.normalize_number(re.sub(pattern=Order.CURRENCY_SANITIZE_REGEX, repl="", string=field))
 
             try:
@@ -136,8 +131,14 @@ class Order(CLIProgram):
         return self.get_sort_fields(line)
 
     def generate_dictionary_sort_key(self, line: str) -> list[str]:
-        """Return a sort key that orders lines using dictionary order."""
-        return self.get_sort_fields(line)
+        """Return a sort key that orders lines using dictionary order (case-insensitive, comparing only letters, digits, and spaces)."""
+        sort_fields = []
+
+        for field in self.get_sort_fields(line):
+            # Remove everything except letters, digits, and spaces.
+            sort_fields.append(re.sub(pattern=Order.NON_WORD_OR_WHITESPACE_REGEX, repl="", string=field))
+
+        return sort_fields
 
     def generate_natural_sort_key(self, line: str) -> list[tuple[int, float | str]]:
         """
@@ -262,12 +263,12 @@ class Order(CLIProgram):
 
     def sort_and_print_lines_from_files(self, files: Iterable[str]) -> None:
         """Read, sort, and print lines from each file."""
-        for _, file, text in io.read_text_files(files, self.encoding, on_error=self.print_error):
+        for _, file_name, text in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
-                self.print_file_header(file)
+                self.print_file_header(file_name)
                 self.sort_and_print_lines(text.readlines())
             except UnicodeDecodeError:
-                self.print_error(f"{file}: unable to read with {self.encoding}")
+                self.print_error(f"{file_name}: unable to read with {self.encoding}")
 
     def sort_and_print_lines_from_input(self) -> None:
         """Read, sort, and print lines from standard input until EOF."""

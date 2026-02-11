@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: dupe.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that filters duplicate or unique lines from files.
-License: GNU GPLv3
-"""
+"""A program that filters duplicate or unique lines from files."""
 
 import argparse
 import os

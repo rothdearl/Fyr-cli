@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Filename: num.py
-Author: Roth Earl
-Version: 1.3.14
-Description: A program that numbers lines from files and prints them to standard output.
-License: GNU GPLv3
-"""
+"""A program that numbers lines from files and prints them to standard output."""
 
 import argparse
 import os
