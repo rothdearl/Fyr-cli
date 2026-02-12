@@ -125,7 +125,7 @@ class Dupe(CLIProgram):
             if next_key != previous_key:
                 groups.append([])
 
-            groups[-1].append(line)
+            groups[-1].append(line)  # Always append to the last group.
             previous_key = next_key
 
         return groups
@@ -141,7 +141,7 @@ class Dupe(CLIProgram):
             groups = self.group_lines_by_key(lines).values()
 
         # Print groups.
-        last_group_index = len(groups) - 1
+        printed_group_count = 0
 
         for group_index, group in enumerate(groups):
             group_count = len(group)
@@ -172,13 +172,14 @@ class Dupe(CLIProgram):
                         self.print_file_header(origin_file)
                         file_header_printed = True
 
+                    if self.args.group and printed_group_count:  # --group
+                        print()
+
                     print(f"{group_count_str}{line}")
+                    printed_group_count += 1
 
                     if not (self.args.all_repeated or self.args.group):  # --all-repeated or --group
                         break
-
-            if self.args.group and group_index < last_group_index:  # --group
-                print()
 
     def group_and_print_lines_from_files(self, files: Iterable[str]) -> None:
         """Read and print lines from each file."""
