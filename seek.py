@@ -167,17 +167,13 @@ class Seek(CLIProgram):
         else:
             self.print_files(self.args.directories or [os.curdir])
 
-    def print_file(self, file: pathlib.Path, *, root: pathlib.Path) -> None:
+    def print_file(self, file: pathlib.Path) -> None:
         """Print the file if it matches the specified search criteria."""
         file_name = file.name or os.curdir  # The dot file has no name component.
         file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the dot file in the path.
 
         if not file.name and not self.args.dot_prefix:  # Skip the root directory if not --dot-prefix.
             return
-
-        # Exit early once --max-depth has been reached.
-        if self.args.max_depth < len(file.relative_to(root).parts):
-            raise SystemExit(0 if self.found_any_match else Seek.NO_MATCHES_EXIT_CODE)
 
         # Check if the file matches the search criteria and whether to invert the result.
         matches = self.file_matches_patterns(file_name, file_path) and self.file_matches_filters(file)
@@ -216,11 +212,15 @@ class Seek(CLIProgram):
             if os.path.exists(directory):
                 root = pathlib.Path(directory)
 
-                self.print_file(root, root=root)
+                self.print_file(root)
 
                 try:
                     for path in root.rglob("*"):
-                        self.print_file(path, root=root)
+                        # Stop processing directory once --max-depth has been reached.
+                        if self.args.max_depth < len(path.relative_to(root).parts):
+                            break
+
+                        self.print_file(path)
                 except PermissionError as error:
                     self.print_error(f"{error.filename}: permission denied")
             else:
