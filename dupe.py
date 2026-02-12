@@ -4,6 +4,7 @@
 """A program that filters duplicate or unique lines from files."""
 
 import argparse
+import csv
 import os
 import sys
 from collections.abc import Iterable
@@ -20,11 +21,17 @@ class Colors:
 
 
 class Dupe(CLIProgram):
-    """A program that filters duplicate or unique lines from files."""
+    """
+    A program that filters duplicate or unique lines from files.
+
+    :ivar use_csv_for_skip_fields: Whether to use CSV when skipping fields.
+    """
 
     def __init__(self) -> None:
         """Initialize a new ``Dupe`` instance."""
         super().__init__(name="dupe", version="1.3.15")
+
+        self.use_csv_for_skip_fields: bool = False
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -43,8 +50,9 @@ class Dupe(CLIProgram):
         print_group.add_argument("-g", "--group", action="store_true",
                                  help="show all lines, separating each group with an empty line")
         print_group.add_argument("-u", "--unique", action="store_true", help="print unique lines only")
-        parser.add_argument("-f", "--skip-fields", help="skip the first N non-empty fields when comparing (N >= 1)",
-                            metavar="N", type=int)
+        parser.add_argument("-f", "--skip-fields",
+                            help="skip the first N fields when comparing (empty fields count; N >= 1)", metavar="N",
+                            type=int)
         parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
         parser.add_argument("-m", "--max-chars", help="compare at most N characters (N >= 1)", metavar="N", type=int)
@@ -57,7 +65,7 @@ class Dupe(CLIProgram):
         parser.add_argument("--count-width", default=4, help="pad occurrence counts to width N (default: 4; N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--field-separator", default=" ",
-                            help="split lines into fields using SEP (default: <space>; affects --skip-fields)",
+                            help="split lines into fields using SEP (CSV-style; default: <space>; for --skip-fields)",
                             metavar="SEP")
         parser.add_argument("--ignore-blank", action="store_true", help="ignore blank lines")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
@@ -86,6 +94,14 @@ class Dupe(CLIProgram):
         if self.args.skip_fields is not None and self.args.skip_fields < 1:  # --skip-fields
             self.print_error_and_exit("--skip-fields must be >= 1")
 
+        # Decode escape sequences in --field-separator and determine whether to skip fields using CSV.
+        try:
+            self.args.field_separator = self.args.field_separator.encode().decode("unicode_escape")
+        except UnicodeDecodeError:
+            self.print_error_and_exit("--field-separator contains an invalid escape sequence")
+
+        self.use_csv_for_skip_fields = len(self.args.field_separator) == 1 and self.args.field_separator != '"'
+
         # Set --no-file-name to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_name = True
@@ -96,7 +112,10 @@ class Dupe(CLIProgram):
             line = line.strip()
 
         if self.args.skip_fields:  # --skip-fields
-            fields = [field for field in line.split(self.args.field_separator) if field]  # Collect non-empty fields.
+            if self.use_csv_for_skip_fields:
+                fields = next(csv.reader([line], delimiter=self.args.field_separator))
+            else:
+                fields = line.split(self.args.field_separator)
 
             line = self.args.field_separator.join(fields[self.args.skip_fields:])
 
@@ -143,8 +162,11 @@ class Dupe(CLIProgram):
         # Print groups.
         printed_group_count = 0
 
-        for group_index, group in enumerate(groups):
+        for group in groups:
             group_count = len(group)
+
+            if self.args.group and printed_group_count:  # --group
+                print()
 
             for line_index, line in enumerate(group):
                 can_print = True
@@ -171,9 +193,6 @@ class Dupe(CLIProgram):
                     if not file_header_printed:
                         self.print_file_header(origin_file)
                         file_header_printed = True
-
-                    if self.args.group and printed_group_count:  # --group
-                        print()
 
                     print(f"{group_count_str}{line}")
                     printed_group_count += 1

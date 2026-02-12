@@ -4,6 +4,7 @@
 """A program that sorts files and prints them to standard output."""
 
 import argparse
+import csv
 import datetime
 import os
 import random
@@ -30,6 +31,7 @@ class Order(CLIProgram):
     :cvar CURRENCY_SANITIZE_REGEX: Matches one or more consecutive characters that are not digits, commas, or periods.
     :cvar DIGIT_TOKEN_REGEX: Matches (and captures) one or more decimal digits.
     :cvar NON_WORD_OR_WHITESPACE_REGEX: Matches one or more consecutive characters that are not Unicode word characters or whitespace.
+    :ivar use_csv_for_skip_fields: Whether to use CSV when skipping fields.
     """
 
     CURRENCY_SANITIZE_REGEX: Final[str] = r"[^0-9,.]+"
@@ -39,6 +41,8 @@ class Order(CLIProgram):
     def __init__(self) -> None:
         """Initialize a new ``Order`` instance."""
         super().__init__(name="order", version="1.3.15")
+
+        self.use_csv_for_skip_fields: bool = False
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -55,8 +59,9 @@ class Order(CLIProgram):
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="sort lines in natural order (numbers numeric)")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="sort lines in random order")
-        parser.add_argument("-f", "--skip-fields", help="skip the first N non-empty fields when comparing (N >= 1)",
-                            metavar="N", type=int)
+        parser.add_argument("-f", "--skip-fields",
+                            help="skip the first N fields when comparing (empty fields count; N >= 1)", metavar="N",
+                            type=int)
         parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
@@ -65,7 +70,7 @@ class Order(CLIProgram):
         parser.add_argument("--decimal-separator", choices=("period", "comma"), default="period",
                             help="interpret numbers using period or comma as the decimal separator (default: period)")
         parser.add_argument("--field-separator", default=" ",
-                            help="split lines into fields using SEP (default: <space>; affects --skip-fields)",
+                            help="split lines into fields using SEP (CSV-style; default: <space>; for --skip-fields)",
                             metavar="SEP")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
         parser.add_argument("--no-blank", action="store_true", help="suppress blank lines")
@@ -84,6 +89,14 @@ class Order(CLIProgram):
         # Set --ignore-case to True if --dictionary-order=True or --natural-sort=True.
         if self.args.dictionary_order or self.args.natural_sort:
             self.args.ignore_case = True
+
+        # Decode escape sequences in --field-separator and determine whether to skip fields using CSV.
+        try:
+            self.args.field_separator = self.args.field_separator.encode().decode("unicode_escape")
+        except UnicodeDecodeError:
+            self.print_error_and_exit("--field-separator contains an invalid escape sequence")
+
+        self.use_csv_for_skip_fields = len(self.args.field_separator) == 1 and self.args.field_separator != '"'
 
         # Set --no-file-name to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
@@ -143,7 +156,7 @@ class Order(CLIProgram):
         sort_fields = []
 
         for field in self.get_sort_fields(line):
-            # Remove everything except letters, digits, and spaces.
+            # Remove everything except Unicode word characters and whitespace.
             sort_fields.append(re.sub(pattern=Order.NON_WORD_OR_WHITESPACE_REGEX, repl="", string=field))
 
         return sort_fields
@@ -177,11 +190,14 @@ class Order(CLIProgram):
         return segments
 
     def get_sort_fields(self, line: str) -> list[str]:
-        """Return the normalized fields used for sorting after skipping the first ``skip_fields`` non-empty fields."""
+        """Return the normalized fields used for sorting after applying ``--skip-fields``."""
         line = self.normalize_line(line)
 
         if self.args.skip_fields:  # --skip-fields
-            fields = [field for field in line.split(self.args.field_separator) if field]  # Collect non-empty fields.
+            if self.use_csv_for_skip_fields:
+                fields = next(csv.reader([line], delimiter=self.args.field_separator))
+            else:
+                fields = line.split(self.args.field_separator)
 
             return fields[self.args.skip_fields:]
 
