@@ -167,7 +167,7 @@ class Seek(CLIProgram):
         else:
             self.print_files(self.args.directories or [os.curdir])
 
-    def print_file(self, file: pathlib.Path) -> None:
+    def print_file(self, file: pathlib.Path, *, root: pathlib.Path) -> None:
         """Print the file if it matches the specified search criteria."""
         file_name = file.name or os.curdir  # The dot file has no name component.
         file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the dot file in the path.
@@ -175,8 +175,9 @@ class Seek(CLIProgram):
         if not file.name and not self.args.dot_prefix:  # Skip the root directory if not --dot-prefix.
             return
 
-        if self.args.max_depth < len(file.parts):  # --max-depth
-            return
+        # Exit early once --max-depth has been reached.
+        if self.args.max_depth < len(file.relative_to(root).parts):
+            raise SystemExit(0 if self.found_any_match else Seek.NO_MATCHES_EXIT_CODE)
 
         # Check if the file matches the search criteria and whether to invert the result.
         matches = self.file_matches_patterns(file_name, file_path) and self.file_matches_filters(file)
@@ -213,13 +214,13 @@ class Seek(CLIProgram):
         """Print files that match the specified search criteria in a directory hierarchy."""
         for directory in io.normalize_input_lines(directories):
             if os.path.exists(directory):
-                directory_hierarchy = pathlib.Path(directory)
+                root = pathlib.Path(directory)
 
-                self.print_file(directory_hierarchy)
+                self.print_file(root, root=root)
 
                 try:
-                    for path in directory_hierarchy.rglob("*"):
-                        self.print_file(path)
+                    for path in root.rglob("*"):
+                        self.print_file(path, root=root)
                 except PermissionError as error:
                     self.print_error(f"{error.filename}: permission denied")
             else:
