@@ -8,9 +8,10 @@ import os
 import pathlib
 import sys
 import time
+from collections.abc import Iterable
 from typing import Final, override
 
-from cli import CLIProgram, CompiledPatterns, ansi, patterns, terminal
+from cli import CLIProgram, CompiledPatterns, ansi, io, patterns, terminal
 
 
 class Colors:
@@ -49,26 +50,26 @@ class Seek(CLIProgram):
         parser.add_argument("directories", help="search starting points", metavar="DIRECTORIES", nargs="*")
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when matching")
         parser.add_argument("-n", "--name", action="extend",
-                            help="print files with names matching PATTERN (repeat -n to require all patterns to match)",
+                            help="print files whose names match PATTERN (repeat -n to require all patterns)",
                             metavar="PATTERN", nargs=1)
         parser.add_argument("-p", "--path", action="extend",
-                            help="print files with paths matching PATTERN (repeat -p to require all patterns to match)",
+                            help="print files whose names match PATTERN (repeat -p to require all patterns)",
                             metavar="PATTERN", nargs=1)
         parser.add_argument("-q", "--quiet", "--silent", action="store_true", help="suppress normal output")
         parser.add_argument("-s", "--no-messages", action="store_true", help="suppress file error messages")
         parser.add_argument("-v", "--invert-match", action="store_true", help="print files that do not match")
         parser.add_argument("--abs", action="store_true", help="print absolute paths")
         parser.add_argument("--color", choices=("on", "off"), default="on", help="use color for matches (default: on)")
-        parser.add_argument("--dot", action="store_true", help="include dot (.) files in output")
         parser.add_argument("--empty-only", action="store_true", help="print only empty files")
+        parser.add_argument("--include-root", action="store_true", help="include the starting directory (.) in output")
         modified_group.add_argument("--mtime-days",
-                                    help="print files modified less than or more than N days ago (use +N or -N)",
+                                    help="print files modified within N days or more than N days ago (use N or -N)",
                                     metavar="N", type=int)
         modified_group.add_argument("--mtime-hours",
-                                    help="print files modified less than or more than N hours ago (use +N or -N)",
+                                    help="print files modified within N days or more than N hours ago (use N or -N)",
                                     metavar="N", type=int)
         modified_group.add_argument("--mtime-mins",
-                                    help="print files modified less than or more than N minutes ago (use +N or -N)",
+                                    help="print files modified within N days or more than N minutes ago (use N or -N)",
                                     metavar="N", type=int)
         parser.add_argument("--max-depth", default=sys.maxsize,
                             help="descend at most N levels below the starting points (N >= 1)", metavar="N", type=int)
@@ -84,7 +85,7 @@ class Seek(CLIProgram):
         super().check_for_errors()
 
         if not self.found_any_match:
-            SystemExit(Seek.NO_MATCHES_EXIT_CODE)
+            raise SystemExit(Seek.NO_MATCHES_EXIT_CODE)
 
     @override
     def check_parsed_arguments(self) -> None:
@@ -103,47 +104,47 @@ class Seek(CLIProgram):
                                                            on_error=self.print_error_and_exit)
 
     def file_matches_filters(self, file: pathlib.Path) -> bool:
-        """Check whether the file matches any of the filters."""
-        matches_filters = True
+        """Return whether the file matches all enabled filters."""
+        matches_all_filters = True
 
         try:
             if self.args.type:  # --type
                 is_dir = file.is_dir()
 
                 if self.args.type == "d":
-                    matches_filters = is_dir
+                    matches_all_filters = is_dir
                 else:
-                    matches_filters = not is_dir
+                    matches_all_filters = not is_dir
 
-            if matches_filters and self.args.empty_only:  # --empty-only
+            if matches_all_filters and self.args.empty_only:  # --empty-only
                 if file.is_dir():
-                    matches_filters = not os.listdir(file)
+                    matches_all_filters = not os.listdir(file)
                 else:
-                    matches_filters = not file.lstat().st_size
+                    matches_all_filters = not file.lstat().st_size
 
             # --mtime-days, --mtime-hours, or --mtime-mins
-            if matches_filters and any((self.args.mtime_days, self.args.mtime_hours, self.args.mtime_mins)):
+            if matches_all_filters and any((self.args.mtime_days, self.args.mtime_hours, self.args.mtime_mins)):
                 if self.args.mtime_days:
-                    last_modified = self.args.mtime_days * 86400  # Convert seconds to days.
+                    last_modified = self.args.mtime_days * 86400  # Convert days to seconds.
                 elif self.args.mtime_hours:
-                    last_modified = self.args.mtime_hours * 3600  # Convert seconds to hours.
+                    last_modified = self.args.mtime_hours * 3600  # Convert hours to seconds.
                 else:
-                    last_modified = self.args.mtime_mins * 60  # Convert seconds to minutes.
+                    last_modified = self.args.mtime_mins * 60  # Convert minutes to seconds.
 
                 difference = time.time() - file.lstat().st_mtime
 
                 if last_modified < 0:
-                    matches_filters = difference < abs(last_modified)
+                    matches_all_filters = difference < abs(last_modified)
                 else:
-                    matches_filters = difference > last_modified
+                    matches_all_filters = difference > last_modified
         except PermissionError:
-            matches_filters = False
+            matches_all_filters = False
             self.print_error(f"{file}: permission denied")
 
-        return matches_filters
+        return matches_all_filters
 
     def file_matches_patterns(self, file_name: str, file_path: str) -> bool:
-        """Return whether the file name and file path match their patterns."""
+        """Return whether the ``file_name`` and ``file_path`` match all provided pattern groups."""
         if not patterns.matches_all_patterns(file_name, self.name_patterns):  # --name
             return False
 
@@ -167,16 +168,16 @@ class Seek(CLIProgram):
 
     def print_file(self, file: pathlib.Path) -> None:
         """Print the file if it matches the specified search criteria."""
-        file_name = file.name or os.curdir  # The dot file does not have a file name.
-        file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the dot file in the path.
+        file_name = file.name or os.curdir  # The root has no name component.
+        file_path = str(file.parent) if len(file.parts) > 1 else ""  # Do not use the root directory in the path.
 
-        if not file.name and not self.args.dot:  # Skip the dot file if not --dot.
+        if not file.name and not self.args.include_root:  # Skip the root directory if not --include-root.
             return
 
         if self.args.max_depth < len(file.parts):  # --max-depth
             return
 
-        # Check if the file matches the search criteria and whether to invert the result:
+        # Check if the file matches the search criteria and whether to invert the result.
         matches = self.file_matches_patterns(file_name, file_path) and self.file_matches_filters(file)
 
         if matches == self.args.invert_match:  # --invert-match
@@ -193,11 +194,11 @@ class Seek(CLIProgram):
             file_path = patterns.color_pattern_matches(file_path, self.path_patterns, color=Colors.MATCH)
 
         if self.args.abs:  # --abs
-            if file.name:  # Do not join the current working directory with the dot file.
+            if file.name:  # Do not join the current working directory with the root directory.
                 path = os.path.join(pathlib.Path.cwd(), file_path, file_name)
             else:
                 path = os.path.join(pathlib.Path.cwd(), file_path)
-        elif self.args.dot and file.name:  # Do not join the current directory with the dot file.
+        elif self.args.include_root and file.name:  # Do not join the current directory with the root directory.
             path = os.path.join(os.curdir, file_path, file_name)
         else:
             path = os.path.join(file_path, file_name)
@@ -207,9 +208,9 @@ class Seek(CLIProgram):
 
         print(path)
 
-    def print_files(self, directory_root: str) -> None:
-        """Print files that match the specified search criteria in a directory hierarchy."""
-        for directory in directory_root:
+    def print_files(self, directories: Iterable[str]) -> None:
+        """Print files that match the specified search criteria in directories."""
+        for directory in io.normalize_input_lines(directories):
             if os.path.exists(directory):
                 directory_hierarchy = pathlib.Path(directory)
 
