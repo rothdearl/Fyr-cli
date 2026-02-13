@@ -169,7 +169,7 @@ class Seek(CLIProgram):
 
     def print_path(self, path: pathlib.Path) -> None:
         """Print the path if it matches the specified search criteria."""
-        is_current_directory = not bool(path.name)
+        is_current_directory = path.name == ""
         name_part = path.name or os.curdir  # The current directory has no name component.
         path_part = str(path.parent) if len(path.parts) > 1 else ""  # Do not include '.' in the path part.
 
