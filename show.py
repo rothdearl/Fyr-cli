@@ -6,7 +6,7 @@
 import argparse
 import os
 import sys
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable, Sequence
 from typing import Final, override
 
 from cli import CLIProgram, ansi, io, terminal
@@ -15,26 +15,19 @@ from cli import CLIProgram, ansi, io, terminal
 class Colors:
     """Namespace for terminal color constants."""
     COLON: Final[str] = ansi.Colors.BRIGHT_CYAN
-    EOL: Final[str] = ansi.Colors.BRIGHT_BLUE
+    END_MARKER: Final[str] = ansi.Colors.BRIGHT_BLUE
     FILE_NAME: Final[str] = ansi.Colors.BRIGHT_MAGENTA
     LINE_NUMBER: Final[str] = ansi.Colors.BRIGHT_GREEN
-    SPACE: Final[str] = ansi.Colors.BRIGHT_CYAN
-    TAB: Final[str] = ansi.Colors.BRIGHT_CYAN
+    SPACE_MARKER: Final[str] = ansi.Colors.BRIGHT_CYAN
+    TAB_MARKER: Final[str] = ansi.Colors.BRIGHT_CYAN
 
 
 class Whitespace:
-    """
-    Namespace for whitespace replacement constants.
-
-    :cvar EOL: Replacement for the EOL.
-    :cvar SPACE: Replacement for a space.
-    :cvar TAB: Replacement for a tab.
-    :cvar TRAILING_SPACE: Replacement for a trailing space.
-    """
-    EOL: Final[str] = "$"
-    SPACE: Final[str] = "·"
-    TAB: Final[str] = ">···"
-    TRAILING_SPACE: Final[str] = "~"
+    """Namespace for whitespace replacement constants."""
+    END_MARKER: Final[str] = "$"
+    SPACE_MARKER: Final[str] = "·"
+    TAB_MARKER: Final[str] = ">···"
+    TRAILING_SPACE_MARKER: Final[str] = "~"
 
 
 class Show(CLIProgram):
@@ -59,13 +52,14 @@ class Show(CLIProgram):
                             metavar="N", type=int)
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names, line numbers, and whitespace (default: on)")
-        parser.add_argument("--ends", action="store_true", help=f"display '{Whitespace.EOL}' at end of each line")
+        parser.add_argument("--ends", action="store_true",
+                            help=f"display '{Whitespace.END_MARKER}' at end of each line")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
         parser.add_argument("--spaces", action="store_true",
-                            help=f"display spaces as '{Whitespace.SPACE}' and trailing spaces as '{Whitespace.TRAILING_SPACE}'")
+                            help=f"display spaces as '{Whitespace.SPACE_MARKER}' and trailing spaces as '{Whitespace.TRAILING_SPACE_MARKER}'")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
-        parser.add_argument("--tabs", action="store_true", help=f"display tab characters as '{Whitespace.TAB}'")
+        parser.add_argument("--tabs", action="store_true", help=f"display tab characters as '{Whitespace.TAB_MARKER}'")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
@@ -77,7 +71,7 @@ class Show(CLIProgram):
             self.print_error_and_exit("--max-lines must be >= 1")
 
         if self.args.start == 0:  # --start
-            self.print_error_and_exit("--start cannot = 0")
+            self.print_error_and_exit("--start cannot be 0")
 
         # Set --no-file-name to True if there are no files and --stdin-files=False.
         if not self.args.files and not self.args.stdin_files:
@@ -102,7 +96,7 @@ class Show(CLIProgram):
             self.print_lines_from_input()
 
     def print_file_header(self, file_name: str) -> None:
-        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name` is set."""
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name`` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 
@@ -113,28 +107,29 @@ class Show(CLIProgram):
 
             print(file_header)
 
-    def print_lines(self, lines: Collection[str]) -> None:
-        """Print lines to standard output according to command-line arguments."""
-        line_start = len(lines) + self.args.start + 1 if self.args.start < 0 else self.args.start
-        line_end = line_start + self.args.max_lines - 1
-        line_min = min(self.args.max_lines, len(lines)) if self.args.max_lines else len(lines)
-        padding = len(str(line_min))
+    def print_lines(self, lines: Sequence[str]) -> None:
+        """Print lines to standard output, applying numbering and whitespace rendering."""
+        line_start = self.args.start if self.args.start > 0 else len(lines) + self.args.start + 1
+        line_end = min(len(lines), line_start + self.args.max_lines - 1)
+        padding = len(str(line_end))
 
         for line_number, line in enumerate(io.normalize_input_lines(lines), start=1):
             if line_start <= line_number <= line_end:
+                rendered = line
+
                 if self.args.spaces:  # --spaces
-                    line = self.render_spaces(line)
+                    rendered = self.render_spaces(rendered)
 
                 if self.args.tabs:  # --tabs
-                    line = self.render_tabs(line)
+                    rendered = self.render_tabs(rendered)
 
                 if self.args.ends:  # --ends
-                    line = self.render_ends(line)
+                    rendered = self.render_ends(rendered)
 
                 if self.args.line_numbers:  # --line-numbers
-                    line = self.render_line_number(line, line_number, padding)
+                    rendered = self.render_line_number(rendered, line_number, padding)
 
-                print(line)
+                print(rendered)
 
     def print_lines_from_files(self, files: Iterable[str]) -> None:
         """Read and print lines from each file."""
@@ -151,42 +146,41 @@ class Show(CLIProgram):
 
     def render_ends(self, line: str) -> str:
         """Append a visible end-of-line marker to the line."""
-        end_index = len(line)
-
         if self.print_color:
-            return f"{line[:end_index]}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}"
+            return f"{line}{Colors.END_MARKER}{Whitespace.END_MARKER}{ansi.RESET}"
 
-        return f"{line[:end_index]}{Whitespace.EOL}"
+        return f"{line}{Whitespace.END_MARKER}"
 
     def render_line_number(self, line: str, line_number: int, padding: int) -> str:
         """Prefix the line with a line number, right-aligned to the specified padding."""
         if self.print_color:
-            return f"{Colors.LINE_NUMBER}{line_number:>{padding}}{Colors.COLON}{ansi.RESET} {line}"
+            return f"{Colors.LINE_NUMBER}{line_number:>{padding}}{ansi.RESET} {line}"
 
         return f"{line_number:>{padding}} {line}"
 
     def render_spaces(self, line: str) -> str:
         """Replace spaces and trailing spaces with visible markers."""
-        trailing_count = len(line) - len(line.rstrip(" "))  # Count trailing spaces.
+        rendered = line
+        trailing_count = len(rendered) - len(rendered.rstrip(" "))  # Count trailing spaces.
 
         # Truncate trailing spaces.
-        line = line[:-trailing_count] if trailing_count else line
+        rendered = rendered[:-trailing_count] if trailing_count else rendered
 
         if self.print_color:
-            line = line.replace(" ", f"{Colors.SPACE}{Whitespace.SPACE}{ansi.RESET}")
-            line = line + Colors.SPACE + (Whitespace.TRAILING_SPACE * trailing_count) + ansi.RESET
+            rendered = rendered.replace(" ", f"{Colors.SPACE_MARKER}{Whitespace.SPACE_MARKER}{ansi.RESET}")
+            rendered = rendered + Colors.SPACE_MARKER + (Whitespace.TRAILING_SPACE_MARKER * trailing_count) + ansi.RESET
         else:
-            line = line.replace(" ", Whitespace.SPACE)
-            line = line + (Whitespace.TRAILING_SPACE * trailing_count)
+            rendered = rendered.replace(" ", Whitespace.SPACE_MARKER)
+            rendered = rendered + (Whitespace.TRAILING_SPACE_MARKER * trailing_count)
 
-        return line
+        return rendered
 
     def render_tabs(self, line: str) -> str:
         """Replace tabs with visible markers."""
         if self.print_color:
-            return line.replace("\t", f"{Colors.TAB}{Whitespace.TAB}{ansi.RESET}")
+            return line.replace("\t", f"{Colors.TAB_MARKER}{Whitespace.TAB_MARKER}{ansi.RESET}")
 
-        return line.replace("\t", Whitespace.TAB)
+        return line.replace("\t", Whitespace.TAB_MARKER)
 
 
 if __name__ == "__main__":

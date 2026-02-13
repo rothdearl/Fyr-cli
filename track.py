@@ -124,7 +124,7 @@ class Track(CLIProgram):
                 thread.join()
 
     def print_file_header(self, file_name: str) -> None:
-        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name` is set."""
+        """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name`` is set."""
         if not self.args.no_file_name:  # --no-file-name
             file_header = os.path.relpath(file_name) if file_name else "(standard input)"
 

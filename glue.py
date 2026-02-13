@@ -13,20 +13,15 @@ from cli import CLIProgram, ansi, io, terminal
 
 class Colors:
     """Namespace for terminal color constants."""
-    EOL: Final[str] = ansi.Colors.BRIGHT_BLUE
+    END_MARKER: Final[str] = ansi.Colors.BRIGHT_BLUE
     NUMBER: Final[str] = ansi.Colors.BRIGHT_GREEN
-    TAB: Final[str] = ansi.Colors.BRIGHT_CYAN
+    TAB_MARKER: Final[str] = ansi.Colors.BRIGHT_CYAN
 
 
 class Whitespace:
-    """
-    Namespace for whitespace replacement constants.
-
-    :cvar EOL: Replacement for the EOL.
-    :cvar TAB: Replacement for a tab.
-    """
-    EOL: Final[str] = "$"
-    TAB: Final[str] = ">···"
+    """Namespace for whitespace replacement constants."""
+    END_MARKER: Final[str] = "$"
+    TAB_MARKER: Final[str] = ">···"
 
 
 class Glue(CLIProgram):
@@ -56,9 +51,9 @@ class Glue(CLIProgram):
         blank_group.add_argument("-s", "--squeeze-blank", action="store_true", help="suppress repeated blank lines")
         blank_group.add_argument("--no-blank", action="store_true", help="suppress blank lines")
         parser.add_argument("-E", "--show-ends", action="store_true",
-                            help=f"display '{Whitespace.EOL}' at end of each line")
+                            help=f"display '{Whitespace.END_MARKER}' at end of each line")
         parser.add_argument("-T", "--show-tabs", action="store_true",
-                            help=f"display tab characters as '{Whitespace.TAB}'")
+                            help=f"display tab characters as '{Whitespace.TAB_MARKER}'")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for numbers and whitespace (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
@@ -93,7 +88,7 @@ class Glue(CLIProgram):
             self.print_lines_from_input()
 
     def print_lines(self, lines: Iterable[str]) -> None:
-        """Print lines to standard output applying numbering and whitespace rendering and blank-line suppression."""
+        """Print lines to standard output, applying numbering, whitespace rendering, and blank-line handling."""
         blank_line_count = 0
         number_lines = self.args.number or self.args.number_nonblank  # --number or --number-nonblank
 
@@ -140,22 +135,24 @@ class Glue(CLIProgram):
 
     def render_whitespace(self, line: str) -> str:
         """Render visible representations of tabs and end-of-line markers."""
+        rendered = line
+
         if self.args.show_tabs:  # --show-tabs
             if self.print_color:
-                line = line.replace("\t", f"{Colors.TAB}{Whitespace.TAB}{ansi.RESET}")
+                rendered = rendered.replace("\t", f"{Colors.TAB_MARKER}{Whitespace.TAB_MARKER}{ansi.RESET}")
             else:
-                line = line.replace("\t", Whitespace.TAB)
+                rendered = rendered.replace("\t", Whitespace.TAB_MARKER)
 
         if self.args.show_ends:  # --show-ends
             if self.print_color:
-                line = f"{line}{Colors.EOL}{Whitespace.EOL}{ansi.RESET}"
+                rendered = f"{rendered}{Colors.END_MARKER}{Whitespace.END_MARKER}{ansi.RESET}"
             else:
-                line = f"{line}{Whitespace.EOL}"
+                rendered = f"{rendered}{Whitespace.END_MARKER}"
 
-        return line
+        return rendered
 
     def should_suppress_blank_line(self, blank_line_count: int) -> bool:
-        """Determine whether a blank line should be suppressed based on blank-line handling options."""
+        """Return whether a blank line should be suppressed."""
         if self.args.no_blank:  # --no-blank
             return True
 

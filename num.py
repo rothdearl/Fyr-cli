@@ -159,7 +159,7 @@ class Num(CLIProgram):
         return f"{line_number:{self.format_prefix}{self.args.number_width}}{self.args.number_separator}{line}"
 
     def should_suppress_blank_line(self, blank_line_count: int) -> bool:
-        """Determine whether a blank line should be suppressed based on blank-line handling options."""
+        """Return whether a blank line should be suppressed."""
         if self.args.no_blank:  # --no-blank
             return True
 
