@@ -64,13 +64,13 @@ class Seek(CLIProgram):
                             help="prefix relative paths with './' (print '.' for current directory)")
         parser.add_argument("--empty-only", action="store_true", help="print only empty files")
         modified_group.add_argument("--mtime-days",
-                                    help="print files modified within N days or more than N days ago (use N or -N)",
+                                    help="print files modified within N days or older than N days ago (use N or -N)",
                                     metavar="N", type=int)
         modified_group.add_argument("--mtime-hours",
-                                    help="print files modified within N hours or more than N hours ago (use N or -N)",
+                                    help="print files modified within N hours or older than N hours ago (use N or -N)",
                                     metavar="N", type=int)
         modified_group.add_argument("--mtime-mins",
-                                    help="print files modified within N minutes or more than N minutes ago (use N or -N)",
+                                    help="print files modified within N minutes or older than N minutes ago (use N or -N)",
                                     metavar="N", type=int)
         parser.add_argument("--max-depth", default=sys.maxsize,
                             help="descend at most N levels below the starting points (N >= 1)", metavar="N", type=int)
@@ -169,8 +169,8 @@ class Seek(CLIProgram):
 
     def print_path(self, path: pathlib.Path) -> None:
         """Print the path if it matches the specified search criteria."""
-        name_part = path.name or os.curdir  # The dot file has no name component.
-        path_part = str(path.parent) if len(path.parts) > 1 else ""  # Do not use the dot file in the path.
+        name_part = path.name or os.curdir  # The '.' file has no name component.
+        path_part = str(path.parent) if len(path.parts) > 1 else ""  # Do not use '.' in the path.
 
         if not path.name and not self.args.dot_prefix:  # Skip the root directory if not --dot-prefix.
             return
@@ -192,22 +192,22 @@ class Seek(CLIProgram):
             path_part = patterns.color_pattern_matches(path_part, self.path_patterns, color=Colors.MATCH)
 
         if self.args.abs:  # --abs
-            if path.name:  # Do not join the current working directory with the dot file.
-                path = os.path.join(pathlib.Path.cwd(), path_part, name_part)
+            if path.name:  # Do not join the current working directory with '.'.
+                display_path = os.path.join(pathlib.Path.cwd(), path_part, name_part)
             else:
-                path = os.path.join(pathlib.Path.cwd(), path_part)
-        elif self.args.dot_prefix and path.name:  # Do not join the current directory with the dot file.
-            path = os.path.join(os.curdir, path_part, name_part)
+                display_path = os.path.join(pathlib.Path.cwd(), path_part)
+        elif self.args.dot_prefix and path.name:  # Do not join the current directory with '.'.
+            display_path = os.path.join(os.curdir, path_part, name_part)
         else:
-            path = os.path.join(path_part, name_part)
+            display_path = os.path.join(path_part, name_part)
 
         if self.args.quotes:  # --quotes
-            path = f"\"{path}\""
+            display_path = f"\"{display_path}\""
 
-        print(path)
+        print(display_path)
 
     def print_paths(self, directories: Iterable[str]) -> None:
-        """Traverse each starting directory up to --max-depth and print paths that match the search criteria."""
+        """Traverse each starting directory up to ``args.max_depth`` and print paths that match the search criteria."""
         for directory in io.normalize_input_lines(directories):
             if os.path.exists(directory):
                 root = pathlib.Path(directory)
@@ -216,7 +216,7 @@ class Seek(CLIProgram):
 
                 try:
                     for path in root.rglob("*"):
-                        # Stop processing directory once --max-depth has been reached.
+                        # Stop processing starting directory once --max-depth is exceeded.
                         if self.args.max_depth < len(path.relative_to(root).parts):
                             break
 
