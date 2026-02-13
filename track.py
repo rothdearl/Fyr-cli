@@ -7,7 +7,7 @@ import argparse
 import os
 import sys
 import time
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable, Sequence
 from threading import Thread
 from typing import Final, override
 
@@ -56,14 +56,10 @@ class Track(CLIProgram):
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_name = True
 
-    def follow_file(self, file_name: str, print_file_name: bool, polling_interval: float = .5) -> None:
-        """
-        Follow the file for new lines.
+    def follow_file(self, file_name: str, print_file_name_on_update) -> None:
+        """Follow the file for new lines."""
+        polling_interval: float = .5
 
-        :param file_name: File to follow.
-        :param print_file_name: Whether to print the file name with each update.
-        :param polling_interval: Duration between each check.
-        """
         try:
             # Get the initial file content.
             with open(file_name, mode="rt", encoding=self.encoding) as f:
@@ -86,7 +82,7 @@ class Track(CLIProgram):
                         else:
                             print(f"data modified in: {file_name}")
 
-                        if print_file_name:
+                        if print_file_name_on_update:
                             self.print_file_header(file_name)
 
                         print(next_content[print_index:])
@@ -101,26 +97,26 @@ class Track(CLIProgram):
     @override
     def main(self) -> None:
         """Run the program."""
-        files_printed = []
+        printed_files = []
 
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
-                files_printed.extend(self.print_lines_from_files(sys.stdin))
+                printed_files.extend(self.print_lines_from_files(sys.stdin))
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
                     self.print_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                files_printed.extend(self.print_lines_from_files(self.args.files))
+                printed_files.extend(self.print_lines_from_files(self.args.files))
         elif self.args.files:
-            files_printed.extend(self.print_lines_from_files(self.args.files))
+            printed_files.extend(self.print_lines_from_files(self.args.files))
         else:
             self.print_lines_from_input()
 
-        if self.args.follow and files_printed:  # --follow
+        if self.args.follow and printed_files:  # --follow
             # Start threads and wait for them to terminate.
-            for thread in self.start_following_threads(files_printed, print_file_name=len(files_printed) > 1):
+            for thread in self.start_following_threads(printed_files, print_file_name_on_update=len(printed_files) > 1):
                 thread.join()
 
     def print_file_header(self, file_name: str) -> None:
@@ -135,7 +131,7 @@ class Track(CLIProgram):
 
             print(file_header)
 
-    def print_lines(self, lines: Collection[str]) -> None:
+    def print_lines(self, lines: Sequence[str]) -> None:
         """Print lines to standard output."""
         max_lines = self.args.lines  # --lines
         skip_to_line = len(lines) - max_lines
@@ -149,23 +145,18 @@ class Track(CLIProgram):
                 print(line)
 
     def print_lines_from_files(self, files: Iterable[str]) -> list[str]:
-        """
-        Read and print lines from each file.
-
-        :param files: Iterable of files to read.
-        :return: List of file names successfully printed, used to determine which are eligible for following.
-        """
-        files_printed = []
+        """Read and print lines from each file, returning the names of files successfully printed."""
+        printed_files = []
 
         for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
             try:
                 self.print_file_header(file_info.file_name)
                 self.print_lines(file_info.text_stream.readlines())
-                files_printed.append(file_info.file_name)
+                printed_files.append(file_info.file_name)
             except UnicodeDecodeError:
                 self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
-        return files_printed
+        return printed_files
 
     def print_lines_from_input(self) -> None:
         """Read and print lines from standard input until EOF."""
@@ -175,19 +166,13 @@ class Track(CLIProgram):
             if not self.args.follow:  # --follow on standard input is an infinite loop until Ctrl-C.
                 return
 
-    def start_following_threads(self, files: Collection[str], *, print_file_name: bool) -> list[Thread]:
-        """
-        Start a thread for each file and return the started ``Thread`` objects.
-
-        :param files: Files to follow.
-        :param print_file_name: Whether to print the file name with each update.
-        :return: List of started threads that are following files.
-        """
+    def start_following_threads(self, files: Iterable[str], *, print_file_name_on_update: bool) -> list[Thread]:
+        """Start a thread for each file and return the started ``Thread`` objects."""
         threads = []
 
         for file_name in files:
-            thread = Thread(target=self.follow_file, args=(file_name, print_file_name), name=f"following-{file_name}")
-            thread.daemon = True
+            thread = Thread(target=self.follow_file, args=(file_name, print_file_name_on_update),
+                            name=f"following-{file_name}")
             thread.start()
             threads.append(thread)
 

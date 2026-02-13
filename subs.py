@@ -7,7 +7,7 @@ import argparse
 import os
 import re
 import sys
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from typing import Final, override
 
 from cli import CLIProgram, ansi, io, patterns, terminal
@@ -42,7 +42,7 @@ class Subs(CLIProgram):
         parser.add_argument("-e", "--find", action="extend", help="match PATTERN", metavar="PATTERN", nargs=1,
                             required=True)
         parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
-        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
+        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when matching")
         parser.add_argument("-r", "--replace", help="replace matches with literal STRING", metavar="STRING",
                             required=True)
         parser.add_argument("--color", choices=("on", "off"), default="on",
@@ -64,7 +64,17 @@ class Subs(CLIProgram):
         if self.args.max_replacements < 1:  # --max-replacements
             self.print_error_and_exit("--max-replacements must be >= 1")
 
-    def iterate_replaced_lines(self, lines: Iterable[str]) -> Iterable[str]:
+        # Set --no-file-name to True if there are no files and --stdin-files=False.
+        if not self.args.files and not self.args.stdin_files:
+            self.args.no_file_name = True
+
+    def compile_patterns(self) -> None:
+        """Compile search patterns."""
+        if compiled := patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
+                                                 on_error=self.print_error_and_exit):
+            self.pattern = patterns.compile_combined_patterns(compiled, ignore_case=self.args.ignore_case)
+
+    def iterate_replaced_lines(self, lines: Iterable[str]) -> Iterator[str]:
         """Yield lines with pattern matches replaced."""
         for line in io.normalize_input_lines(lines):
             if self.pattern:
@@ -75,11 +85,7 @@ class Subs(CLIProgram):
     @override
     def main(self) -> None:
         """Run the program."""
-        self.precompile_patterns()
-
-        # Set --no-file-name to True if there are no files and --stdin-files=False.
-        if not self.args.files and not self.args.stdin_files:
-            self.args.no_file_name = True
+        self.compile_patterns()
 
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:  # --stdin-files
@@ -96,12 +102,6 @@ class Subs(CLIProgram):
         else:
             self.print_replaced_lines_from_input()
 
-    def precompile_patterns(self) -> None:
-        """Pre-compile search patterns."""
-        if compiled := patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
-                                                 on_error=self.print_error_and_exit):
-            self.pattern = patterns.compile_combined_patterns(compiled, ignore_case=self.args.ignore_case)
-
     def print_file_header(self, file_name: str) -> None:
         """Print the file name (or "(standard input)" if empty), followed by a colon, unless ``args.no_file_name`` is set."""
         if not self.args.no_file_name:  # --no-file-name
@@ -115,7 +115,7 @@ class Subs(CLIProgram):
             print(file_header)
 
     def print_replaced_lines(self, lines: Iterable[str]) -> None:
-        """Read, replace, and print lines from each file."""
+        """Print replaced lines."""
         for line in self.iterate_replaced_lines(lines):
             print(line)
 

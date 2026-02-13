@@ -33,7 +33,7 @@ class Tally(CLIProgram):
 
     :cvar WORD_REGEX: Matches a whole word token.
     :ivar files_counted: Number of files counted.
-    :ivar flags: Flags for determining if a count will be printed.
+    :ivar flags: Flags for determining if a count attribute will be printed.
     :ivar totals: Total counts across all files.
     """
 
@@ -44,7 +44,7 @@ class Tally(CLIProgram):
         super().__init__(name="tally", version="1.3.15")
 
         self.files_counted: int = 0
-        self.flags: Final[list[bool]] = [False, False, False, False]  # [Lines, words, characters, max line length]
+        self.flags: Final[list[bool]] = [False, False, False, False]  # [lines, words, characters, max_line_length]
         self.totals: Counts = Counts(0, 0, 0, 0)
 
     def add_counts_to_totals(self, counts: Counts) -> None:
