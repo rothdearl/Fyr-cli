@@ -169,10 +169,10 @@ class Seek(CLIProgram):
 
     def print_path(self, path: pathlib.Path) -> None:
         """Print the path if it matches the specified search criteria."""
-        name_part = path.name or os.curdir  # The '.' file has no name component.
+        name_part = path.name or os.curdir  # The '.' has no name component.
         path_part = str(path.parent) if len(path.parts) > 1 else ""  # Do not use '.' in the path.
 
-        if not path.name and not self.args.dot_prefix:  # Skip the root directory if not --dot-prefix.
+        if not path.name and not self.args.dot_prefix:  # Skip '.' if not --dot-prefix.
             return
 
         # Check if the path matches the search criteria and whether to invert the result.
@@ -216,8 +216,10 @@ class Seek(CLIProgram):
 
                 try:
                     for path in root.rglob("*"):
+                        depth = len(path.relative_to(root).parts)
+
                         # Stop processing starting directory once --max-depth is exceeded.
-                        if self.args.max_depth < len(path.relative_to(root).parts):
+                        if self.args.max_depth < depth:
                             break
 
                         self.print_path(path)
