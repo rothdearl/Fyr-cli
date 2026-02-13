@@ -20,15 +20,10 @@ class FileInfo(NamedTuple):
     text_stream: TextIO
 
 
-def _remove_trailing_newline(string: str) -> str:
-    """Remove a single trailing newline, if present."""
-    return string.removesuffix("\n")
-
-
 def normalize_input_lines(lines: Iterable[str]) -> Iterator[str]:
     """Yield lines with a single trailing newline removed, if present."""
     for line in lines:
-        yield _remove_trailing_newline(line)
+        yield remove_trailing_newline(line)
 
 
 def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> Iterator[FileInfo]:
@@ -41,7 +36,7 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
     :return: Iterator yielding ``FileInfo`` objects, where the text stream is only valid until the next yield.
     """
     for file_index, raw_name in enumerate(files):
-        file_name = _remove_trailing_newline(raw_name)  # Normalize file name.
+        file_name = remove_trailing_newline(raw_name)  # Normalize file name.
 
         try:
             if os.path.isdir(file_name):
@@ -59,6 +54,11 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
             on_error(f"{file_name}: unable to read file")
 
 
+def remove_trailing_newline(string: str) -> str:
+    """Remove a single trailing newline, if present."""
+    return string.removesuffix("\n")
+
+
 def write_text_to_file(file_name: str, text: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> None:
     """
     Write text lines to a file, ensuring exactly one trailing newline is written for each input line.
@@ -71,7 +71,7 @@ def write_text_to_file(file_name: str, text: Iterable[str], encoding: str, *, on
     try:
         with open(file_name, mode="wt", encoding=encoding) as f:
             for line in text:
-                f.write(_remove_trailing_newline(line) + "\n")
+                f.write(remove_trailing_newline(line) + "\n")
     except PermissionError:
         on_error(f"{file_name}: permission denied")
     except UnicodeEncodeError:
@@ -84,5 +84,6 @@ __all__ = [
     "FileInfo",
     "normalize_input_lines",
     "read_text_files",
+    "remove_trailing_newline",
     "write_text_to_file",
 ]

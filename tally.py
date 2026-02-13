@@ -44,7 +44,7 @@ class Tally(CLIProgram):
         super().__init__(name="tally", version="1.3.15")
 
         self.files_counted: int = 0
-        self.flags: Final[list[bool]] = [False, False, False, False]  # [lines, words, characters, max_line_length]
+        self.flags: list[bool] = [False, False, False, False]  # [lines, words, characters, max_line_length]
         self.totals: Counts = Counts(0, 0, 0, 0)
 
     def add_counts_to_totals(self, counts: Counts) -> None:
@@ -85,17 +85,17 @@ class Tally(CLIProgram):
         return parser
 
     def calculate_counts(self, text: Iterable[str]) -> Counts:
-        """Calculate the counts for the lines, words, characters, and the maximum line length in the text."""
+        """Calculate counts for the lines, words, characters, and the maximum line length in the text."""
         character_count, line_count, max_line_length, words = 0, 0, 0, 0
 
-        for line in text:
-            line_length = len(line)
-            max_display_width = len(line) + (line.count("\t") * self.args.tab_width) - 1  # -1 for the newline.
+        for raw_line in text:
+            display_line = io.remove_trailing_newline(raw_line)
+            max_display_width = len(display_line.expandtabs(self.args.tab_width))
 
-            character_count += line_length
+            character_count += len(raw_line)
             line_count += 1
             max_line_length = max(max_display_width, max_line_length)
-            words += len(re.findall(pattern=Tally.WORD_REGEX, string=line))
+            words += len(re.findall(pattern=Tally.WORD_REGEX, string=raw_line))
 
         return Counts(line_count, words, character_count, max_line_length)
 
@@ -107,9 +107,6 @@ class Tally(CLIProgram):
 
         if self.args.tab_width < 1:  # --tab-width
             self.print_error_and_exit("--tab-width must be >= 1")
-
-        # -1 one for the tab character.
-        self.args.tab_width -= 1
 
         # Check which count flags were provided: --lines, --words, --chars, or --max-line-length
         for index, flag in enumerate((self.args.lines, self.args.words, self.args.chars, self.args.max_line_length)):

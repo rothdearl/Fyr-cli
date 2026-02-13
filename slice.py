@@ -43,12 +43,12 @@ class Slice(CLIProgram):
         parser.add_argument("-s", "--separator", default="\t", help="separate output fields with SEP (default: <tab>)",
                             metavar="SEP")
         parser.add_argument("-u", "--unique", action="store_true",
-                            help="print each field only once, in ascending order")
+                            help="normalize field selection to unique field numbers in ascending order (overrides --fields)")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
         parser.add_argument("--fields", action="extend",
-                            help="print only the specified fields (numbered from 1; duplicates allowed)", metavar="N",
-                            nargs='+', type=int)
+                            help="print only the specified fields (numbered from 1; order preserved; duplicates allowed)",
+                            metavar="N", nargs="+", type=int)
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
         parser.add_argument("--literal-quotes", action="store_true",
                             help="treat quotes as ordinary characters (disable shell-style parsing)")

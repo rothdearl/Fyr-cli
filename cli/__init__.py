@@ -38,6 +38,7 @@ from .io import (
     FileInfo,
     normalize_input_lines,
     read_text_files,
+    remove_trailing_newline,
     write_text_to_file,
 )
 
