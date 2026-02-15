@@ -59,7 +59,6 @@ class Seek(CLIProgram):
         parser.add_argument("-s", "--no-messages", action="store_true", help="suppress file error messages")
         parser.add_argument("-v", "--invert-match", action="store_true", help="print files that do not match")
         parser.add_argument("--abs", action="store_true", help="print absolute paths")
-        parser.add_argument("--color", choices=("on", "off"), default="on", help="use color for matches (default: on)")
         parser.add_argument("--dot-prefix", action="store_true",
                             help="prefix relative paths with './' (print '.' for current directory)")
         parser.add_argument("--empty-only", action="store_true", help="print only empty files")
@@ -76,6 +75,7 @@ class Seek(CLIProgram):
                             help="descend at most N levels below the starting points (N >= 1)", metavar="N", type=int)
         parser.add_argument("--quotes", action="store_true", help="print file paths in double quotes")
         parser.add_argument("--type", choices=("d", "f"), help="print only directories (d) or regular files (f)")
+        parser.add_argument("--color", choices=("on", "off"), default="on", help="use color for matches (default: on)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser

@@ -52,10 +52,12 @@ class Slice(CLIProgram):
         parser.add_argument("--literal-quotes", action="store_true",
                             help="treat quotes as ordinary characters (use with --mode shell)")
         parser.add_argument("--keep-empty", action="store_true", help="keep empty fields (default: drop)")
+        parser.add_argument("--keep-empty-lines", action="store_true",
+                            help="print empty lines when no fields are produced (default: drop)")
         parser.add_argument("-s", "--separator", default="\t", help="separate output fields with SEP (default: <tab>)",
                             metavar="SEP")
         parser.add_argument("-u", "--unique", action="store_true",
-                            help="normalize field selection to unique field numbers in ascending order (overrides --fields)")
+                            help="normalize field selection to unique field numbers in ascending order (use with --fields)")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
@@ -139,15 +141,15 @@ class Slice(CLIProgram):
             print(file_header)
 
     def split_and_print_lines(self, lines: Iterable[str]) -> None:
-        """Split lines into fields and print."""
+        """Split lines into fields and print them."""
         quote = '"' if self.args.quotes == "d" else "'" if self.args.quotes == "s" else ""  # --quotes
         separator = self.args.separator  # --separator
 
         for line in io.normalize_input_lines(lines):
             fields = self.split_line(line)
 
-            # Do not print blank lines when there are no fields to print.
-            if not fields:
+            # Do not print blank lines unless --keep-empty-lines=True.
+            if not fields and not self.args.keep_empty_lines:
                 continue
 
             print(separator.join(f"{quote}{field}{quote}" for field in fields))

@@ -48,6 +48,8 @@ class Glue(CLIProgram):
         parser.add_argument("files", help="read input from FILES", metavar="FILES", nargs="*")
         number_group.add_argument("-b", "--number-nonblank", action="store_true", help="number nonblank lines")
         number_group.add_argument("-n", "--number", action="store_true", help="number lines")
+        parser.add_argument("--number-width", default=6, help="pad line numbers to width N (default: 6; N >= 1)",
+                            metavar="N", type=int)
         blank_group.add_argument("-s", "--squeeze-blank", action="store_true", help="suppress repeated blank lines")
         blank_group.add_argument("--no-blank", action="store_true", help="suppress blank lines")
         parser.add_argument("-E", "--show-ends", action="store_true",
@@ -57,8 +59,6 @@ class Glue(CLIProgram):
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for numbers and whitespace (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
-        parser.add_argument("--number-width", default=6, help="pad line numbers to width N (default: 6; N >= 1)",
-                            metavar="N", type=int)
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")

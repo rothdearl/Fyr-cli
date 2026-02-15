@@ -48,27 +48,27 @@ class Order(CLIProgram):
         sort_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("files", help="read input from FILES", metavar="FILES", nargs="*")
-        parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading whitespace")
         sort_group.add_argument("-c", "--currency-sort", action="store_true", help="sort lines by currency value")
         sort_group.add_argument("-d", "--dictionary-order", action="store_true", help="sort lines in dictionary order")
         sort_group.add_argument("-D", "--date-sort", action="store_true", help="sort lines by date")
         sort_group.add_argument("-n", "--natural-sort", action="store_true",
                                 help="sort lines in natural order (numbers numeric)")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="sort lines in random order")
+        parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading whitespace")
+        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
+        parser.add_argument("--decimal-separator", choices=("period", "comma"), default="period",
+                            help="interpret numbers using period or comma as the decimal separator (default: period)")
         parser.add_argument("-f", "--skip-fields", help="skip the first N non-empty fields when comparing (N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--field-separator", default=" ",
                             help="split lines into fields using SEP (default: <space>; use with --skip-fields)",
                             metavar="SEP")
-        parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
-        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
+        parser.add_argument("--no-blank", action="store_true", help="suppress blank lines")
+        parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
-        parser.add_argument("--decimal-separator", choices=("period", "comma"), default="period",
-                            help="interpret numbers using period or comma as the decimal separator (default: period)")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
-        parser.add_argument("--no-blank", action="store_true", help="suppress blank lines")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")

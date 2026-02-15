@@ -48,20 +48,20 @@ class Num(CLIProgram):
 
         parser.add_argument("files", help="read input from FILES", metavar="FILES", nargs="*")
         parser.add_argument("-b", "--number-nonblank", action="store_true", help="number nonblank lines")
-        parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
-        blank_group.add_argument("-s", "--squeeze-blank", action="store_true", help="suppress repeated blank lines")
-        blank_group.add_argument("--no-blank", action="store_true", help="suppress blank lines")
+        parser.add_argument("--number-start", default=1, help="start numbering at N (default: 1; N >= 0)", metavar="N",
+                            type=int)
         parser.add_argument("-w", "--number-width", default=6, help="pad line numbers to width N (default: 6; N >= 1)",
                             metavar="N", type=int)
-        parser.add_argument("--color", choices=("on", "off"), default="on",
-                            help="use color for file names and line numbers (default: on)")
-        parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
         parser.add_argument("--number-format", choices=("ln", "rn", "rz"), default="rn",
                             help="format line numbers (ln=left, rn=right, rz=zero-padded; default: rn)")
         parser.add_argument("--number-separator", default="\t",
                             help="separate line numbers and output lines with SEP (default: <tab>)", metavar="SEP")
-        parser.add_argument("--number-start", default=1, help="start numbering at N (default: 1; N >= 0)", metavar="N",
-                            type=int)
+        blank_group.add_argument("-s", "--squeeze-blank", action="store_true", help="suppress repeated blank lines")
+        blank_group.add_argument("--no-blank", action="store_true", help="suppress blank lines")
+        parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
+        parser.add_argument("--color", choices=("on", "off"), default="on",
+                            help="use color for file names and line numbers (default: on)")
+        parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")

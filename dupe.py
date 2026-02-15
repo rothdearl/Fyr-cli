@@ -34,32 +34,32 @@ class Dupe(CLIProgram):
         print_group = parser.add_mutually_exclusive_group()
 
         parser.add_argument("files", help="read input from FILES", metavar="FILES", nargs="*")
-        parser.add_argument("-a", "--adjacent", action="store_true",
-                            help="compare adjacent lines only (do not search entire file)")
-        parser.add_argument("-c", "--count", action="store_true", help="prefix lines with the number of occurrences")
         print_group.add_argument("-d", "--repeated", action="store_true", help="print one duplicate line per group")
         print_group.add_argument("-D", "--all-repeated", action="store_true",
                                  help="print all duplicate lines per group")
         print_group.add_argument("-g", "--group", action="store_true",
                                  help="show all lines, separating each group with an empty line")
         print_group.add_argument("-u", "--unique", action="store_true", help="print unique lines only")
+        parser.add_argument("-c", "--count", action="store_true", help="prefix lines with the number of occurrences")
+        parser.add_argument("--count-width", default=4, help="pad occurrence counts to width N (default: 4; N >= 1)",
+                            metavar="N", type=int)
+        parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
+        parser.add_argument("-a", "--adjacent", action="store_true",
+                            help="compare adjacent lines only (do not search entire file)")
+        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
+        parser.add_argument("--ignore-blank", action="store_true", help="ignore blank lines")
         parser.add_argument("-f", "--skip-fields", help="skip the first N non-empty fields when comparing (N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--field-separator", default=" ",
                             help="split lines into fields using SEP (default: <space>; use with --skip-fields)",
                             metavar="SEP")
-        parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
-        parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
-        parser.add_argument("-m", "--max-chars", help="compare at most N characters (N >= 1)", metavar="N", type=int)
         parser.add_argument("-s", "--skip-chars", help="skip the first N characters when comparing (N >= 0)",
                             metavar="N", type=int)
+        parser.add_argument("-m", "--max-chars", help="compare at most N characters (N >= 1)", metavar="N", type=int)
         parser.add_argument("-w", "--skip-whitespace", action="store_true",
                             help="ignore leading and trailing whitespace when comparing")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names and counts (default: on)")
-        parser.add_argument("--count-width", default=4, help="pad occurrence counts to width N (default: 4; N >= 1)",
-                            metavar="N", type=int)
-        parser.add_argument("--ignore-blank", action="store_true", help="ignore blank lines")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
         parser.add_argument("--stdin-files", action="store_true",
                             help="treat standard input as a list of FILES (one per line)")
