@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""A program that displays current ip-based location information."""
+"""A program that displays current IP-based location information."""
 
 import argparse
 import sys
@@ -32,7 +32,7 @@ def get_json_value(*, data: JsonObject, key: str) -> str:
 
 class Where:
     """
-    A program that displays current ip-based location information.
+    A program that displays current IP-based location information.
 
     :cvar IPINFO_URL: Endpoint returning public IP geolocation data in JSON.
     :cvar NAME: Program name.
@@ -52,13 +52,18 @@ class Where:
         """Run the program."""
         try:
             response = requests.get(Where.IPINFO_URL, timeout=5)
+
+            # Ensure a successful response.
+            response.raise_for_status()
+
+            # Get JSON data.
             data = response.json()
 
-            # Print the geolocation information.
+            # Print geolocation information.
             for key in ("city", "region", "postal", "country", "timezone"):
                 print(f"{key}: {get_json_value(data=data, key=key)}")
 
-            # Optionally print the geographic location and public IP address.
+            # Optionally print geographic location and public IP address.
             if self.args.coordinates:  # --coordinates
                 print(f"coordinates: {get_json_value(data=data, key='loc')}")
 
