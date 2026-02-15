@@ -27,7 +27,7 @@ class Slice(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Slice`` instance."""
-        super().__init__(name="slice", version="1.3.16")
+        super().__init__(name="slice", version="1.3.17")
 
         self.selected_fields: list[int] = []
 
