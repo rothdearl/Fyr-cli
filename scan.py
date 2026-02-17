@@ -83,7 +83,7 @@ class Scan(TextProgram):
             raise SystemExit(Scan.NO_MATCHES_EXIT_CODE)
 
     def collect_matches(self, lines: Iterable[str]) -> list[Match]:
-        """Collect matches of (line_number, line) for lines matching the configured patterns."""
+        """Return a list of ``Match`` objects for lines matching the configured patterns."""
         matches = []
 
         for line_number, line in enumerate(io.normalize_input_lines(lines), start=1):
@@ -109,7 +109,7 @@ class Scan(TextProgram):
 
     @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream in ``FileInfo``."""
+        """Process the text stream contained in ``FileInfo``."""
         self.print_matches(file_info.text_stream, origin_file=file_info.file_name)
 
     def is_printing_counts(self) -> bool:
@@ -132,7 +132,6 @@ class Scan(TextProgram):
         elif self.args.files:
             self.process_text_files(self.args.files)
         else:
-            self.args.no_file_name = True  # No file header if no files.
             self.print_matches_from_input()
 
     @override

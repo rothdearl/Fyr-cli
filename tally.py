@@ -101,7 +101,7 @@ class Tally(TextProgram):
 
     @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream in ``FileInfo``."""
+        """Process the text stream contained in ``FileInfo``."""
         counts = self.calculate_counts(file_info.text_stream)
 
         self.files_counted += 1

@@ -67,7 +67,7 @@ class Glue(TextProgram):
 
     @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream in ``FileInfo``."""
+        """Process the text stream contained in ``FileInfo``."""
         self.print_lines(file_info.text_stream)
 
     @override
