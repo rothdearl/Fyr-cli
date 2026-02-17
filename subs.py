@@ -28,7 +28,7 @@ class Subs(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Subs`` instance."""
-        super().__init__(name="subs", version="1.3.18")
+        super().__init__(name="subs", version="1.4.0")
 
         self.pattern: re.Pattern[str] | None = None
 
@@ -64,6 +64,16 @@ class Subs(TextProgram):
                                                  on_error=self.print_error_and_exit):
             self.pattern = patterns.compile_combined_patterns(compiled, ignore_case=self.args.ignore_case)
 
+    @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        if self.args.in_place:
+            io.write_text_to_file(file_info.file_name, self.iterate_replaced_lines(file_info.text_stream.readlines()),
+                                  self.encoding, on_error=self.print_error)
+        else:
+            self.print_file_header(file_info.file_name)
+            self.print_replaced_lines(file_info.text_stream.readlines())
+
     def iterate_replaced_lines(self, lines: Iterable[str]) -> Iterator[str]:
         """Yield lines with pattern matches replaced."""
         for line in io.normalize_input_lines(lines):
@@ -79,16 +89,16 @@ class Subs(TextProgram):
 
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.process_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
                     self.print_replaced_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                self.process_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.process_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.print_replaced_lines_from_input()
 
@@ -119,20 +129,6 @@ class Subs(TextProgram):
     def print_replaced_lines_from_input(self) -> None:
         """Read, replace, and print lines from standard input until EOF."""
         self.print_replaced_lines(sys.stdin)
-
-    def process_files(self, files: Iterable[str]) -> None:
-        """Process files by replacing matches and printing results or writing changes in place."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            if self.args.in_place:
-                io.write_text_to_file(file_info.file_name,
-                                      self.iterate_replaced_lines(file_info.text_stream.readlines()), self.encoding,
-                                      on_error=self.print_error)
-            else:
-                try:
-                    self.print_file_header(file_info.file_name)
-                    self.print_replaced_lines(file_info.text_stream.readlines())
-                except UnicodeDecodeError:
-                    self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     @override
     def validate_option_ranges(self) -> None:

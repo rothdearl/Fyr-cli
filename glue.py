@@ -33,7 +33,7 @@ class Glue(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Glue`` instance."""
-        super().__init__(name="glue", version="1.3.18")
+        super().__init__(name="glue", version="1.4.0")
 
         self.line_number: int = 0
 
@@ -66,18 +66,23 @@ class Glue(TextProgram):
         return parser
 
     @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        self.print_lines(file_info.text_stream)
+
+    @override
     def main(self) -> None:
         """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.print_lines_from_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             else:
                 self.print_lines(sys.stdin)
 
             if self.args.files:  # Process any additional files.
-                self.print_lines_from_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.print_lines_from_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.print_lines_from_input()
 
@@ -107,14 +112,6 @@ class Glue(TextProgram):
                 line = self.render_number(line)
 
             print(line)
-
-    def print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read and print lines from each file."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                self.print_lines(file_info.text_stream)
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_lines_from_input(self) -> None:
         """Read and print lines from standard input until EOF."""

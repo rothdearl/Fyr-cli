@@ -33,7 +33,7 @@ class Scan(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Scan`` instance."""
-        super().__init__(name="scan", version="1.3.18", error_exit_code=2)
+        super().__init__(name="scan", version="1.4.0", error_exit_code=2)
 
         self.found_any_match: bool = False
         self.patterns: CompiledPatterns = []
@@ -82,6 +82,11 @@ class Scan(TextProgram):
             self.patterns = patterns.compile_patterns(self.args.find, ignore_case=self.args.ignore_case,
                                                       on_error=self.print_error_and_exit)
 
+    @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        self.print_matches(file_info.text_stream, origin_file=file_info.file_name)
+
     def is_printing_counts(self) -> bool:
         """Return whether ``args.count`` or ``args.count_nonzero`` is set."""
         return self.args.count or self.args.count_nonzero
@@ -93,14 +98,14 @@ class Scan(TextProgram):
 
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.print_matches_from_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             elif standard_input := sys.stdin.readlines():
                 self.print_matches(standard_input, origin_file="")
 
             if self.args.files:  # Process any additional files.
-                self.print_matches_from_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.print_matches_from_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.args.no_file_name = True  # No file header if no files.
             self.print_matches_from_input()
@@ -164,14 +169,6 @@ class Scan(TextProgram):
                         print(f"{line_number:>{padding}}:", end="")
 
                 print(line)
-
-    def print_matches_from_files(self, files: Iterable[str]) -> None:
-        """Read and print matches from each file."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                self.print_matches(file_info.text_stream, origin_file=file_info.file_name)
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_matches_from_input(self) -> None:
         """Read and print matches from standard input until EOF."""

@@ -24,7 +24,7 @@ class Dupe(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Dupe`` instance."""
-        super().__init__(name="dupe", version="1.3.18")
+        super().__init__(name="dupe", version="1.4.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -172,14 +172,6 @@ class Dupe(TextProgram):
                     if not (self.args.all_repeated or self.args.group):
                         break
 
-    def group_and_print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read and print lines from each file."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                self.group_and_print_lines(file_info.text_stream, origin_file=file_info.file_name)
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
-
     def group_and_print_lines_from_input(self) -> None:
         """Read and print lines from standard input until EOF."""
         self.group_and_print_lines(sys.stdin, origin_file="")
@@ -202,19 +194,24 @@ class Dupe(TextProgram):
         return group_map
 
     @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        self.group_and_print_lines(file_info.text_stream, origin_file=file_info.file_name)
+
+    @override
     def main(self) -> None:
         """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.group_and_print_lines_from_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.group_and_print_lines(standard_input, origin_file="")
 
             if self.args.files:  # Process any additional files.
-                self.group_and_print_lines_from_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.group_and_print_lines_from_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.group_and_print_lines_from_input()
 

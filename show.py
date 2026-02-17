@@ -6,7 +6,7 @@
 import argparse
 import os
 import sys
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from typing import Final, override
 
 from cli import TextProgram, ansi, io, terminal
@@ -35,7 +35,7 @@ class Show(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Show`` instance."""
-        super().__init__(name="show", version="1.3.18")
+        super().__init__(name="show", version="1.4.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -65,20 +65,26 @@ class Show(TextProgram):
         return parser
 
     @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        self.print_file_header(file_info.file_name)
+        self.print_lines(file_info.text_stream.readlines())
+
+    @override
     def main(self) -> None:
         """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.print_lines_from_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
                     self.print_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                self.print_lines_from_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.print_lines_from_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.print_lines_from_input()
 
@@ -124,15 +130,6 @@ class Show(TextProgram):
                     rendered = self.render_line_number(rendered, line_number, padding)
 
                 print(rendered)
-
-    def print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read and print lines from each file."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                self.print_file_header(file_info.file_name)
-                self.print_lines(file_info.text_stream.readlines())
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_lines_from_input(self) -> None:
         """Read and print lines from standard input until EOF."""

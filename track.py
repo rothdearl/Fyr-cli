@@ -25,7 +25,7 @@ class Track(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Track`` instance."""
-        super().__init__(name="track", version="1.3.18")
+        super().__init__(name="track", version="1.4.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -88,22 +88,28 @@ class Track(TextProgram):
             self.print_error(f"{file_name} is no longer accessible")
 
     @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        self.print_file_header(file_info.file_name)
+        self.print_lines(file_info.text_stream.readlines())
+
+    @override
     def main(self) -> None:
         """Run the program."""
         printed_files = []
 
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                printed_files.extend(self.print_lines_from_files(sys.stdin))
+                printed_files.extend(self.process_text_files(sys.stdin))
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
                     self.print_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                printed_files.extend(self.print_lines_from_files(self.args.files))
+                printed_files.extend(self.process_text_files(self.args.files))
         elif self.args.files:
-            printed_files.extend(self.print_lines_from_files(self.args.files))
+            printed_files.extend(self.process_text_files(self.args.files))
         else:
             self.print_lines_from_input()
 
@@ -142,20 +148,6 @@ class Track(TextProgram):
         for index, line in enumerate(io.normalize_input_lines(lines), start=1):
             if index > skip_to_line:
                 print(line)
-
-    def print_lines_from_files(self, files: Iterable[str]) -> list[str]:
-        """Read and print lines from each file, returning the names of files successfully printed."""
-        printed_files = []
-
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                self.print_file_header(file_info.file_name)
-                self.print_lines(file_info.text_stream.readlines())
-                printed_files.append(file_info.file_name)
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
-
-        return printed_files
 
     def print_lines_from_input(self) -> None:
         """Read and print lines from standard input until EOF."""

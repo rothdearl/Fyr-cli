@@ -27,7 +27,7 @@ class Slice(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Slice`` instance."""
-        super().__init__(name="slice", version="1.3.18")
+        super().__init__(name="slice", version="1.4.0")
 
         self.selected_fields: list[int] = []
 
@@ -98,20 +98,26 @@ class Slice(TextProgram):
             self.print_error_and_exit("--unique is only used with --fields")
 
     @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        self.print_file_header(file_info.file_name)
+        self.split_and_print_lines(file_info.text_stream)
+
+    @override
     def main(self) -> None:
         """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.split_and_print_lines_from_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
                     self.split_and_print_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                self.split_and_print_lines_from_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.split_and_print_lines_from_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.split_and_print_lines_from_input()
 
@@ -152,15 +158,6 @@ class Slice(TextProgram):
                 continue
 
             print(self.args.separator.join(f"{quote}{field}{quote}" for field in fields))
-
-    def split_and_print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read, split, and print lines from each file."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                self.print_file_header(file_info.file_name)
-                self.split_and_print_lines(file_info.text_stream)
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def split_and_print_lines_from_input(self) -> None:
         """Read, split, and print lines from standard input until EOF."""

@@ -41,7 +41,7 @@ class Tally(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Tally`` instance."""
-        super().__init__(name="tally", version="1.3.18")
+        super().__init__(name="tally", version="1.4.0")
 
         self.files_counted: int = 0
         self.flags: list[bool] = [False, False, False, False]  # [lines, words, characters, max_line_length]
@@ -100,6 +100,15 @@ class Tally(TextProgram):
         return Counts(line_count, words, character_count, max_line_length)
 
     @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        counts = self.calculate_counts(file_info.text_stream)
+
+        self.files_counted += 1
+        self.add_counts_to_totals(counts)
+        self.print_counts(counts, origin_file=file_info.file_name)
+
+    @override
     def initialize_runtime_state(self) -> None:
         """Initialize internal state derived from parsed options."""
         super().initialize_runtime_state()
@@ -119,7 +128,7 @@ class Tally(TextProgram):
         """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.print_counts_from_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     counts = self.calculate_counts(standard_input)
@@ -129,9 +138,9 @@ class Tally(TextProgram):
                     self.print_counts(counts, origin_file="(standard input)" if self.args.files else "")
 
             if self.args.files:  # Process any additional files.
-                self.print_counts_from_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.print_counts_from_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.print_counts_from_input()
 
@@ -158,18 +167,6 @@ class Tally(TextProgram):
                 print(f" {origin_file}")
         else:
             print()
-
-    def print_counts_from_files(self, files: Iterable[str]) -> None:
-        """Read, count, and print from each file."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                counts = self.calculate_counts(file_info.text_stream)
-
-                self.files_counted += 1
-                self.add_counts_to_totals(counts)
-                self.print_counts(counts, origin_file=file_info.file_name)
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def print_counts_from_input(self) -> None:
         """Read, count, and print from standard input until EOF."""

@@ -9,7 +9,6 @@ import os
 import random
 import re
 import sys
-from collections.abc import Iterable
 from typing import Final, override
 
 from dateutil.parser import ParserError, parse
@@ -38,7 +37,7 @@ class Order(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Order`` instance."""
-        super().__init__(name="order", version="1.3.18")
+        super().__init__(name="order", version="1.4.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -183,20 +182,26 @@ class Order(TextProgram):
         return fields
 
     @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process a single text stream contained in a ``FileInfo`` instance."""
+        self.print_file_header(file_info.file_name)
+        self.sort_and_print_lines(file_info.text_stream.readlines())
+
+    @override
     def main(self) -> None:
         """Run the program."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
-                self.sort_and_print_lines_from_files(sys.stdin)
+                self.process_text_files(sys.stdin)
             else:
                 if standard_input := sys.stdin.readlines():
                     self.print_file_header(file_name="")
                     self.sort_and_print_lines(standard_input)
 
             if self.args.files:  # Process any additional files.
-                self.sort_and_print_lines_from_files(self.args.files)
+                self.process_text_files(self.args.files)
         elif self.args.files:
-            self.sort_and_print_lines_from_files(self.args.files)
+            self.process_text_files(self.args.files)
         else:
             self.sort_and_print_lines_from_input()
 
@@ -266,15 +271,6 @@ class Order(TextProgram):
                 continue
 
             print(line)
-
-    def sort_and_print_lines_from_files(self, files: Iterable[str]) -> None:
-        """Read, sort, and print lines from each file."""
-        for file_info in io.read_text_files(files, self.encoding, on_error=self.print_error):
-            try:
-                self.print_file_header(file_info.file_name)
-                self.sort_and_print_lines(file_info.text_stream.readlines())
-            except UnicodeDecodeError:
-                self.print_error(f"{file_info.file_name}: unable to read with {self.encoding}")
 
     def sort_and_print_lines_from_input(self) -> None:
         """Read, sort, and print lines from standard input until EOF."""
