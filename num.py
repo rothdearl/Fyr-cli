@@ -98,7 +98,7 @@ class Num(TextProgram):
     def number_lines(self, lines: Iterable[str]) -> None:
         """Number and print lines to standard output according to command-line arguments."""
         blank_line_count = 0
-        format_prefix = Num.FORMAT_PREFIXES[self.args.number_format]
+        format_prefix = self.FORMAT_PREFIXES[self.args.number_format]
         line_number = self.args.number_start - 1
 
         for line in io.normalize_input_lines(lines):

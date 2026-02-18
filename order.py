@@ -97,7 +97,7 @@ class Order(TextProgram):
             negative = "-" in field or "(" in field and ")" in field  # Negative if field contains "-" or "(" and ")".
 
             # Remove non-numeric characters.
-            number = self.normalize_number(re.sub(pattern=Order.CURRENCY_SANITIZE_REGEX, repl="", string=field))
+            number = self.normalize_number(re.sub(pattern=self.CURRENCY_SANITIZE_REGEX, repl="", string=field))
 
             try:
                 segments.append((0, float(number) * (-1 if negative else 1)))  # Convert to float and apply sign.
@@ -133,7 +133,7 @@ class Order(TextProgram):
 
         for field in self.get_sort_fields(line):
             # Remove everything except Unicode word characters and whitespace.
-            sort_fields.append(re.sub(pattern=Order.NON_WORD_OR_WHITESPACE_REGEX, repl="", string=field))
+            sort_fields.append(re.sub(pattern=self.NON_WORD_OR_WHITESPACE_REGEX, repl="", string=field))
 
         return sort_fields
 
@@ -151,7 +151,7 @@ class Order(TextProgram):
                 segments.append((0, float(self.normalize_number(field))))
             except ValueError:
                 # Split field into chunks and check for digits.
-                for chunk in re.split(pattern=Order.DIGIT_TOKEN_REGEX, string=field):
+                for chunk in re.split(pattern=self.DIGIT_TOKEN_REGEX, string=field):
                     if not chunk:  # Skip empty chunks.
                         continue
 

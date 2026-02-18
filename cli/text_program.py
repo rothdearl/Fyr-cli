@@ -33,11 +33,11 @@ class TextProgram(CLIProgram, ABC):
     @staticmethod
     def _filter_empty_file_names(stdin_files: Iterable[str]) -> Iterator[str]:
         """Yield file names, excluding lines that are empty after removing one trailing newline."""
-        for file_names in normalize_input_lines(stdin_files):
-            if not file_names:
+        for file_name in normalize_input_lines(stdin_files):
+            if not file_name:
                 continue
 
-            yield file_names
+            yield file_name
 
     @abstractmethod
     def handle_text_stream(self, file_info: FileInfo) -> None:
@@ -73,7 +73,7 @@ class TextProgram(CLIProgram, ABC):
     @final
     def process_text_files_from_stdin(self) -> list[str]:
         """Process file names read from standard input."""
-        return self.process_text_files(TextProgram._filter_empty_file_names(sys.stdin))
+        return self.process_text_files(self._filter_empty_file_names(sys.stdin))
 
     @final
     def render_file_header(self, file_name: str, *, file_name_color: str, colon_color: str) -> str:

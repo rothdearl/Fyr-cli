@@ -70,10 +70,9 @@ class When(CLIProgram):
         """Return the text wrapped in reverse-video ANSI escape codes."""
         return f"{ansi.TextAttributes.REVERSE}{text}{ansi.RESET}"
 
-    @staticmethod
-    def highlight_day_within_bounds(line: str, day: str, bounds: CalendarQuarterColumnBounds) -> str:
+    def highlight_day_within_bounds(self, line: str, day: str, bounds: CalendarQuarterColumnBounds) -> str:
         """Return the line with a day highlighted only within the bounds."""
-        colored_text = line[bounds.start:bounds.end].replace(day, When.highlight(day))
+        colored_text = line[bounds.start:bounds.end].replace(day, self.highlight(day))
 
         return line[:bounds.start] + colored_text + line[bounds.end:]
 
@@ -84,14 +83,14 @@ class When(CLIProgram):
 
         match self.args.calendar:
             case "m":
-                When.print_month(text_calendar)
+                self.print_month(text_calendar)
             case "q":
-                When.print_quarter(text_calendar)
+                self.print_quarter(text_calendar)
             case _:
-                When.print_year(text_calendar)
+                self.print_year(text_calendar)
 
         if self.args.datetime:
-            date_format = self.args.datetime_format or When.DEFAULT_DATETIME_FORMAT
+            date_format = self.args.datetime_format or self.DEFAULT_DATETIME_FORMAT
             now = datetime.datetime.now()
 
             try:
@@ -100,8 +99,7 @@ class When(CLIProgram):
             except ValueError:  # Raised for invalid format directives on Windows; unreachable on POSIX.
                 self.print_error_and_exit("invalid datetime format")
 
-    @staticmethod
-    def print_month(text_calendar: calendar.TextCalendar) -> None:
+    def print_month(self, text_calendar: calendar.TextCalendar) -> None:
         """Print the current month."""
         date = datetime.date.today()
         month = text_calendar.formatmonth(date.year, date.month, w=0, l=0).splitlines()
@@ -116,17 +114,16 @@ class When(CLIProgram):
 
         for output in month[2:]:
             if not found_day and day in output:
-                output = output.replace(day, When.highlight(day))
+                output = output.replace(day, self.highlight(day))
                 found_day = True
 
             print(output)
 
-    @staticmethod
-    def print_quarter(text_calendar: calendar.TextCalendar) -> None:
+    def print_quarter(self, text_calendar: calendar.TextCalendar) -> None:
         """Print all months in the current quarter."""
         date = datetime.date.today()
         month_name = calendar.month_name[date.month]
-        quarter_bounds = When.get_quarter_column_bounds_for_month(date.month)
+        quarter_bounds = self.get_quarter_column_bounds_for_month(date.month)
         year = text_calendar.formatyear(date.year, w=2, l=1, c=6, m=3).splitlines()  # Use defaults for consistency.
 
         # Print year header and empty line.
@@ -143,7 +140,7 @@ class When(CLIProgram):
             quarter_header_index += 1
 
         # Highlight current month name.
-        year[quarter_header_index] = year[quarter_header_index].replace(month_name, When.highlight(month_name))
+        year[quarter_header_index] = year[quarter_header_index].replace(month_name, self.highlight(month_name))
 
         # Print month names and weekdays.
         print(year[quarter_header_index])
@@ -158,17 +155,16 @@ class When(CLIProgram):
                 break
 
             if not found_day and day in output[quarter_bounds.start:quarter_bounds.end]:
-                output = When.highlight_day_within_bounds(output, day, quarter_bounds)
+                output = self.highlight_day_within_bounds(output, day, quarter_bounds)
                 found_day = True
 
             print(output)
 
-    @staticmethod
-    def print_year(text_calendar: calendar.TextCalendar) -> None:
+    def print_year(self, text_calendar: calendar.TextCalendar) -> None:
         """Print all months in the current year."""
         date = datetime.date.today()
         month_name = calendar.month_name[date.month]
-        quarter_bounds = When.get_quarter_column_bounds_for_month(date.month)
+        quarter_bounds = self.get_quarter_column_bounds_for_month(date.month)
         year = text_calendar.formatyear(date.year, w=2, l=1, c=6, m=3).splitlines()  # Use defaults for consistency.
 
         # Print months highlighting the current month and day.
@@ -177,11 +173,11 @@ class When(CLIProgram):
 
         for output in year:
             if not found_month and month_name in output:
-                output = output.replace(month_name, When.highlight(month_name))
+                output = output.replace(month_name, self.highlight(month_name))
                 found_month = True
 
             if not found_day and found_month and day in output[quarter_bounds.start:quarter_bounds.end]:
-                output = When.highlight_day_within_bounds(output, day, quarter_bounds)
+                output = self.highlight_day_within_bounds(output, day, quarter_bounds)
                 found_day = True
 
             print(output)

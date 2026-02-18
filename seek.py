@@ -86,7 +86,7 @@ class Seek(CLIProgram):
         super().check_for_errors()
 
         if not self.found_any_match:
-            raise SystemExit(Seek.NO_MATCHES_EXIT_CODE)
+            raise SystemExit(self.NO_MATCHES_EXIT_CODE)
 
     def compile_patterns(self) -> None:
         """Compile search patterns."""

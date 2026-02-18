@@ -80,7 +80,7 @@ class Scan(TextProgram):
         super().check_for_errors()
 
         if not self.found_any_match:
-            raise SystemExit(Scan.NO_MATCHES_EXIT_CODE)
+            raise SystemExit(self.NO_MATCHES_EXIT_CODE)
 
     def collect_matches(self, lines: Iterable[str]) -> list[Match]:
         """Return a list of ``Match`` objects for lines matching the configured patterns."""

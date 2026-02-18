@@ -73,7 +73,7 @@ class Where(CLIProgram):
     def main(self) -> None:
         """Run the program."""
         try:
-            response = requests.get(Where.IPINFO_URL, timeout=5)
+            response = requests.get(self.IPINFO_URL, timeout=5)
 
             # Ensure a successful response.
             response.raise_for_status()
@@ -87,19 +87,19 @@ class Where(CLIProgram):
 
             # Print geolocation information.
             for key in ("city", "region", "postal", "country", "timezone"):
-                print(f"{key}: {Where.get_json_value(data=data, key=key)}")
+                print(f"{key}: {self.get_json_value(data=data, key=key)}")
 
             # Optionally print geographic coordinates and public IP address.
             if self.args.coordinates:
-                coordinates = Where.get_json_value(data=data, key='loc')
+                coordinates = self.get_json_value(data=data, key='loc')
 
                 if self.args.cardinal:
-                    print(f"coordinates: {Where.format_coordinates_cardinal(coordinates)}")
+                    print(f"coordinates: {self.format_coordinates_cardinal(coordinates)}")
                 else:
                     print(f"coordinates: {coordinates}")
 
             if self.args.ip:
-                print(f"ip: {Where.get_json_value(data=data, key='ip')}")
+                print(f"ip: {self.get_json_value(data=data, key='ip')}")
         except (ValueError, requests.RequestException):
             self.print_error_and_exit("unable to retrieve location")
 

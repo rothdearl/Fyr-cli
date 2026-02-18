@@ -95,7 +95,7 @@ class Tally(TextProgram):
             character_count += len(raw_line)
             line_count += 1
             max_line_length = max(max_display_width, max_line_length)
-            words += len(Tally.WORD_PATTERN.findall(display_line))
+            words += len(self.WORD_PATTERN.findall(display_line))
 
         return Counts(line_count, words, character_count, max_line_length)
 
