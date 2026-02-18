@@ -1,13 +1,14 @@
 """Provides an abstract base class (ABC) for command-line programs that process text files."""
 
 import os
+import sys
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import final, override
 
 from .ansi import RESET
 from .cli_program import CLIProgram
-from .io import FileInfo, read_text_files
+from .io import FileInfo, filter_empty_file_names, read_text_files
 
 
 class TextProgram(CLIProgram, ABC):
@@ -59,6 +60,11 @@ class TextProgram(CLIProgram, ABC):
                 self.print_error(f"{file_info.file_name!r}: unable to read with {self.encoding!r}")
 
         return processed_files
+
+    @final
+    def process_text_files_from_stdin(self) -> list[str]:
+        """Process file names read from standard input."""
+        return self.process_text_files(filter_empty_file_names(sys.stdin))
 
     @final
     def render_file_header(self, file_name: str, *, file_name_color: str, colon_color: str) -> str:
