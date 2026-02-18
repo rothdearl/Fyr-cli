@@ -70,6 +70,7 @@ class TextProgram(CLIProgram, ABC):
 
         return f"{rendered}:"
 
+    @final
     def should_print_file_header(self) -> bool:
         """Return whether file headers should be printed."""
         return not getattr(self.args, "no_file_name", False)
