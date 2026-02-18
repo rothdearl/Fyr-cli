@@ -9,15 +9,15 @@ from .types import ErrorReporter
 
 def split_csv(text: str, *, separator: str = " ", on_error: ErrorReporter) -> list[str]:
     """Split text into fields using CSV parsing when possible, falling back to ``str.split``."""
-    # Decode escape sequences in the field separator.
     try:
-        separator = separator.encode().decode("unicode_escape")
+        # Decode Python-style escape sequences (e.g., "\\t").
+        decoded_separator = separator.encode("utf-8").decode("unicode_escape")
 
-        if not separator:
+        if not decoded_separator:
             raise ValueError()
 
-        if len(separator) == 1 and separator not in ('"', "\n", "\r"):
-            return next(csv.reader([text], delimiter=separator))
+        if len(decoded_separator) == 1 and decoded_separator not in ('"', "\n", "\r"):
+            return next(csv.reader([text], delimiter=decoded_separator))
     except (UnicodeDecodeError, ValueError, csv.Error):
         on_error(f"invalid separator: {separator!r}")
         return text.split()

@@ -53,28 +53,28 @@ def color_pattern_matches(text: str, patterns: Collection[re.Pattern[str]], *, c
     return "".join(colored_text)
 
 
-def compile_combined_patterns(patterns: Iterable[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
+def compile_combined_patterns(compiled_patterns: Iterable[re.Pattern[str]], *, ignore_case: bool) -> re.Pattern[str]:
     """
     Combine patterns into a single compiled OR-pattern.
 
-    :param patterns: Patterns to combine.
+    :param compiled_patterns: Patterns to combine.
     :param ignore_case: Whether to ignore case.
     :return: Compiled regular expression matching any pattern.
     """
     flags = re.IGNORECASE if ignore_case else re.NOFLAG
-    sources = [f"(?:{group.pattern})" for group in patterns]
+    sources = [f"(?:{pattern.pattern})" for pattern in compiled_patterns]
 
     return re.compile("|".join(sources), flags=flags)
 
 
 def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: ErrorReporter) -> CompiledPatterns:
     """
-    Compile patterns into OR groups implementing AND-of-OR matching.
+    Compile a sequence of regular expression patterns suitable for AND-style matching (e.g., ``matches_all_patterns``).
 
     :param patterns: Patterns to compile.
     :param ignore_case: Whether to ignore case.
     :param on_error: Callback invoked with an error message for pattern-related errors.
-    :return: List of compiled regular expression patterns implementing AND-of-OR matching.
+    :return: List of compiled regular expression patterns.
     """
     compiled = []
     flags = re.IGNORECASE if ignore_case else re.NOFLAG
@@ -92,13 +92,7 @@ def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: Er
 
 
 def matches_all_patterns(text: str, patterns: Iterable[re.Pattern[str]]) -> bool:
-    """
-    Return whether the text matches all pattern groups.
-
-    :param text: Text to search.
-    :param patterns: Patterns to match.
-    :return: ``True`` if the text matches all pattern groups.
-    """
+    """Return whether the text matches every pattern."""
     return all(group.search(text) for group in patterns)
 
 

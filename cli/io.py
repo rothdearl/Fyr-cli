@@ -18,9 +18,9 @@ class FileInfo(NamedTuple):
     text_stream: TextIO
 
 
-def iter_nonempty_file_names(stdin_files: Iterable[str]) -> Iterator[str]:
+def iter_nonempty_file_names(lines: Iterable[str]) -> Iterator[str]:
     """Yield non-empty file names from normalized input lines."""
-    for file_name in normalize_input_lines(stdin_files):
+    for file_name in normalize_input_lines(lines):
         if file_name:
             yield file_name
 
@@ -58,23 +58,23 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
             on_error(f"{file_name!r}: unable to read")
 
 
-def remove_trailing_newline(string: str) -> str:
+def remove_trailing_newline(line: str) -> str:
     """Remove a single trailing newline, if present."""
-    return string.removesuffix("\n")
+    return line.removesuffix("\n")
 
 
-def write_text_to_file(file_name: str, text: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> None:
+def write_text_to_file(file_name: str, lines: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> None:
     """
     Write text lines to a file, ensuring exactly one trailing newline is written for each input line.
 
     :param file_name: File name.
-    :param text: Iterable of strings (e.g., list, generator, or text stream).
+    :param lines: Iterable of lines (e.g., list, generator, or text stream).
     :param encoding: Text encoding.
     :param on_error: Callback invoked with an error message for file-related errors.
     """
     try:
         with open(file_name, mode="wt", encoding=encoding) as f:
-            for line in text:
+            for line in lines:
                 f.write(remove_trailing_newline(line) + "\n")
     except LookupError:
         on_error(f"{file_name!r}: unknown encoding {encoding!r}")
