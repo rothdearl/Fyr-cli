@@ -68,8 +68,8 @@ class Slice(TextProgram):
 
         return parser
 
-    def check_mode_options(self) -> None:
-        """Validate mode option arguments."""
+    def check_mode_option_dependencies(self) -> None:
+        """Enforce mode-specific options are only used with their corresponding mode."""
         allowed_option_by_mode = {
             "csv": "--field-separator",
             "regex": "--field-pattern",
@@ -91,7 +91,7 @@ class Slice(TextProgram):
     @override
     def check_option_dependencies(self) -> None:
         """Enforce relationships and mutual constraints between command-line options."""
-        self.check_mode_options()
+        self.check_mode_option_dependencies()
 
         # --unique is only meaningful with --fields.
         if self.args.unique and self.args.fields is None:
