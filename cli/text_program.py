@@ -44,7 +44,7 @@ class TextProgram(CLIProgram, ABC):
     @final
     def process_text_files(self, files: Iterable[str]) -> list[str]:
         """
-        Process each file path and delegate handling of its text stream to ``handle_text_stream``
+        Process each file path and delegate handling of its text stream to ``handle_text_stream``.
 
         :param files: Iterable of file names to process.
         :return: A list of file names processed successfully.
@@ -62,16 +62,17 @@ class TextProgram(CLIProgram, ABC):
 
     @final
     def render_file_header(self, file_name: str, *, file_name_color: str, colon_color: str) -> str:
-        """Return a ``file_name:`` header (or ``"(standard input):"``), optionally colorized when enabled."""
-        if not self.args.no_file_name:
-            rendered = os.path.relpath(file_name) if file_name else "(standard input)"
+        """Return a ``file_name:`` header (or ``"(standard input):"``), colorized when enabled."""
+        rendered = os.path.relpath(file_name) if file_name else "(standard input)"
 
-            if self.print_color:
-                return f"{file_name_color}{rendered}{colon_color}:{RESET}"
+        if self.print_color:
+            return f"{file_name_color}{rendered}{colon_color}:{RESET}"
 
-            return f"{rendered}:"
+        return f"{rendered}:"
 
-        return file_name
+    def should_print_file_header(self) -> bool:
+        """Return whether file headers should be printed."""
+        return not getattr(self.args, "no_file_name", False)
 
 
 __all__ = ["TextProgram"]

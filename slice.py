@@ -135,7 +135,8 @@ class Slice(TextProgram):
 
     def print_file_header(self, file_name: str) -> None:
         """Print the rendered file header for ``file_name``."""
-        print(self.render_file_header(file_name, file_name_color=Colors.FILE_NAME, colon_color=Colors.COLON))
+        if self.should_print_file_header():
+            print(self.render_file_header(file_name, file_name_color=Colors.FILE_NAME, colon_color=Colors.COLON))
 
     def split_and_print_lines(self, lines: Iterable[str]) -> None:
         """Split lines into fields and print them."""

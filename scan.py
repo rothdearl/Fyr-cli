@@ -143,7 +143,10 @@ class Scan(TextProgram):
 
     def print_match_results(self, matches: Sequence[Match], *, origin_file: str) -> None:
         """Print match counts or matched lines according to command-line options."""
-        file_name = self.render_file_header(origin_file, file_name_color=Colors.FILE_NAME, colon_color=Colors.COLON)
+        file_name = ""
+
+        if self.should_print_file_header():
+            file_name = self.render_file_header(origin_file, file_name_color=Colors.FILE_NAME, colon_color=Colors.COLON)
 
         if self.is_printing_counts():
             print(f"{file_name}{len(matches)}")

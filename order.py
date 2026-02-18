@@ -238,7 +238,8 @@ class Order(TextProgram):
 
     def print_file_header(self, file_name: str) -> None:
         """Print the rendered file header for ``file_name``."""
-        print(self.render_file_header(file_name, file_name_color=Colors.FILE_NAME, colon_color=Colors.COLON))
+        if self.should_print_file_header():
+            print(self.render_file_header(file_name, file_name_color=Colors.FILE_NAME, colon_color=Colors.COLON))
 
     def sort_and_print_lines(self, lines: list[str]) -> None:
         """Sort lines in place and print them to standard output according to command-line arguments."""
