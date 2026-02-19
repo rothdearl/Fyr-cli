@@ -111,39 +111,39 @@ Each tool performs one well-defined operation. Examples assume input from `stdin
 
 ### `dupe`
 
-A program that filters duplicate or unique lines from files.
+dupe — a minimal, uniq-like command for filtering and reporting repeated lines.
 
 ### `emit`
 
-A program that writes arguments to standard output.
+A minimal, echo-like command implemented in Python.
 
 ### `glue`
 
-A program that concatenates files and standard input to standard output.
+A minimal, cat-like command for concatenating files to standard output.
 
 ### `num`
 
-A program that numbers lines from files and prints them to standard output.
+A minimal, nl-like command for numbering lines in files.
 
 ### `order`
 
-A program that sorts files and prints them to standard output.
+A minimal, sort-like command for sorting and printing lines.
 
 ### `peek`
 
-A program that prints the first part of files.
+A minimal, head-like command for printing the first part of files.
 
 ### `scan`
 
-A program that prints lines matching patterns in files.
+A minimal, grep-like command for printing lines that match patterns.
 
 ### `seek`
 
-A program that searches for files in a directory hierarchy.
+A minimal, find-like command for searching for files in a directory hierarchy.
 
 ### `show`
 
-A program that prints files to standard output.
+A minimal command for displaying files with optional whitespace rendering.
 
 ### `slice`
 
@@ -151,23 +151,23 @@ A program that splits lines in files into fields.
 
 ### `subs`
 
-A program that replaces matching text in files.
+A minimal command for replacing matching text in files.
 
 ### `tally`
 
-A program that counts lines, words, and characters in files.
+A minimal, wc-like command for counting lines, words, and characters in files.
 
 ### `track`
 
-A program that prints the last part of files, optionally following new lines.
+A minimal, tail-like command for printing the last part of files and following new lines.
 
 ### `when`
 
-A program that displays the current calendar, with optional date and time.
+A minimal calendar command for displaying months, quarters, or years with optional date and time.
 
 ### `where`
 
-A program that displays current IP-based location information.
+A minimal command for displaying current IP-based location information.
 
 > Each command documents its own flags and output shape via `--help`.
 
