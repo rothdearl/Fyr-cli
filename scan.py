@@ -8,7 +8,7 @@ import sys
 from collections.abc import Iterable, Sequence
 from typing import Final, NamedTuple, override
 
-from cli import CompiledPatterns, TextProgram, ansi, io, patterns, terminal
+from cli import CompiledPatterns, TextProgram, ansi, io, patterns, render, terminal, text
 
 
 class Colors:
@@ -38,7 +38,7 @@ class Scan(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Scan`` instance."""
-        super().__init__(name="scan", version="1.4.2", error_exit_code=2)
+        super().__init__(name="scan", version="1.4.3", error_exit_code=2)
 
         self.found_any_match: bool = False
         self.patterns: CompiledPatterns = []
@@ -86,7 +86,7 @@ class Scan(TextProgram):
         """Return a list of ``Match`` objects for lines matching the configured patterns."""
         matches = []
 
-        for line_number, line in enumerate(io.normalize_input_lines(lines), start=1):
+        for line_number, line in enumerate(text.iter_normalized_lines(lines), start=1):
             if patterns.matches_all_patterns(line, self.patterns) != self.args.invert_match:
                 self.found_any_match = True
 
@@ -95,7 +95,7 @@ class Scan(TextProgram):
                     raise SystemExit(0)
 
                 if self.print_color and not self.args.invert_match:
-                    line = patterns.color_pattern_matches(line, self.patterns, color=Colors.MATCH)
+                    line = render.color_pattern_matches(line, self.patterns, color=Colors.MATCH)
 
                 matches.append(Match(line_number, line))
 

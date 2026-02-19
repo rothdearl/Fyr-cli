@@ -34,18 +34,20 @@ from .ini import (
 
 from .io import (
     FileInfo,
-    iter_nonempty_file_names,
-    normalize_input_lines,
+    iter_stdin_file_names,
     read_text_files,
-    remove_trailing_newline,
     write_text_to_file,
 )
 
 from .patterns import (
-    color_pattern_matches,
     compile_combined_patterns,
     compile_patterns,
     matches_all_patterns,
+)
+
+from .render import (
+    color_pattern_matches,
+    reverse_video,
 )
 
 from .terminal import (
@@ -56,9 +58,12 @@ from .terminal import (
 )
 
 from .text import (
+    iter_nonempty_lines,
+    iter_normalized_lines,
     split_csv,
     split_regex,
     split_shell_style,
+    strip_trailing_newline,
 )
 
 from .text_program import TextProgram

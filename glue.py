@@ -8,7 +8,7 @@ import sys
 from collections.abc import Iterable
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, terminal
+from cli import TextProgram, ansi, io, terminal, text
 
 
 class Colors:
@@ -33,7 +33,7 @@ class Glue(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Glue`` instance."""
-        super().__init__(name="glue", version="1.4.2")
+        super().__init__(name="glue", version="1.4.3")
 
         self.line_number: int = 0
 
@@ -91,7 +91,7 @@ class Glue(TextProgram):
         blank_line_count = 0
         number_lines = self.args.number or self.args.number_nonblank
 
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             print_number = number_lines
 
             if not line:  # Blank line?

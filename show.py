@@ -8,7 +8,7 @@ import sys
 from collections.abc import Sequence
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, terminal
+from cli import TextProgram, ansi, io, terminal, text
 
 
 class Colors:
@@ -34,7 +34,7 @@ class Show(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Show`` instance."""
-        super().__init__(name="show", version="1.4.2")
+        super().__init__(name="show", version="1.4.3")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -105,7 +105,7 @@ class Show(TextProgram):
         line_end = min(len(lines), line_start + self.args.max_lines - 1)
         padding = len(str(line_end))
 
-        for line_number, line in enumerate(io.normalize_input_lines(lines), start=1):
+        for line_number, line in enumerate(text.iter_normalized_lines(lines), start=1):
             if line_start <= line_number <= line_end:
                 rendered = line
 

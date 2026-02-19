@@ -8,7 +8,7 @@ import sys
 from collections.abc import Iterable
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, terminal
+from cli import TextProgram, ansi, io, terminal, text
 
 
 class Colors:
@@ -33,7 +33,7 @@ class Num(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Num`` instance."""
-        super().__init__(name="num", version="1.4.2")
+        super().__init__(name="num", version="1.4.3")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -101,7 +101,7 @@ class Num(TextProgram):
         format_prefix = self.FORMAT_PREFIXES[self.args.number_format]
         line_number = self.args.number_start - 1
 
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             print_number = True
 
             if not line:  # Blank line?

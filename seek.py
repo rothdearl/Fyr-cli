@@ -11,7 +11,7 @@ import time
 from collections.abc import Iterable
 from typing import Final, override
 
-from cli import CLIProgram, CompiledPatterns, ansi, io, patterns, terminal
+from cli import CLIProgram, CompiledPatterns, ansi, io, patterns, render, terminal, text
 
 
 class Colors:
@@ -33,7 +33,7 @@ class Seek(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Seek`` instance."""
-        super().__init__(name="seek", version="1.4.2", error_exit_code=2)
+        super().__init__(name="seek", version="1.4.3", error_exit_code=2)
 
         self.found_any_match: bool = False
         self.name_patterns: CompiledPatterns = []
@@ -104,7 +104,7 @@ class Seek(CLIProgram):
         self.compile_patterns()
 
         if terminal.stdin_is_redirected():
-            self.print_paths(io.iter_nonempty_file_names(sys.stdin))
+            self.print_paths(io.iter_stdin_file_names())
 
             if self.args.directories:  # Process any additional directories.
                 self.print_paths(self.args.directories)
@@ -182,8 +182,8 @@ class Seek(CLIProgram):
             raise SystemExit(0)
 
         if self.print_color and not self.args.invert_match:
-            name_part = patterns.color_pattern_matches(name_part, self.name_patterns, color=Colors.MATCH)
-            path_part = patterns.color_pattern_matches(path_part, self.path_patterns, color=Colors.MATCH)
+            name_part = render.color_pattern_matches(name_part, self.name_patterns, color=Colors.MATCH)
+            path_part = render.color_pattern_matches(path_part, self.path_patterns, color=Colors.MATCH)
 
         if self.args.abs:
             if is_current_directory:  # Do not join the current working directory with '.'.
@@ -203,7 +203,7 @@ class Seek(CLIProgram):
 
     def print_paths(self, directories: Iterable[str]) -> None:
         """Traverse each starting directory up to ``args.max_depth`` and print paths that match the search criteria."""
-        for directory in io.normalize_input_lines(directories):
+        for directory in text.iter_normalized_lines(directories):
             if os.path.exists(directory):
                 root = pathlib.Path(directory)
 

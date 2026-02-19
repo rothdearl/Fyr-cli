@@ -8,6 +8,19 @@ from cli import text
 class TextTest(unittest.TestCase):
     """Tests the text module."""
 
+    def test_iter_normalized_lines(self) -> None:
+        """Tests the iter_normalized_lines function."""
+        lines = (
+            "Line 1\n",
+            "Line 2",
+            "Line 3\n",
+            "Line 4",
+            "Line 5\n"
+        )
+
+        for line in text.iter_normalized_lines(lines):
+            self.assertFalse(line.endswith("\n"))
+
     def test_split_csv(self) -> None:
         """Tests the split_csv function."""
         errors = []
@@ -100,3 +113,16 @@ class TextTest(unittest.TestCase):
         # 4) Unmatched quotes, raise ValueError, fallback to a single field.
         raw = 'a "b '
         self.assertEqual(text.split_shell_style(raw), [raw])
+
+    def test_strip_trailing_newline(self) -> None:
+        """Tests the strip_trailing_newline function."""
+        lines = (
+            "Line 1\n",
+            "Line 2",
+            "Line 3\n",
+            "Line 4",
+            "Line 5\n"
+        )
+
+        for line in lines:
+            self.assertFalse(text.strip_trailing_newline(line).endswith("\n"))

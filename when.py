@@ -8,7 +8,7 @@ import calendar
 import datetime
 from typing import Final, NamedTuple, override
 
-from cli import CLIProgram, ansi, constants
+from cli import CLIProgram, constants, render
 
 
 class CalendarQuarterColumnBounds(NamedTuple):
@@ -28,7 +28,7 @@ class When(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``When`` instance."""
-        super().__init__(name="when", version="1.1.0")
+        super().__init__(name="when", version="1.1.1")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -68,7 +68,7 @@ class When(CLIProgram):
     @staticmethod
     def highlight(text: str) -> str:
         """Return the text wrapped in reverse-video ANSI escape codes."""
-        return f"{ansi.TextAttributes.REVERSE}{text}{ansi.RESET}"
+        return render.reverse_video(text)
 
     def highlight_day_within_bounds(self, line: str, day: str, bounds: CalendarQuarterColumnBounds) -> str:
         """Return the line with a day highlighted only within the bounds."""

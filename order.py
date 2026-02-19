@@ -36,7 +36,7 @@ class Order(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Order`` instance."""
-        super().__init__(name="order", version="1.4.2")
+        super().__init__(name="order", version="1.4.3")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -258,7 +258,7 @@ class Order(TextProgram):
             lines.sort(key=key_function, reverse=reverse)
 
         # Print lines.
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             if self.args.no_blank and not line.rstrip():
                 continue
 

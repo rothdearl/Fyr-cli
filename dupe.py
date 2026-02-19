@@ -23,7 +23,7 @@ class Dupe(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Dupe`` instance."""
-        super().__init__(name="dupe", version="1.4.2")
+        super().__init__(name="dupe", version="1.4.3")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -106,7 +106,7 @@ class Dupe(TextProgram):
         groups = []
         previous_key = None
 
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             next_key = self.get_compare_key(line)
 
             if not self.can_group_key(next_key):
@@ -179,7 +179,7 @@ class Dupe(TextProgram):
         """Return a mapping from comparison key to the lines that match that key."""
         group_map = {}
 
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             key = self.get_compare_key(line)
 
             if not self.can_group_key(key):

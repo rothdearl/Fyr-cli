@@ -9,7 +9,7 @@ import sys
 from collections.abc import Iterable, Iterator
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, patterns, terminal
+from cli import TextProgram, ansi, io, patterns, terminal, text
 
 
 class Colors:
@@ -27,7 +27,7 @@ class Subs(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Subs`` instance."""
-        super().__init__(name="subs", version="1.4.2")
+        super().__init__(name="subs", version="1.4.3")
 
         self.pattern: re.Pattern[str] | None = None
 
@@ -75,7 +75,7 @@ class Subs(TextProgram):
 
     def iter_replaced_lines(self, lines: Iterable[str]) -> Iterator[str]:
         """Yield lines with pattern matches replaced."""
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             if self.pattern:
                 yield self.pattern.sub(self.args.replace, line, count=self.args.max_replacements)
             else:

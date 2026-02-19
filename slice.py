@@ -26,7 +26,7 @@ class Slice(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Slice`` instance."""
-        super().__init__(name="slice", version="1.4.2")
+        super().__init__(name="slice", version="1.4.3")
 
         self.selected_fields: list[int] = []
 
@@ -142,7 +142,7 @@ class Slice(TextProgram):
         """Split lines into fields and print them."""
         quote = '"' if self.args.quotes == "d" else "'" if self.args.quotes == "s" else ""
 
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             fields = self.split_line(line)
 
             # Do not print blank lines unless --keep-empty-lines=True.

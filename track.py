@@ -10,7 +10,7 @@ from collections.abc import Iterable, Sequence
 from threading import Thread
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, terminal
+from cli import TextProgram, ansi, io, terminal, text
 
 
 class Colors:
@@ -24,7 +24,7 @@ class Track(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Track`` instance."""
-        super().__init__(name="track", version="1.4.2")
+        super().__init__(name="track", version="1.4.3")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -137,7 +137,7 @@ class Track(TextProgram):
         if self.args.lines < 0:
             skip_to_line = abs(self.args.lines)
 
-        for index, line in enumerate(io.normalize_input_lines(lines), start=1):
+        for index, line in enumerate(text.iter_normalized_lines(lines), start=1):
             if index > skip_to_line:
                 print(line)
 

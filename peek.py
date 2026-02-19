@@ -9,7 +9,7 @@ from collections import deque
 from collections.abc import Iterable
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, terminal
+from cli import TextProgram, ansi, io, terminal, text
 
 
 class Colors:
@@ -23,7 +23,7 @@ class Peek(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Peek`` instance."""
-        super().__init__(name="peek", version="1.4.2")
+        super().__init__(name="peek", version="1.4.3")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -85,7 +85,7 @@ class Peek(TextProgram):
         """Print lines to standard output."""
         # If --lines is positive or zero: print the first N lines.
         if self.args.lines >= 0:
-            for index, line in enumerate(io.normalize_input_lines(lines)):
+            for index, line in enumerate(text.iter_normalized_lines(lines)):
                 if index >= self.args.lines:
                     break
 
@@ -96,7 +96,7 @@ class Peek(TextProgram):
         # --lines is negative: print all but the last |N| lines.
         buffer = deque(maxlen=-self.args.lines)
 
-        for line in io.normalize_input_lines(lines):
+        for line in text.iter_normalized_lines(lines):
             if len(buffer) == buffer.maxlen:
                 print(buffer.popleft())
 

@@ -3,8 +3,22 @@
 import csv
 import re
 import shlex
+from collections.abc import Iterable, Iterator
 
 from .types import ErrorReporter
+
+
+def iter_nonempty_lines(lines: Iterable[str]) -> Iterator[str]:
+    """Yield normalized, non-empty lines."""
+    for file_name in iter_normalized_lines(lines):
+        if file_name:
+            yield file_name
+
+
+def iter_normalized_lines(lines: Iterable[str]) -> Iterator[str]:
+    """Yield lines with one trailing newline removed, if present."""
+    for line in lines:
+        yield strip_trailing_newline(line)
 
 
 def split_csv(text: str, *, separator: str = " ", on_error: ErrorReporter) -> list[str]:
@@ -55,8 +69,16 @@ def split_shell_style(text: str, *, literal_quotes: bool = False) -> list[str]:
         return [text]
 
 
+def strip_trailing_newline(line: str) -> str:
+    """Remove one trailing newline, if present."""
+    return line.removesuffix("\n")
+
+
 __all__ = [
+    "iter_nonempty_lines",
+    "iter_normalized_lines",
     "split_csv",
     "split_regex",
     "split_shell_style",
+    "strip_trailing_newline",
 ]

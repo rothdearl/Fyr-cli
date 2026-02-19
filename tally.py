@@ -9,7 +9,7 @@ import sys
 from collections.abc import Iterable
 from typing import Final, NamedTuple, override
 
-from cli import TextProgram, ansi, io, terminal
+from cli import TextProgram, ansi, io, terminal, text
 
 
 class Colors:
@@ -41,7 +41,7 @@ class Tally(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Tally`` instance."""
-        super().__init__(name="tally", version="1.4.2")
+        super().__init__(name="tally", version="1.4.3")
 
         self.files_counted: int = 0
         self.flags: list[bool] = [False, False, False, False]  # [lines, words, characters, max_line_length]
@@ -84,12 +84,12 @@ class Tally(TextProgram):
 
         return parser
 
-    def calculate_counts(self, text: Iterable[str]) -> Counts:
-        """Calculate counts for the lines, words, characters, and the maximum displayed line length in the text."""
+    def calculate_counts(self, lines: Iterable[str]) -> Counts:
+        """Calculate counts for lines, words, characters, and the maximum displayed line length in the lines."""
         character_count, line_count, max_line_length, words = 0, 0, 0, 0
 
-        for raw_line in text:
-            display_line = io.remove_trailing_newline(raw_line)
+        for raw_line in lines:
+            display_line = text.strip_trailing_newline(raw_line)
             max_display_width = len(display_line.expandtabs(self.args.tab_width))
 
             character_count += len(raw_line)
