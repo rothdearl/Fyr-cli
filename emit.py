@@ -17,16 +17,19 @@ class Emit(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Emit`` instance."""
-        super().__init__(name="emit", version="1.0.0")
+        super().__init__(name="emit", version="1.0.1")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
         """Build and return an argument parser."""
         parser = argparse.ArgumentParser(allow_abbrev=False, description="write strings to standard output",
-                                         epilog="standard input is processed before STRINGS", prog=self.name)
+                                         epilog="standard input is processed before STRINGS unless --stdin-after is used",
+                                         prog=self.name)
 
         parser.add_argument("strings", help="strings to write", metavar="STRINGS", nargs="*")
         parser.add_argument("--stdin", action="store_true", help="read from standard input")
+        parser.add_argument("--stdin-after", action="store_true",
+                            help="process standard input after STRINGS (use with --stdin)")
         parser.add_argument("-n", "--no-newline", action="store_true", help="suppress trailing newline")
         parser.add_argument("-e", "--escapes", action="store_true", help="interpret backslash escape sequences")
         parser.add_argument("-s", "--strict-escapes", action="store_true",
@@ -38,6 +41,10 @@ class Emit(CLIProgram):
     @override
     def check_option_dependencies(self) -> None:
         """Enforce relationships and mutual constraints between command-line options."""
+        # --stdin-after is only meaningful with --stdin.
+        if self.args.stdin_after and not self.args.stdin:
+            self.print_error_and_exit("--stdin-after must be used with --stdin")
+
         # --strict-escapes is only meaningful with --escapes.
         if self.args.strict_escapes and not self.args.escapes:
             self.print_error_and_exit("--strict-escapes must be used with --escapes")
@@ -49,7 +56,10 @@ class Emit(CLIProgram):
 
         # Stream stdin (when enabled) ahead of positional strings to preserve ordering and avoid buffering.
         if terminal.stdin_is_redirected() and self.args.stdin:
-            strings = chain(sys.stdin, strings)
+            if self.args.stdin_after:
+                strings = chain(strings, sys.stdin)
+            else:
+                strings = chain(sys.stdin, strings)
 
         self.write_strings(strings)
 
