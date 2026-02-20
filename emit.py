@@ -17,13 +17,12 @@ class Emit(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Emit`` instance."""
-        super().__init__(name="emit", version="1.0.1")
+        super().__init__(name="emit", version="1.1.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
         """Build and return an argument parser."""
         parser = argparse.ArgumentParser(allow_abbrev=False, description="write strings to standard output",
-                                         epilog="standard input is processed before STRINGS unless --stdin-after is used",
                                          prog=self.name)
 
         parser.add_argument("strings", help="strings to write", metavar="STRINGS", nargs="*")
@@ -67,7 +66,7 @@ class Emit(CLIProgram):
             print()
 
     def write_strings(self, strings: Iterable[str]) -> None:
-        """Write strings to standard output."""
+        """Write strings to standard output, separated by spaces."""
         needs_space = False
 
         for raw_string in strings:
@@ -79,9 +78,9 @@ class Emit(CLIProgram):
             if self.args.escapes:
                 try:
                     string = text.decode_python_escape_sequences(string)
-                except UnicodeDecodeError:
+                except UnicodeDecodeError as error:
                     if self.args.strict_escapes:
-                        self.print_error_and_exit(f"invalid escape sequence: {string!r}")
+                        self.print_error_and_exit(f"invalid escape sequence at index {error.start}: {string!r}")
 
             sys.stdout.write(string)
             needs_space = True
