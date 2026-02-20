@@ -115,7 +115,7 @@ dupe — a minimal, uniq-like command for filtering and reporting repeated lines
 
 ### `emit`
 
-A minimal, echo-like command implemented in Python.
+A minimal, echo-like command for writing strings to standard output.
 
 ### `glue`
 
@@ -474,10 +474,11 @@ class Emit(CLIProgram):
         """Run the program."""
         print_newline = not self.args.no_newline
 
-        self.write_strings(self.args.strings)
-
         if terminal.stdin_is_redirected():
             self.write_strings(sys.stdin)
+
+        if self.args.strings:
+            self.write_strings(self.args.strings)
 
         print(end="\n" if print_newline else "")
 

@@ -37,10 +37,11 @@ class Emit(CLIProgram):
         """Run the program."""
         print_newline = not self.args.no_newline
 
-        self.write_strings(self.args.strings)
-
         if terminal.stdin_is_redirected():
             self.write_strings(sys.stdin)
+
+        if self.args.strings:
+            self.write_strings(self.args.strings)
 
         print(end="\n" if print_newline else "")
 
