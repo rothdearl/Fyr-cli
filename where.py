@@ -44,7 +44,7 @@ class Where(CLIProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --cardinal is only meaningful with --coordinates.
         if self.args.cardinal and not self.args.coordinates:
-            self.print_error_and_exit("--cardinal is only used with --coordinates")
+            self.print_error_and_exit("--cardinal must be used with --coordinates")
 
     @staticmethod
     def format_coordinates_cardinal(coordinates: str) -> str:

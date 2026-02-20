@@ -74,7 +74,7 @@ class Dupe(TextProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --field-separator is only meaningful with --skip-fields.
         if self.args.field_separator is not None and self.args.skip_fields is None:
-            self.print_error_and_exit("--field-separator is only used with --skip-fields")
+            self.print_error_and_exit("--field-separator must be used with --skip-fields")
 
     def get_compare_key(self, line: str) -> str:
         """Return a normalized comparison key derived from the line, applying rules according to command-line options."""

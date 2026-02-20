@@ -77,11 +77,11 @@ class Order(TextProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --field-separator is only meaningful with --skip-fields.
         if self.args.field_separator is not None and self.args.skip_fields is None:
-            self.print_error_and_exit("--field-separator is only used with --skip-fields")
+            self.print_error_and_exit("--field-separator must be used with --skip-fields")
 
         # --decimal-comma is only meaningful with --currency-sort or --natural-sort.
         if self.args.decimal_comma and not any((self.args.currency_sort, self.args.natural_sort)):
-            self.print_error_and_exit("--decimal-comma is only used with --currency-sort or --natural-sort")
+            self.print_error_and_exit("--decimal-comma must be used with --currency-sort or --natural-sort")
 
     def generate_currency_sort_key(self, line: str) -> list[tuple[int, float | str]]:
         """

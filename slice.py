@@ -93,7 +93,7 @@ class Slice(TextProgram):
 
         # --unique is only meaningful with --fields.
         if self.args.unique and self.args.fields is None:
-            self.print_error_and_exit("--unique is only used with --fields")
+            self.print_error_and_exit("--unique must be used with --fields")
 
     @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:

@@ -6,6 +6,7 @@
 import argparse
 import sys
 from collections.abc import Iterable
+from itertools import chain
 from typing import override
 
 from cli import CLIProgram, terminal, text
@@ -22,45 +23,58 @@ class Emit(CLIProgram):
     def build_arguments(self) -> argparse.ArgumentParser:
         """Build and return an argument parser."""
         parser = argparse.ArgumentParser(allow_abbrev=False, description="write strings to standard output",
-                                         prog=self.name)
+                                         epilog="standard input is processed before STRINGS", prog=self.name)
 
         parser.add_argument("strings", help="strings to write", metavar="STRINGS", nargs="*")
+        parser.add_argument("--stdin", action="store_true", help="read from standard input")
         parser.add_argument("-n", "--no-newline", action="store_true", help="suppress trailing newline")
-        parser.add_argument("-e", "--escape-sequences", action="store_true",
-                            help="interpret backslash escapes (disabled by default)")
+        parser.add_argument("-e", "--escapes", action="store_true", help="interpret backslash escape sequences")
+        parser.add_argument("-s", "--strict-escapes", action="store_true",
+                            help="fail on invalid escape sequences (use with --escapes)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 
     @override
+    def check_option_dependencies(self) -> None:
+        """Enforce relationships and mutual constraints between command-line options."""
+        # --strict-escapes is only meaningful with --escapes.
+        if self.args.strict_escapes and not self.args.escapes:
+            self.print_error_and_exit("--strict-escapes must be used with --escapes")
+
+    @override
     def main(self) -> None:
         """Run the program."""
-        print_newline = not self.args.no_newline
+        strings = self.args.strings
 
-        if terminal.stdin_is_redirected():
-            self.args.strings.extend(sys.stdin)
+        # Stream stdin (when enabled) ahead of positional strings to preserve ordering and avoid buffering.
+        if terminal.stdin_is_redirected() and self.args.stdin:
+            strings = chain(sys.stdin, strings)
 
-        self.write_strings(self.args.strings)
+        self.write_strings(strings)
 
-        print(end="\n" if print_newline else "")
+        if not self.args.no_newline:
+            print()
 
     def write_strings(self, strings: Iterable[str]) -> None:
         """Write strings to standard output."""
-        print_space = False
+        needs_space = False
 
-        for string in text.iter_normalized_lines(strings):
-            if print_space:  # Prefix strings with a space character to avoid a trailing space character.
-                print(" ", end="")
+        for raw_string in strings:
+            string = text.strip_trailing_newline(raw_string)
 
-            if self.args.escape_sequences:
+            if needs_space:
+                sys.stdout.write(" ")
+
+            if self.args.escapes:
                 try:
-                    print(text.decode_python_escape_sequences(string), end="")
+                    string = text.decode_python_escape_sequences(string)
                 except UnicodeDecodeError:
-                    self.print_error_and_exit(f"invalid escape sequence in: {string!r}")
-            else:
-                print(string, end="")
+                    if self.args.strict_escapes:
+                        self.print_error_and_exit(f"invalid escape sequence: {string!r}")
 
-            print_space = True
+            sys.stdout.write(string)
+            needs_space = True
 
 
 if __name__ == "__main__":
