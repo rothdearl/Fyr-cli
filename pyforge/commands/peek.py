@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that prints the first part of files."""
 
 import argparse
@@ -107,5 +104,10 @@ class Peek(TextProgram):
         self.print_lines(sys.stdin)
 
 
+def main() -> int:
+    """Run the program."""
+    return Peek().run_program()
+
+
 if __name__ == "__main__":
-    Peek().run_program()
+    raise SystemExit(main())

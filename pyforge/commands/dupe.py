@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that filters duplicate or unique lines from files."""
 
 import argparse
@@ -241,5 +238,10 @@ class Dupe(TextProgram):
             self.print_error_and_exit("--skip-fields must be >= 1")
 
 
+def main() -> int:
+    """Run the program."""
+    return Dupe().run_program()
+
+
 if __name__ == "__main__":
-    Dupe().run_program()
+    raise SystemExit(main())

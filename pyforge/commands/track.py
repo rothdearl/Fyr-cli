@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that prints the last part of files, optionally following new lines."""
 
 import argparse
@@ -161,5 +158,10 @@ class Track(TextProgram):
         return threads
 
 
+def main() -> int:
+    """Run the program."""
+    return Track().run_program()
+
+
 if __name__ == "__main__":
-    Track().run_program()
+    raise SystemExit(main())

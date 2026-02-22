@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that prints files to standard output."""
 
 import argparse
@@ -174,5 +171,10 @@ class Show(TextProgram):
             self.print_error_and_exit("--start cannot be 0")
 
 
+def main() -> int:
+    """Run the program."""
+    return Show().run_program()
+
+
 if __name__ == "__main__":
-    Show().run_program()
+    raise SystemExit(main())

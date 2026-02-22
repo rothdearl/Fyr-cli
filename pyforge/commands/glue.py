@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that concatenates files and standard input to standard output."""
 
 import argparse
@@ -158,5 +155,10 @@ class Glue(TextProgram):
             self.print_error_and_exit("--number-width must be >= 1")
 
 
+def main() -> int:
+    """Run the program."""
+    return Glue().run_program()
+
+
 if __name__ == "__main__":
-    Glue().run_program()
+    raise SystemExit(main())

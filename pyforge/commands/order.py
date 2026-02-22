@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that sorts files and prints them to standard output."""
 
 import argparse
@@ -274,5 +271,10 @@ class Order(TextProgram):
             self.print_error_and_exit("--skip-fields must be >= 1")
 
 
+def main() -> int:
+    """Run the program."""
+    return Order().run_program()
+
+
 if __name__ == "__main__":
-    Order().run_program()
+    raise SystemExit(main())

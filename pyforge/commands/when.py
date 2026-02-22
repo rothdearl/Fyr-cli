@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that displays the current calendar, with optional date and time."""
 
 import argparse
@@ -183,5 +180,10 @@ class When(CLIProgram):
             print(output)
 
 
+def main() -> int:
+    """Run the program."""
+    return When().run_program()
+
+
 if __name__ == "__main__":
-    When().run_program()
+    raise SystemExit(main())

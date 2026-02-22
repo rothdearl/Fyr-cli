@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that counts lines, words, and characters in files."""
 
 import argparse
@@ -184,5 +181,10 @@ class Tally(TextProgram):
             self.print_error_and_exit("--tab-width must be >= 1")
 
 
+def main() -> int:
+    """Run the program."""
+    return Tally().run_program()
+
+
 if __name__ == "__main__":
-    Tally().run_program()
+    raise SystemExit(main())

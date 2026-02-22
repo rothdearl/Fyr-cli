@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that writes strings to standard output."""
 
 import argparse
@@ -86,5 +83,10 @@ class Emit(CLIProgram):
             needs_space = True
 
 
+def main() -> int:
+    """Run the program."""
+    return Emit().run_program()
+
+
 if __name__ == "__main__":
-    Emit().run_program()
+    raise SystemExit(main())

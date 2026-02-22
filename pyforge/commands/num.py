@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that numbers lines from files and prints them to standard output."""
 
 import argparse
@@ -162,5 +159,10 @@ class Num(TextProgram):
             self.print_error_and_exit("--number-separator contains an invalid escape sequence")
 
 
+def main() -> int:
+    """Run the program."""
+    return Num().run_program()
+
+
 if __name__ == "__main__":
-    Num().run_program()
+    raise SystemExit(main())

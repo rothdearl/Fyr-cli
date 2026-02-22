@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that displays current IP-based location information."""
 
 import argparse
@@ -104,5 +101,10 @@ class Where(CLIProgram):
             self.print_error_and_exit("unable to retrieve location")
 
 
+def main() -> int:
+    """Run the program."""
+    return Where().run_program()
+
+
 if __name__ == "__main__":
-    Where().run_program()
+    raise SystemExit(main())

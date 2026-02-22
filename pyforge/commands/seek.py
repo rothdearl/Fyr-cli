@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that searches for files in a directory hierarchy."""
 
 import argparse
@@ -235,5 +232,10 @@ class Seek(CLIProgram):
             self.print_error_and_exit("--max-depth must be >= 1")
 
 
+def main() -> int:
+    """Run the program."""
+    return Seek().run_program()
+
+
 if __name__ == "__main__":
-    Seek().run_program()
+    raise SystemExit(main())

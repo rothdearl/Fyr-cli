@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that replaces matching text in files."""
 
 import argparse
@@ -133,5 +130,10 @@ class Subs(TextProgram):
             self.print_error_and_exit("--max-replacements must be >= 1")
 
 
+def main() -> int:
+    """Run the program."""
+    return Subs().run_program()
+
+
 if __name__ == "__main__":
-    Subs().run_program()
+    raise SystemExit(main())

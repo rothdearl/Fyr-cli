@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that splits lines in files into fields."""
 
 import argparse
@@ -190,5 +187,10 @@ class Slice(TextProgram):
                 self.print_error_and_exit("--fields must contain numbers >= 1")
 
 
+def main() -> int:
+    """Run the program."""
+    return Slice().run_program()
+
+
 if __name__ == "__main__":
-    Slice().run_program()
+    raise SystemExit(main())

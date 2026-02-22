@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """A program that prints lines matching patterns in files."""
 
 import argparse
@@ -190,5 +187,10 @@ class Scan(TextProgram):
             self.print_matches(sys.stdin, origin_file="")
 
 
+def main() -> int:
+    """Run the program."""
+    return Scan().run_program()
+
+
 if __name__ == "__main__":
-    Scan().run_program()
+    raise SystemExit(main())
