@@ -2,7 +2,7 @@ import os
 import unittest
 from typing import final
 
-from cli import io
+from pyforge.cli import io
 
 
 @final

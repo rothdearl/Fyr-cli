@@ -1,7 +1,7 @@
 import unittest
 from typing import final
 
-from cli import terminal
+from pyforge.cli import terminal
 
 
 @final

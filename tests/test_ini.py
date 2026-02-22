@@ -2,7 +2,7 @@ import os
 import unittest
 from typing import final
 
-from cli import ini
+from pyforge.cli import ini
 
 
 @final

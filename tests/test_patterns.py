@@ -1,7 +1,7 @@
 import re
 import unittest
 
-from cli import patterns
+from pyforge.cli import patterns
 
 
 class TestCompileCombinedPatterns(unittest.TestCase):
