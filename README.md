@@ -43,6 +43,34 @@ These dependencies must be available in the active Python environment before run
 
 ------------------------------------------------------------------------
 
+## Installation
+
+PyForge is installed using `pip`.
+
+### Development install (editable)
+
+Create and activate a virtual environment, then install PyForge in editable mode:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e .
+```
+
+This registers all PyForge commands as console scripts in the active environment.
+
+### User install
+
+To install PyForge as a user-level CLI toolkit:
+
+```bash
+python3 -m pip install --user .
+```
+
+Ensure the user script directory is on your `PATH`.
+
+------------------------------------------------------------------------
+
 ## Command Model
 
 All PyForge commands follow the same execution model:
@@ -403,8 +431,13 @@ Do **not** print raw error messages.
 All programs **must** use the standardized lifecycle:
 
 ``` python
+def main() -> int:
+    """Run the program."""
+    return MyProgram().run_program()
+
+
 if __name__ == "__main__":
-    MyProgram().run_program()
+    raise SystemExit(main())
 ```
 
 The `run_program()` method guarantees:
