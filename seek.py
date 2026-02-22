@@ -11,7 +11,7 @@ import time
 from collections.abc import Iterable
 from typing import Final, override
 
-from cli import CLIProgram, CompiledPatterns, ansi, io, patterns, render, terminal, text
+from pyforge.cli import CLIProgram, CompiledPatterns, ansi, io, patterns, render, terminal, text
 
 
 class Colors:
@@ -33,7 +33,7 @@ class Seek(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Seek`` instance."""
-        super().__init__(name="seek", version="1.4.5", error_exit_code=2)
+        super().__init__(name="seek", version="1.0.0", error_exit_code=2)
 
         self.found_any_match: bool = False
         self.name_patterns: CompiledPatterns = []

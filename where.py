@@ -8,7 +8,7 @@ from typing import Final, override
 
 import requests
 
-from cli import CLIProgram, JsonObject
+from pyforge.cli import CLIProgram, JsonObject
 
 
 class Where(CLIProgram):
@@ -22,7 +22,7 @@ class Where(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Where`` instance."""
-        super().__init__(name="where", version="1.1.1")
+        super().__init__(name="where", version="1.0.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:

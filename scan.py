@@ -8,7 +8,7 @@ import sys
 from collections.abc import Iterable, Sequence
 from typing import Final, NamedTuple, override
 
-from cli import CompiledPatterns, TextProgram, ansi, io, patterns, render, terminal, text
+from pyforge.cli import CompiledPatterns, TextProgram, ansi, io, patterns, render, terminal, text
 
 
 class Colors:
@@ -38,7 +38,7 @@ class Scan(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Scan`` instance."""
-        super().__init__(name="scan", version="1.4.5", error_exit_code=2)
+        super().__init__(name="scan", version="1.0.0", error_exit_code=2)
 
         self.found_any_match: bool = False
         self.patterns: CompiledPatterns = []

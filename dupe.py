@@ -8,7 +8,7 @@ import sys
 from collections.abc import Iterable
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, terminal, text
+from pyforge.cli import TextProgram, ansi, io, terminal, text
 
 
 class Colors:
@@ -23,7 +23,7 @@ class Dupe(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Dupe`` instance."""
-        super().__init__(name="dupe", version="1.4.5")
+        super().__init__(name="dupe", version="1.0.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:

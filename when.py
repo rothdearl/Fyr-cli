@@ -8,7 +8,7 @@ import calendar
 import datetime
 from typing import Final, NamedTuple, override
 
-from cli import CLIProgram, constants, render
+from pyforge.cli import CLIProgram, constants, render
 
 
 class CalendarQuarterColumnBounds(NamedTuple):
@@ -28,7 +28,7 @@ class When(CLIProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``When`` instance."""
-        super().__init__(name="when", version="1.1.2")
+        super().__init__(name="when", version="1.0.0")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:

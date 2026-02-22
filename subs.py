@@ -9,7 +9,7 @@ import sys
 from collections.abc import Iterable, Iterator
 from typing import Final, override
 
-from cli import TextProgram, ansi, io, patterns, terminal, text
+from pyforge.cli import TextProgram, ansi, io, patterns, terminal, text
 
 
 class Colors:
@@ -27,7 +27,7 @@ class Subs(TextProgram):
 
     def __init__(self) -> None:
         """Initialize a new ``Subs`` instance."""
-        super().__init__(name="subs", version="1.4.5")
+        super().__init__(name="subs", version="1.0.0")
 
         self.pattern: re.Pattern[str] | None = None
 
