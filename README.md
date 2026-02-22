@@ -29,18 +29,17 @@ These constraints make the tools predictable, scriptable, and safe for compositi
 
 ------------------------------------------------------------------------
 
-## Installation
+## Dependencies
 
-Python ≥ 3.12 is required.
+PyForge targets Python ≥ 3.12.
 
-Clone the repository and install required package dependencies:
+The following third-party packages are required at runtime:
 
-``` bash
-git clone <repo-url>
-pip3 install colorama
-pip3 install python-dateutil
-pip3 install requests
-```
+- colorama
+- python-dateutil
+- requests
+
+These dependencies must be available in the active Python environment before running any PyForge commands.
 
 ------------------------------------------------------------------------
 
