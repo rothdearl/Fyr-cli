@@ -93,7 +93,7 @@ class CLIProgram(ABC):
         raise SystemExit(self.error_exit_code)
 
     @final
-    def run_program(self) -> None:
+    def run_program(self) -> int:
         """
         Run the full program lifecycle and normalize process termination and exit codes.
 
@@ -130,6 +130,8 @@ class CLIProgram(ABC):
         except OSError as error:
             # Normalize unexpected OS errors to a clean exit code.
             raise SystemExit(self.error_exit_code) from error
+
+        return 0
 
     def validate_option_ranges(self) -> None:
         """Validate that option values fall within their allowed numeric or logical ranges."""
