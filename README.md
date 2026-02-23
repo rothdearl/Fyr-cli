@@ -514,7 +514,7 @@ This design provides:
 
 ## Minimal Examples
 
-### Non-text program
+### Text program
 
 ``` python
 """A program that prints files to standard output."""
