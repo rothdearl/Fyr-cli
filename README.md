@@ -517,94 +517,95 @@ This design provides:
 ### Non-text program
 
 ``` python
-"""A program that writes strings to standard output."""
+"""A program that prints files to standard output."""
 
 import argparse
 import sys
 from collections.abc import Iterable
-from itertools import chain
-from typing import override
+from typing import Final, override
 
-from pyrcli.cli import CLIProgram, terminal, text
+from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
 
-class Emit(CLIProgram):
-    """A program that writes strings to standard output."""
+class Colors:
+    """Namespace for terminal color constants."""
+    COLON: Final[str] = ansi.Colors.BRIGHT_CYAN
+    FILE_NAME: Final[str] = ansi.Colors.BRIGHT_MAGENTA
+
+
+class Demo(TextProgram):
+    """A program that prints files to standard output."""
 
     def __init__(self) -> None:
-        """Initialize a new ``Emit`` instance."""
-        super().__init__(name="emit")
+        """Initialize a new ``Demo`` instance."""
+        super().__init__(name="demo")
 
     @override
     def build_arguments(self) -> argparse.ArgumentParser:
         """Build and return an argument parser."""
-        parser = argparse.ArgumentParser(allow_abbrev=False, description="write strings to standard output",
-                                         prog=self.name)
+        parser = argparse.ArgumentParser(allow_abbrev=False, description="print the first part of FILES",
+                                         epilog="read from standard input when no FILES are specified", prog=self.name)
 
-        parser.add_argument("strings", help="strings to write", metavar="STRINGS", nargs="*")
-        parser.add_argument("--stdin", action="store_true", help="read from standard input")
-        parser.add_argument("--stdin-after", action="store_true",
-                            help="process standard input after STRINGS (use with --stdin)")
-        parser.add_argument("-n", "--no-newline", action="store_true", help="suppress trailing newline")
-        parser.add_argument("-e", "--escapes", action="store_true", help="interpret backslash escape sequences")
-        parser.add_argument("-s", "--strict-escapes", action="store_true",
-                            help="fail on invalid escape sequences (use with --escapes)")
+        parser.add_argument("files", help="read from FILES", metavar="FILES", nargs="*")
+        parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
+        parser.add_argument("--color", choices=("on", "off"), default="on",
+                            help="use color for file names (default: on)")
+        parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
+        parser.add_argument("--stdin-files", action="store_true", help="read FILES from standard input (one per line)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
 
     @override
-    def check_option_dependencies(self) -> None:
-        """Enforce relationships and mutual constraints between command-line options."""
-        # --stdin-after is only meaningful with --stdin.
-        if self.args.stdin_after and not self.args.stdin:
-            self.print_error_and_exit("--stdin-after must be used with --stdin")
-
-        # --strict-escapes is only meaningful with --escapes.
-        if self.args.strict_escapes and not self.args.escapes:
-            self.print_error_and_exit("--strict-escapes must be used with --escapes")
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process the text stream contained in ``FileInfo``."""
+        self.print_file_header(file_info.file_name)
+        self.print_lines(file_info.text_stream)
 
     @override
     def main(self) -> None:
         """Run the program."""
-        strings = self.args.strings
-
-        # Stream stdin (when enabled) with positional strings to avoid buffering.
-        if terminal.stdin_is_redirected() and self.args.stdin:
-            if self.args.stdin_after:
-                strings = chain(strings, sys.stdin)
+        if terminal.stdin_is_redirected():
+            if self.args.stdin_files:
+                self.process_text_files_from_stdin()
             else:
-                strings = chain(sys.stdin, strings)
+                if standard_input := sys.stdin.readlines():
+                    self.print_file_header(file_name="")
+                    self.print_lines(standard_input)
 
-        self.write_strings(strings)
+            if self.args.files:  # Process any additional files.
+                self.process_text_files(self.args.files)
+        elif self.args.files:
+            self.process_text_files(self.args.files)
+        else:
+            self.print_lines_from_input()
 
-        if not self.args.no_newline:
-            print()
+    @override
+    def normalize_options(self) -> None:
+        """Apply derived defaults and adjust option values for consistent internal use."""
+        # Set --no-file-name to True if there are no files and --stdin-files=False.
+        if not self.args.files and not self.args.stdin_files:
+            self.args.no_file_name = True
 
-    def write_strings(self, strings: Iterable[str]) -> None:
-        """Write strings to standard output, separated by spaces."""
-        needs_space = False
+    def print_file_header(self, file_name: str) -> None:
+        """Print the rendered file header for ``file_name``."""
+        if self.should_print_file_header():
+            print(self.render_file_header(file_name, file_name_color=Colors.FILE_NAME, colon_color=Colors.COLON))
 
-        for raw_string in strings:
-            string = text.strip_trailing_newline(raw_string)
+    @staticmethod
+    def print_lines(lines: Iterable[str]) -> None:
+        """Print lines to standard output."""
+        for line in text.iter_normalized_lines(lines):
+            print(line)
 
-            if needs_space:
-                sys.stdout.write(" ")
-
-            if self.args.escapes:
-                try:
-                    string = text.decode_python_escape_sequences(string)
-                except UnicodeDecodeError as error:
-                    if self.args.strict_escapes:
-                        self.print_error_and_exit(f"invalid escape sequence at index {error.start}: {string!r}")
-
-            sys.stdout.write(string)
-            needs_space = True
+    def print_lines_from_input(self) -> None:
+        """Read and print lines from standard input until EOF."""
+        self.print_lines(sys.stdin)
 
 
 def main() -> int:
     """Run the program."""
-    return Emit().run_program()
+    return Demo().run_program()
 
 
 if __name__ == "__main__":
