@@ -1,7 +1,7 @@
 """A program that displays current IP-based location information."""
 
 import argparse
-from typing import Final, override
+from typing import Final, NoReturn, override
 
 import requests
 
@@ -101,8 +101,8 @@ class Where(CLIProgram):
         return str(value) if value not in (None, "") else "n/a"
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Where().run_program()
 
 

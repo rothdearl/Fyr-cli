@@ -4,7 +4,7 @@ import argparse
 import sys
 from collections.abc import Iterable
 from itertools import chain
-from typing import override
+from typing import NoReturn, override
 
 from pyrcli.cli import CLIProgram, terminal, text
 
@@ -83,8 +83,8 @@ class Emit(CLIProgram):
             needs_space = True
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Emit().run_program()
 
 

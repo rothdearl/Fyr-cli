@@ -432,8 +432,8 @@ Do **not** print raw error messages.
 All programs **must** use the standardized lifecycle:
 
 ``` python
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return MyProgram().run_program()
 
 
@@ -603,8 +603,8 @@ class Demo(TextProgram):
         self.print_lines(sys.stdin)
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Demo().run_program()
 
 

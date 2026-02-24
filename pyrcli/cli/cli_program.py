@@ -95,12 +95,15 @@ class CLIProgram(ABC):
     @final
     def run_program(self) -> int:
         """
-        Run the full program lifecycle and normalize process termination and exit codes.
+        Run the full program lifecycle and normalize process termination.
 
         - Configure the environment.
         - Parse arguments and prepare runtime state.
         - Execute the command.
         - Handle errors.
+
+        :return: ``0`` on success.
+        :raises SystemExit: With an exit code on failure.
         """
         keyboard_interrupt_error_code = 130
         sigpipe_exit_code = 141

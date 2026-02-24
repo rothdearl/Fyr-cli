@@ -5,7 +5,7 @@ import datetime
 import random
 import re
 import sys
-from typing import Final, override
+from typing import Final, NoReturn, override
 
 from dateutil.parser import ParserError, parse
 
@@ -271,8 +271,8 @@ class Order(TextProgram):
             self.print_error_and_exit("--skip-fields must be >= 1")
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Order().run_program()
 
 

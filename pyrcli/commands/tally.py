@@ -4,7 +4,7 @@ import argparse
 import re
 import sys
 from collections.abc import Iterable
-from typing import Final, NamedTuple, override
+from typing import Final, NamedTuple, NoReturn, override
 
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
@@ -181,8 +181,8 @@ class Tally(TextProgram):
             self.print_error_and_exit("--tab-width must be >= 1")
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Tally().run_program()
 
 

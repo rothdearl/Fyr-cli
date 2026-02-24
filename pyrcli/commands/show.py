@@ -3,7 +3,7 @@
 import argparse
 import sys
 from collections.abc import Sequence
-from typing import Final, override
+from typing import Final, NoReturn, override
 
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
@@ -171,8 +171,8 @@ class Show(TextProgram):
             self.print_error_and_exit("--start cannot be 0")
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Show().run_program()
 
 

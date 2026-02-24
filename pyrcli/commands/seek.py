@@ -6,7 +6,7 @@ import pathlib
 import sys
 import time
 from collections.abc import Iterable
-from typing import Final, override
+from typing import Final, NoReturn, override
 
 from pyrcli.cli import CLIProgram, CompiledPatterns, ansi, io, patterns, render, terminal, text
 
@@ -232,8 +232,8 @@ class Seek(CLIProgram):
             self.print_error_and_exit("--max-depth must be >= 1")
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Seek().run_program()
 
 

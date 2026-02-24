@@ -4,7 +4,7 @@ import argparse
 import sys
 from collections import deque
 from collections.abc import Iterable
-from typing import Final, override
+from typing import Final, NoReturn, override
 
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
@@ -104,8 +104,8 @@ class Peek(TextProgram):
         self.print_lines(sys.stdin)
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Peek().run_program()
 
 

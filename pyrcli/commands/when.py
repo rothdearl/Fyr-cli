@@ -3,7 +3,7 @@
 import argparse
 import calendar
 import datetime
-from typing import Final, NamedTuple, override
+from typing import Final, NamedTuple, NoReturn, override
 
 from pyrcli.cli import CLIProgram, constants, render
 
@@ -180,8 +180,8 @@ class When(CLIProgram):
             print(output)
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return When().run_program()
 
 

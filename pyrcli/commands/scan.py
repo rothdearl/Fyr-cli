@@ -3,7 +3,7 @@
 import argparse
 import sys
 from collections.abc import Iterable, Sequence
-from typing import Final, NamedTuple, override
+from typing import Final, NamedTuple, NoReturn, override
 
 from pyrcli.cli import CompiledPatterns, TextProgram, ansi, io, patterns, render, terminal, text
 
@@ -187,8 +187,8 @@ class Scan(TextProgram):
             self.print_matches(sys.stdin, origin_file="")
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Scan().run_program()
 
 

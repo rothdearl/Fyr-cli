@@ -3,7 +3,7 @@
 import argparse
 import sys
 from collections.abc import Iterable
-from typing import Final, override
+from typing import Final, NoReturn, override
 
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
@@ -238,8 +238,8 @@ class Dupe(TextProgram):
             self.print_error_and_exit("--skip-fields must be >= 1")
 
 
-def main() -> int:
-    """Run the program."""
+def main() -> int | NoReturn:
+    """Run the command and return the exit code."""
     return Dupe().run_program()
 
 
