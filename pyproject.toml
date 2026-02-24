@@ -4,22 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyr-cli"
-version = "1.0.1"
-description = "A CLI toolkit of small, composable programs designed for deterministic pipelines."
+version = "1.0.2"
+description = "A collection of deterministic Unix-style CLI tools and a shared Python framework with stable I/O contracts for pipeline-safe composition."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { file = "LICENSE" }
+license = { text = "GPL-3.0-only" }
 authors = [{ name = "Roth Earl" }]
-keywords = ["cli", "coreutils", "toolkit", "utilities"]
+keywords = ["cli", "coreutils", "framework", "toolkit", "utilities"]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Environment :: Console",
     "Operating System :: OS Independent",
     "Topic :: Utilities",
 ]
-
 dependencies = [
     "colorama",
     "python-dateutil",
@@ -43,8 +43,14 @@ track = "pyrcli.commands.track:main"
 when = "pyrcli.commands.when:main"
 where = "pyrcli.commands.where:main"
 
+[project.urls]
+Homepage = "https://github.com/rothdearl/Pyr-CLI"
+Repository = "https://github.com/rothdearl/Pyr-CLI"
+Issues = "https://github.com/rothdearl/Pyr-CLI/issues"
+
 [tool.setuptools]
 include-package-data = false
+license-files = ["LICENSE"]
 
 [tool.setuptools.packages.find]
 where = ["."]
