@@ -62,13 +62,8 @@ class Glue(TextProgram):
         return parser
 
     @override
-    def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream contained in ``FileInfo``."""
-        self.print_lines(file_info.text_stream)
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
                 self.process_text_files_from_stdin()
@@ -81,6 +76,11 @@ class Glue(TextProgram):
             self.process_text_files(self.args.files)
         else:
             self.print_lines_from_input()
+
+    @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process the text stream contained in ``FileInfo``."""
+        self.print_lines(file_info.text_stream)
 
     def print_lines(self, lines: Iterable[str]) -> None:
         """Print lines to standard output, applying numbering, whitespace rendering, and blank-line handling."""

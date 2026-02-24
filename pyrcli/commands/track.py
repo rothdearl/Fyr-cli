@@ -44,6 +44,31 @@ class Track(TextProgram):
 
         return parser
 
+    @override
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        printed_files = []
+
+        if terminal.stdin_is_redirected():
+            if self.args.stdin_files:
+                printed_files.extend(self.process_text_files_from_stdin())
+            else:
+                if standard_input := sys.stdin.readlines():
+                    self.print_file_header(file_name="")
+                    self.print_lines(standard_input)
+
+            if self.args.files:  # Process any additional files.
+                printed_files.extend(self.process_text_files(self.args.files))
+        elif self.args.files:
+            printed_files.extend(self.process_text_files(self.args.files))
+        else:
+            self.print_lines_from_input()
+
+        if self.args.follow and printed_files:
+            # Start threads and wait for them to terminate.
+            for thread in self.start_following_threads(printed_files, print_file_name_on_update=len(printed_files) > 1):
+                thread.join()
+
     def follow_file(self, file_name: str, print_file_name_on_update) -> None:
         """Follow the file for new lines."""
         polling_interval: float = .5
@@ -87,31 +112,6 @@ class Track(TextProgram):
         """Process the text stream contained in ``FileInfo``."""
         self.print_file_header(file_info.file_name)
         self.print_lines(file_info.text_stream.readlines())
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
-        printed_files = []
-
-        if terminal.stdin_is_redirected():
-            if self.args.stdin_files:
-                printed_files.extend(self.process_text_files_from_stdin())
-            else:
-                if standard_input := sys.stdin.readlines():
-                    self.print_file_header(file_name="")
-                    self.print_lines(standard_input)
-
-            if self.args.files:  # Process any additional files.
-                printed_files.extend(self.process_text_files(self.args.files))
-        elif self.args.files:
-            printed_files.extend(self.process_text_files(self.args.files))
-        else:
-            self.print_lines_from_input()
-
-        if self.args.follow and printed_files:
-            # Start threads and wait for them to terminate.
-            for thread in self.start_following_threads(printed_files, print_file_name_on_update=len(printed_files) > 1):
-                thread.join()
 
     @override
     def normalize_options(self) -> None:

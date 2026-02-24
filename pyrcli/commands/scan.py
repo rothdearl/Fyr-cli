@@ -103,6 +103,22 @@ class Scan(TextProgram):
                                                   on_error=self.print_error_and_exit)
 
     @override
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        if terminal.stdin_is_redirected():
+            if self.args.stdin_files:
+                self.process_text_files_from_stdin()
+            elif standard_input := sys.stdin.readlines():
+                self.print_matches(standard_input, origin_file="")
+
+            if self.args.files:  # Process any additional files.
+                self.process_text_files(self.args.files)
+        elif self.args.files:
+            self.process_text_files(self.args.files)
+        else:
+            self.print_matches_from_input()
+
+    @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
         """Process the text stream contained in ``FileInfo``."""
         self.print_matches(file_info.text_stream, origin_file=file_info.file_name)
@@ -121,22 +137,6 @@ class Scan(TextProgram):
     def is_printing_counts(self) -> bool:
         """Return whether ``args.count`` or ``args.count_nonzero`` is set."""
         return self.args.count or self.args.count_nonzero
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
-        if terminal.stdin_is_redirected():
-            if self.args.stdin_files:
-                self.process_text_files_from_stdin()
-            elif standard_input := sys.stdin.readlines():
-                self.print_matches(standard_input, origin_file="")
-
-            if self.args.files:  # Process any additional files.
-                self.process_text_files(self.args.files)
-        elif self.args.files:
-            self.process_text_files(self.args.files)
-        else:
-            self.print_matches_from_input()
 
     @override
     def normalize_options(self) -> None:

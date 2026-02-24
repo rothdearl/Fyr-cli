@@ -1,7 +1,17 @@
-"""Predicates describing whether standard input and output are attached to a terminal."""
+"""Predicates describing whether the standard streams are attached to a terminal."""
 
 import sys
 from typing import Final
+
+
+def stderr_is_redirected() -> bool:
+    """Return whether standard error is redirected."""
+    return not stderr_is_terminal()
+
+
+def stderr_is_terminal() -> bool:
+    """Return whether standard error is attached to a terminal."""
+    return sys.stderr.isatty()
 
 
 def stdin_is_redirected() -> bool:
@@ -25,6 +35,8 @@ def stdout_is_terminal() -> bool:
 
 
 __all__: Final[tuple[str, ...]] = (
+    "stderr_is_redirected",
+    "stderr_is_terminal",
     "stdin_is_redirected",
     "stdin_is_terminal",
     "stdout_is_redirected",

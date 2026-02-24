@@ -51,6 +51,8 @@ from .render import (
 )
 
 from .terminal import (
+    stderr_is_redirected,
+    stderr_is_terminal,
     stdin_is_redirected,
     stdin_is_terminal,
     stdout_is_redirected,

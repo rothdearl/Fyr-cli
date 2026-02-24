@@ -60,6 +60,24 @@ class Subs(TextProgram):
             self.pattern = patterns.compile_combined_patterns(compiled, ignore_case=self.args.ignore_case)
 
     @override
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        if terminal.stdin_is_redirected():
+            if self.args.stdin_files:
+                self.process_text_files_from_stdin()
+            else:
+                if standard_input := sys.stdin.readlines():
+                    self.print_file_header(file_name="")
+                    self.print_replaced_lines(standard_input)
+
+            if self.args.files:  # Process any additional files.
+                self.process_text_files(self.args.files)
+        elif self.args.files:
+            self.process_text_files(self.args.files)
+        else:
+            self.print_replaced_lines_from_input()
+
+    @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
         """Process the text stream contained in ``FileInfo``."""
         if self.args.in_place:
@@ -83,24 +101,6 @@ class Subs(TextProgram):
                 yield self.pattern.sub(self.args.replace, line, count=self.args.max_replacements)
             else:
                 yield line
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
-        if terminal.stdin_is_redirected():
-            if self.args.stdin_files:
-                self.process_text_files_from_stdin()
-            else:
-                if standard_input := sys.stdin.readlines():
-                    self.print_file_header(file_name="")
-                    self.print_replaced_lines(standard_input)
-
-            if self.args.files:  # Process any additional files.
-                self.process_text_files(self.args.files)
-        elif self.args.files:
-            self.process_text_files(self.args.files)
-        else:
-            self.print_replaced_lines_from_input()
 
     @override
     def normalize_options(self) -> None:

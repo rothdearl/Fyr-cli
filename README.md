@@ -293,7 +293,7 @@ Every program **must implement**:
 
 Define all command-line options.
 
-#### main(self) -\> None
+#### execute(self) -\> None
 
 Implement the program's core behavior.
 This method is called **after** arguments are parsed, validated, normalized, and runtime state is initialized.
@@ -460,7 +460,7 @@ The `run_program()` method guarantees:
 - Inherit from `CLIProgram` or `TextProgram`
 - Call `super().__init__(name=...)`
 - Implement `build_arguments`
-- Implement `main`
+- Implement `execute`
 - Use validation hooks appropriately
 - Use `print_error` / `print_error_and_exit`
 - Use `run_program()` in the entry point
@@ -557,14 +557,8 @@ class Demo(TextProgram):
         return parser
 
     @override
-    def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream contained in ``FileInfo``."""
-        self.print_file_header(file_info.file_name)
-        self.print_lines(file_info.text_stream)
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
                 self.process_text_files_from_stdin()
@@ -579,6 +573,12 @@ class Demo(TextProgram):
             self.process_text_files(self.args.files)
         else:
             self.print_lines_from_input()
+
+    @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process the text stream contained in ``FileInfo``."""
+        self.print_file_header(file_info.file_name)
+        self.print_lines(file_info.text_stream)
 
     @override
     def normalize_options(self) -> None:

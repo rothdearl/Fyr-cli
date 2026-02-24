@@ -73,6 +73,23 @@ class Dupe(TextProgram):
         if self.args.field_separator is not None and self.args.skip_fields is None:
             self.print_error_and_exit("--field-separator must be used with --skip-fields")
 
+    @override
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        if terminal.stdin_is_redirected():
+            if self.args.stdin_files:
+                self.process_text_files_from_stdin()
+            else:
+                if standard_input := sys.stdin.readlines():
+                    self.group_and_print_lines(standard_input, origin_file="")
+
+            if self.args.files:  # Process any additional files.
+                self.process_text_files(self.args.files)
+        elif self.args.files:
+            self.process_text_files(self.args.files)
+        else:
+            self.group_and_print_lines_from_input()
+
     def get_compare_key(self, line: str) -> str:
         """Return a normalized comparison key derived from the line, applying rules according to command-line options."""
         compare_key = line
@@ -192,23 +209,6 @@ class Dupe(TextProgram):
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
         """Process the text stream contained in ``FileInfo``."""
         self.group_and_print_lines(file_info.text_stream, origin_file=file_info.file_name)
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
-        if terminal.stdin_is_redirected():
-            if self.args.stdin_files:
-                self.process_text_files_from_stdin()
-            else:
-                if standard_input := sys.stdin.readlines():
-                    self.group_and_print_lines(standard_input, origin_file="")
-
-            if self.args.files:  # Process any additional files.
-                self.process_text_files(self.args.files)
-        elif self.args.files:
-            self.process_text_files(self.args.files)
-        else:
-            self.group_and_print_lines_from_input()
 
     @override
     def normalize_options(self) -> None:

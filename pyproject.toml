@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyr-cli"
-version = "1.0.0"
+version = "1.0.1"
 description = "A CLI toolkit of small, composable programs designed for deterministic pipelines."
 readme = "README.md"
 requires-python = ">=3.12"

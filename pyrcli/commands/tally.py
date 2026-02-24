@@ -96,6 +96,30 @@ class Tally(TextProgram):
         return Counts(line_count, words, character_count, max_line_length)
 
     @override
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        if terminal.stdin_is_redirected():
+            if self.args.stdin_files:
+                self.process_text_files_from_stdin()
+            else:
+                if standard_input := sys.stdin.readlines():
+                    counts = self.calculate_counts(standard_input)
+
+                    self.files_counted += 1
+                    self.add_counts_to_totals(counts)
+                    self.print_counts(counts, origin_file="(standard input)" if self.args.files else "")
+
+            if self.args.files:  # Process any additional files.
+                self.process_text_files(self.args.files)
+        elif self.args.files:
+            self.process_text_files(self.args.files)
+        else:
+            self.print_counts_from_input()
+
+        if self.args.total == "on" or (self.args.total == "auto" and self.files_counted > 1):
+            self.print_counts(self.totals, origin_file="total")
+
+    @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
         """Process the text stream contained in ``FileInfo``."""
         counts = self.calculate_counts(file_info.text_stream)
@@ -118,30 +142,6 @@ class Tally(TextProgram):
         if not sum(self.flags):
             for index in (0, 1, 2):
                 self.flags[index] = True
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
-        if terminal.stdin_is_redirected():
-            if self.args.stdin_files:
-                self.process_text_files_from_stdin()
-            else:
-                if standard_input := sys.stdin.readlines():
-                    counts = self.calculate_counts(standard_input)
-
-                    self.files_counted += 1
-                    self.add_counts_to_totals(counts)
-                    self.print_counts(counts, origin_file="(standard input)" if self.args.files else "")
-
-            if self.args.files:  # Process any additional files.
-                self.process_text_files(self.args.files)
-        elif self.args.files:
-            self.process_text_files(self.args.files)
-        else:
-            self.print_counts_from_input()
-
-        if self.args.total == "on" or (self.args.total == "auto" and self.files_counted > 1):
-            self.print_counts(self.totals, origin_file="total")
 
     def print_counts(self, counts: Counts, *, origin_file: str) -> None:
         """Print line, word, and character counts for the given file."""

@@ -46,8 +46,8 @@ class Emit(CLIProgram):
             self.print_error_and_exit("--strict-escapes must be used with --escapes")
 
     @override
-    def main(self) -> None:
-        """Run the program."""
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
         strings = self.args.strings
 
         # Stream stdin (when enabled) with positional strings to avoid buffering.

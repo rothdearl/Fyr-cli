@@ -61,14 +61,8 @@ class Num(TextProgram):
         return parser
 
     @override
-    def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream contained in ``FileInfo``."""
-        self.print_file_header(file_info.file_name)
-        self.number_lines(file_info.text_stream)
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
         if terminal.stdin_is_redirected():
             if self.args.stdin_files:
                 self.process_text_files_from_stdin()
@@ -83,6 +77,12 @@ class Num(TextProgram):
             self.process_text_files(self.args.files)
         else:
             self.number_lines_from_input()
+
+    @override
+    def handle_text_stream(self, file_info: io.FileInfo) -> None:
+        """Process the text stream contained in ``FileInfo``."""
+        self.print_file_header(file_info.file_name)
+        self.number_lines(file_info.text_stream)
 
     @override
     def normalize_options(self) -> None:

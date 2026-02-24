@@ -80,6 +80,24 @@ class Order(TextProgram):
         if self.args.decimal_comma and not any((self.args.currency_sort, self.args.natural_sort)):
             self.print_error_and_exit("--decimal-comma must be used with --currency-sort or --natural-sort")
 
+    @override
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        if terminal.stdin_is_redirected():
+            if self.args.stdin_files:
+                self.process_text_files_from_stdin()
+            else:
+                if standard_input := sys.stdin.readlines():
+                    self.print_file_header(file_name="")
+                    self.sort_and_print_lines(standard_input)
+
+            if self.args.files:  # Process any additional files.
+                self.process_text_files(self.args.files)
+        elif self.args.files:
+            self.process_text_files(self.args.files)
+        else:
+            self.sort_and_print_lines_from_input()
+
     def generate_currency_sort_key(self, line: str) -> list[tuple[int, float | str]]:
         """
         Return a sort key that orders currency-like values numerically when possible.
@@ -181,24 +199,6 @@ class Order(TextProgram):
         """Process the text stream contained in ``FileInfo``."""
         self.print_file_header(file_info.file_name)
         self.sort_and_print_lines(file_info.text_stream.readlines())
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
-        if terminal.stdin_is_redirected():
-            if self.args.stdin_files:
-                self.process_text_files_from_stdin()
-            else:
-                if standard_input := sys.stdin.readlines():
-                    self.print_file_header(file_name="")
-                    self.sort_and_print_lines(standard_input)
-
-            if self.args.files:  # Process any additional files.
-                self.process_text_files(self.args.files)
-        elif self.args.files:
-            self.process_text_files(self.args.files)
-        else:
-            self.sort_and_print_lines_from_input()
 
     def normalize_line(self, line: str) -> str:
         """Return the line with trailing whitespace removed and optional leading-blank and case normalization applied."""

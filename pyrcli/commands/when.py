@@ -51,6 +51,29 @@ class When(CLIProgram):
         if self.args.datetime_format is not None and not self.args.datetime:
             self.print_error_and_exit("--datetime-format must be used with --datetime")
 
+    @override
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        text_calendar = calendar.TextCalendar(calendar.SUNDAY if self.args.week_start == "sun" else calendar.MONDAY)
+
+        match self.args.calendar:
+            case "m":
+                self.print_month(text_calendar)
+            case "q":
+                self.print_quarter(text_calendar)
+            case _:
+                self.print_year(text_calendar)
+
+        if self.args.datetime:
+            date_format = self.args.datetime_format or self.DEFAULT_DATETIME_FORMAT
+            now = datetime.datetime.now()
+
+            try:
+                print()
+                print(now.strftime(date_format))
+            except ValueError:  # Raised for invalid format directives on Windows; unreachable on POSIX.
+                self.print_error_and_exit("invalid datetime format")
+
     @staticmethod
     def get_quarter_column_bounds_for_month(month: int) -> CalendarQuarterColumnBounds:
         """Return character column bounds for a month within a quarter row of ``calendar.calendar(..., m=3)`` output."""
@@ -72,29 +95,6 @@ class When(CLIProgram):
         colored_text = line[bounds.start:bounds.end].replace(day, self.highlight(day))
 
         return line[:bounds.start] + colored_text + line[bounds.end:]
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
-        text_calendar = calendar.TextCalendar(calendar.SUNDAY if self.args.week_start == "sun" else calendar.MONDAY)
-
-        match self.args.calendar:
-            case "m":
-                self.print_month(text_calendar)
-            case "q":
-                self.print_quarter(text_calendar)
-            case _:
-                self.print_year(text_calendar)
-
-        if self.args.datetime:
-            date_format = self.args.datetime_format or self.DEFAULT_DATETIME_FORMAT
-            now = datetime.datetime.now()
-
-            try:
-                print()
-                print(now.strftime(date_format))
-            except ValueError:  # Raised for invalid format directives on Windows; unreachable on POSIX.
-                self.print_error_and_exit("invalid datetime format")
 
     def print_month(self, text_calendar: calendar.TextCalendar) -> None:
         """Print the current month."""

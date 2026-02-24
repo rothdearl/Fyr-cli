@@ -58,15 +58,15 @@ class CLIProgram(ABC):
         self.normalize_options()
         self.initialize_runtime_state()
 
+    @abstractmethod
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
+        ...
+
     def initialize_runtime_state(self) -> None:
         """Initialize internal state derived from parsed options."""
         # Disable color if standard output is redirected.
         self.print_color = getattr(self.args, "color", "off") == "on" and stdout_is_terminal()
-
-    @abstractmethod
-    def main(self) -> None:
-        """Run the program."""
-        ...
 
     def normalize_options(self) -> None:
         """Apply derived defaults and adjust option values for consistent internal use."""
@@ -99,7 +99,7 @@ class CLIProgram(ABC):
 
         - Configure the environment.
         - Parse arguments and prepare runtime state.
-        - Run the program.
+        - Execute the command.
         - Handle errors.
         """
         keyboard_interrupt_error_code = 130
@@ -117,7 +117,7 @@ class CLIProgram(ABC):
 
             self.parse_arguments()
             self.check_parsed_arguments()
-            self.main()
+            self.execute()
             self.check_for_errors()
         except BrokenPipeError:
             raise SystemExit(self.error_exit_code if OS_IS_WINDOWS else sigpipe_exit_code)

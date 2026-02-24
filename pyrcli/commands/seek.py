@@ -96,15 +96,8 @@ class Seek(CLIProgram):
                                                            on_error=self.print_error_and_exit)
 
     @override
-    def initialize_runtime_state(self) -> None:
-        """Initialize internal state derived from parsed options."""
-        super().initialize_runtime_state()
-
-        self.compile_patterns()
-
-    @override
-    def main(self) -> None:
-        """Run the program."""
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
         if terminal.stdin_is_redirected():
             self.print_paths(io.iter_stdin_file_names())
 
@@ -112,6 +105,13 @@ class Seek(CLIProgram):
                 self.print_paths(self.args.directories)
         else:
             self.print_paths(self.args.directories or [os.curdir])
+
+    @override
+    def initialize_runtime_state(self) -> None:
+        """Initialize internal state derived from parsed options."""
+        super().initialize_runtime_state()
+
+        self.compile_patterns()
 
     def path_matches_filters(self, path: pathlib.Path) -> bool:
         """Return whether the path matches all enabled filters."""

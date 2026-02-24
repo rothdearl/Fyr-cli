@@ -43,32 +43,9 @@ class Where(CLIProgram):
         if self.args.cardinal and not self.args.coordinates:
             self.print_error_and_exit("--cardinal must be used with --coordinates")
 
-    @staticmethod
-    def format_coordinates_cardinal(coordinates: str) -> str:
-        """Return coordinates in a human-readable cardinal format."""
-        try:
-            lat_str, lon_str = (part.strip() for part in coordinates.split(",", 1))
-
-            # Determine hemispheres from sign.
-            lat_degrees = float(lat_str)
-            lat_hemisphere = "S" if lat_degrees < 0 else "N"
-            lon_degrees = float(lon_str)
-            lon_hemisphere = "W" if lon_degrees < 0 else "E"
-
-            return f"{abs(lat_degrees):.4f}° {lat_hemisphere}, {abs(lon_degrees):.4f}° {lon_hemisphere}"
-        except (TypeError, ValueError):
-            return "n/a"
-
-    @staticmethod
-    def get_json_value(*, data: JsonObject, key: str) -> str:
-        """Return the value for a key in the JSON data, or ``"n/a"`` if missing or blank."""
-        value = data.get(key)
-
-        return str(value) if value not in (None, "") else "n/a"
-
     @override
-    def main(self) -> None:
-        """Run the program."""
+    def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
         try:
             response = requests.get(self.IPINFO_URL, timeout=5)
 
@@ -99,6 +76,29 @@ class Where(CLIProgram):
                 print(f"ip: {self.get_json_value(data=data, key='ip')}")
         except (ValueError, requests.RequestException):
             self.print_error_and_exit("unable to retrieve location")
+
+    @staticmethod
+    def format_coordinates_cardinal(coordinates: str) -> str:
+        """Return coordinates in a human-readable cardinal format."""
+        try:
+            lat_str, lon_str = (part.strip() for part in coordinates.split(",", 1))
+
+            # Determine hemispheres from sign.
+            lat_degrees = float(lat_str)
+            lat_hemisphere = "S" if lat_degrees < 0 else "N"
+            lon_degrees = float(lon_str)
+            lon_hemisphere = "W" if lon_degrees < 0 else "E"
+
+            return f"{abs(lat_degrees):.4f}° {lat_hemisphere}, {abs(lon_degrees):.4f}° {lon_hemisphere}"
+        except (TypeError, ValueError):
+            return "n/a"
+
+    @staticmethod
+    def get_json_value(*, data: JsonObject, key: str) -> str:
+        """Return the value for a key in the JSON data, or ``"n/a"`` if missing or blank."""
+        value = data.get(key)
+
+        return str(value) if value not in (None, "") else "n/a"
 
 
 def main() -> int:

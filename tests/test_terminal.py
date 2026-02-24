@@ -9,6 +9,8 @@ class TestTerminal(unittest.TestCase):
     """Tests the terminal module."""
 
     def test_terminal_predicates(self) -> None:
+        self.assertFalse(terminal.stderr_is_redirected())
+        self.assertTrue(terminal.stderr_is_terminal())
         self.assertFalse(terminal.stdin_is_redirected())
         self.assertTrue(terminal.stdin_is_terminal())
         self.assertFalse(terminal.stdout_is_redirected())
