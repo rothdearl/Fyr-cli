@@ -1,1 +1,1 @@
-"""Mark the tests directory as a package for unittest discovery."""
+"""Package marker for unittest test discovery."""
