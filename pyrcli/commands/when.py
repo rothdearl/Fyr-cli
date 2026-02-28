@@ -39,7 +39,8 @@ class When(CLIProgram):
         parser.add_argument("-w", "--week-start", choices=("mon", "sun"), default="mon",
                             help="use monday or sunday as first day of the week (default: mon)")
         parser.add_argument("-d", "--datetime", action="store_true", help="print current date and time after calendar")
-        parser.add_argument("--datetime-format", help="use STRING as datetime format", metavar="STRING")
+        parser.add_argument("--datetime-format", help="use STRING as datetime format (requires --datetime)",
+                            metavar="STRING")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
