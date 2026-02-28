@@ -47,7 +47,7 @@ class Dupe(TextProgram):
         parser.add_argument("-f", "--skip-fields", help="skip the first N non-empty fields when comparing (N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--field-separator",
-                            help="split lines into fields using SEP (default: <space>; use with --skip-fields)",
+                            help="split lines into fields using SEP (default: <space>; requires --skip-fields)",
                             metavar="SEP")
         parser.add_argument("-s", "--skip-chars", help="skip the first N characters when comparing (N >= 0)",
                             metavar="N", type=int)
@@ -71,7 +71,7 @@ class Dupe(TextProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --field-separator is only meaningful with --skip-fields.
         if self.args.field_separator is not None and self.args.skip_fields is None:
-            self.print_error_and_exit("--field-separator must be used with --skip-fields")
+            self.print_error_and_exit("--field-separator requires --skip-fields")
 
     @override
     def execute(self) -> None:

@@ -49,7 +49,7 @@ class When(CLIProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --datetime-format is only meaningful with --datetime.
         if self.args.datetime_format is not None and not self.args.datetime:
-            self.print_error_and_exit("--datetime-format must be used with --datetime")
+            self.print_error_and_exit("--datetime-format requires --datetime")
 
     @override
     def execute(self) -> None:

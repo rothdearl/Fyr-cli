@@ -25,11 +25,11 @@ class Emit(CLIProgram):
         parser.add_argument("strings", help="strings to write", metavar="STRINGS", nargs="*")
         parser.add_argument("--stdin", action="store_true", help="read from standard input")
         parser.add_argument("--stdin-after", action="store_true",
-                            help="process standard input after STRINGS (use with --stdin)")
+                            help="process standard input after STRINGS (requires --stdin)")
         parser.add_argument("-n", "--no-newline", action="store_true", help="suppress trailing newline")
         parser.add_argument("-e", "--escapes", action="store_true", help="interpret backslash escape sequences")
         parser.add_argument("-s", "--strict-escapes", action="store_true",
-                            help="fail on invalid escape sequences (use with --escapes)")
+                            help="fail on invalid escape sequences (requires --escapes)")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
@@ -39,11 +39,11 @@ class Emit(CLIProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --stdin-after is only meaningful with --stdin.
         if self.args.stdin_after and not self.args.stdin:
-            self.print_error_and_exit("--stdin-after must be used with --stdin")
+            self.print_error_and_exit("--stdin-after requires --stdin")
 
         # --strict-escapes is only meaningful with --escapes.
         if self.args.strict_escapes and not self.args.escapes:
-            self.print_error_and_exit("--strict-escapes must be used with --escapes")
+            self.print_error_and_exit("--strict-escapes requires --escapes")
 
     @override
     def execute(self) -> None:

@@ -50,13 +50,13 @@ class Order(TextProgram):
                                 help="sort lines in natural order (numbers numeric)")
         sort_group.add_argument("-R", "--random-sort", action="store_true", help="sort lines in random order")
         parser.add_argument("--decimal-comma", action="store_true",
-                            help="interpret comma as the decimal separator (use with --currency-sort or --natural-sort)")
+                            help="interpret comma as the decimal separator (requires --currency-sort or --natural-sort)")
         parser.add_argument("-b", "--ignore-leading-blanks", action="store_true", help="ignore leading whitespace")
         parser.add_argument("-i", "--ignore-case", action="store_true", help="ignore case when comparing")
         parser.add_argument("-f", "--skip-fields", help="skip the first N non-empty fields when comparing (N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--field-separator",
-                            help="split lines into fields using SEP (default: <space>; use with --skip-fields)",
+                            help="split lines into fields using SEP (default: <space>; requires --skip-fields)",
                             metavar="SEP")
         parser.add_argument("-r", "--reverse", action="store_true", help="reverse the order of the sort")
         parser.add_argument("--no-blank", action="store_true", help="suppress blank lines")
@@ -74,11 +74,11 @@ class Order(TextProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --field-separator is only meaningful with --skip-fields.
         if self.args.field_separator is not None and self.args.skip_fields is None:
-            self.print_error_and_exit("--field-separator must be used with --skip-fields")
+            self.print_error_and_exit("--field-separator requires --skip-fields")
 
         # --decimal-comma is only meaningful with --currency-sort or --natural-sort.
         if self.args.decimal_comma and not any((self.args.currency_sort, self.args.natural_sort)):
-            self.print_error_and_exit("--decimal-comma must be used with --currency-sort or --natural-sort")
+            self.print_error_and_exit("--decimal-comma requires --currency-sort or --natural-sort")
 
     @override
     def execute(self) -> None:

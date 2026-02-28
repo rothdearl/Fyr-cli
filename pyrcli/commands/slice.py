@@ -38,16 +38,16 @@ class Slice(TextProgram):
                             help="print only the specified fields (numbered from 1; order preserved; duplicates allowed)",
                             metavar="N", nargs="+", type=int)
         parser.add_argument("-u", "--unique", action="store_true",
-                            help="normalize field selection to unique field numbers in ascending order (use with --fields)")
+                            help="normalize field selection to unique field numbers in ascending order (requires --fields)")
         parser.add_argument("-m", "--mode", choices=("csv", "regex", "shell"), default="csv",
                             help="set field parsing mode (default: csv)")
-        parser.add_argument("--field-separator", help="split fields using SEP (default: <space>; use with --mode csv)",
+        parser.add_argument("--field-separator", help="split fields using SEP (default: <space>; requires --mode=csv)",
                             metavar="SEP")
         parser.add_argument("--field-pattern",
-                            help="split fields using PATTERN (default: <whitespace>; use with --mode regex)",
+                            help="split fields using PATTERN (default: <whitespace>; requires --mode=regex)",
                             metavar="PATTERN")
         parser.add_argument("--literal-quotes", action="store_true",
-                            help="treat quotes as ordinary characters (use with --mode shell)")
+                            help="treat quotes as ordinary characters (requires --mode=shell)")
         parser.add_argument("--keep-empty", action="store_true", help="keep empty fields (default: drop)")
         parser.add_argument("--keep-empty-lines", action="store_true",
                             help="print empty lines when no fields are produced (default: drop)")
@@ -90,7 +90,7 @@ class Slice(TextProgram):
 
         # --unique is only meaningful with --fields.
         if self.args.unique and self.args.fields is None:
-            self.print_error_and_exit("--unique must be used with --fields")
+            self.print_error_and_exit("--unique requires --fields")
 
     @override
     def execute(self) -> None:

@@ -30,7 +30,7 @@ class Where(CLIProgram):
 
         parser.add_argument("-c", "--coordinates", action="store_true", help="display geographic coordinates")
         parser.add_argument("--cardinal", action="store_true",
-                            help="format coordinates with N/S/E/W suffixes (use with --coordinates)")
+                            help="format coordinates with N/S/E/W suffixes (requires --coordinates)")
         parser.add_argument("--ip", action="store_true", help="display public ip address")
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
@@ -41,7 +41,7 @@ class Where(CLIProgram):
         """Enforce relationships and mutual constraints between command-line options."""
         # --cardinal is only meaningful with --coordinates.
         if self.args.cardinal and not self.args.coordinates:
-            self.print_error_and_exit("--cardinal must be used with --coordinates")
+            self.print_error_and_exit("--cardinal requires --coordinates")
 
     @override
     def execute(self) -> None:

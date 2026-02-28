@@ -43,7 +43,7 @@ class Subs(TextProgram):
         parser.add_argument("--max-replacements", default=sys.maxsize, help="limit replacements to N per line (N >= 1)",
                             metavar="N", type=int)
         parser.add_argument("--in-place", action="store_true",
-                            help="write changes back to FILES instead of standard output")
+                            help="write changes back to FILES instead of standard output (requires FILES)")
         parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names (default: on)")
@@ -52,6 +52,13 @@ class Subs(TextProgram):
         parser.add_argument("--version", action="version", version=f"%(prog)s {self.version}")
 
         return parser
+
+    @override
+    def check_option_dependencies(self) -> None:
+        """Enforce relationships and mutual constraints between command-line options."""
+        # --in-place is only meaningful with FILES.
+        if self.args.in_place and not self.args.files and not self.args.stdin_files:
+            self.print_error_and_exit("--in-place requires FILES")
 
     def compile_patterns(self) -> None:
         """Compile search patterns and combine them into a single OR-pattern."""
