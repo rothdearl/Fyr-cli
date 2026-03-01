@@ -51,7 +51,7 @@ class _ProgressIndicator(ABC):
             self._writer.newline()
 
     @abstractmethod
-    def _render_final(self, *, message: ProgressMessage) -> None:
+    def _render_final(self, message: ProgressMessage) -> None:
         """Render the final indicator state and terminate the line when appropriate."""
         ...
 
@@ -64,7 +64,7 @@ class _ProgressIndicator(ABC):
         self._finished = True
 
         if self.visible:
-            self._render_final(message=self.final_message)
+            self._render_final(self.final_message)
         elif self.final_message:
             self.text_stream.write(self.final_message + "\n")
             self.text_stream.flush()

@@ -83,14 +83,14 @@ class Scan(TextProgram):
         matches = []
 
         for line_number, line in enumerate(text.iter_normalized_lines(lines), start=1):
-            if patterns.matches_all_patterns(line, self.patterns) != self.args.invert_match:
+            if patterns.matches_all_patterns(line, patterns=self.patterns) != self.args.invert_match:
                 if self.args.quiet:  # Exit early if --quiet.
                     raise SystemExit(0)
 
                 self.found_any_match = True
 
                 if self.print_color and not self.args.invert_match:
-                    line = render.color_pattern_matches(line, self.patterns, color=Colors.MATCH)
+                    line = render.color_pattern_matches(line, patterns=self.patterns, color=Colors.MATCH)
 
                 matches.append(Match(line_number, line))
 

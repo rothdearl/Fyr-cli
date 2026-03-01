@@ -7,7 +7,12 @@ from typing import Final
 from .ansi import RESET, TextAttributes
 
 
-def color_pattern_matches(text: str, patterns: Collection[re.Pattern[str]], *, color: str) -> str:
+def bold(text: str) -> str:
+    """Return the text wrapped in bold ANSI escape codes."""
+    return f"{TextAttributes.BOLD}{text}{RESET}"
+
+
+def color_pattern_matches(text: str, *, patterns: Collection[re.Pattern[str]], color: str) -> str:
     """
     Color all regions of the text that match any of the given patterns.
 
@@ -53,12 +58,19 @@ def color_pattern_matches(text: str, patterns: Collection[re.Pattern[str]], *, c
     return "".join(colored_text)
 
 
+def dim(text: str) -> str:
+    """Return the text wrapped in dim ANSI escape codes."""
+    return f"{TextAttributes.DIM}{text}{RESET}"
+
+
 def reverse_video(text: str) -> str:
     """Return the text wrapped in reverse-video ANSI escape codes."""
     return f"{TextAttributes.REVERSE}{text}{RESET}"
 
 
 __all__: Final[tuple[str, ...]] = (
+    "bold",
     "color_pattern_matches",
+    "dim",
     "reverse_video",
 )

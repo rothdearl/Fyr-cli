@@ -42,7 +42,9 @@ from .patterns import (
     matches_all_patterns,
 )
 from .render import (
+    bold,
     color_pattern_matches,
+    dim,
     reverse_video,
 )
 from .terminal import (
@@ -116,7 +118,9 @@ __all__: Final[tuple[str, ...]] = (
     "matches_all_patterns",
 
     # render
+    "bold",
     "color_pattern_matches",
+    "dim",
     "reverse_video",
 
     # terminal

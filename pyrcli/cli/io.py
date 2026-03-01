@@ -25,7 +25,7 @@ def iter_stdin_file_names() -> Iterator[str]:
     yield from iter_nonempty_lines(sys.stdin)
 
 
-def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> Iterator[FileInfo]:
+def read_text_files(files: Iterable[str], *, encoding: str, on_error: ErrorReporter) -> Iterator[FileInfo]:
     """
     Open files for reading in text mode and yield ``FileInfo`` objects.
 
@@ -52,7 +52,7 @@ def read_text_files(files: Iterable[str], encoding: str, *, on_error: ErrorRepor
             on_error(f"{file_name!r}: unable to read")
 
 
-def write_text_to_file(file_name: str, lines: Iterable[str], encoding: str, *, on_error: ErrorReporter) -> None:
+def write_text_to_file(file_name: str, *, lines: Iterable[str], encoding: str, on_error: ErrorReporter) -> None:
     """
     Write text lines to a file, ensuring exactly one trailing newline is written for each input line.
 

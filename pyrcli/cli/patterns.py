@@ -45,7 +45,7 @@ def compile_patterns(patterns: Iterable[str], *, ignore_case: bool, on_error: Er
     return compiled
 
 
-def matches_all_patterns(text: str, patterns: Iterable[re.Pattern[str]]) -> bool:
+def matches_all_patterns(text: str, *, patterns: Iterable[re.Pattern[str]]) -> bool:
     """Return whether the text matches every pattern."""
     return all(group.search(text) for group in patterns)
 

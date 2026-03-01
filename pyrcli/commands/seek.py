@@ -154,10 +154,10 @@ class Seek(CLIProgram):
 
     def path_matches_patterns(self, name_part: str, path_part: str) -> bool:
         """Return whether the ``name_part`` and ``path_part`` match all provided pattern groups."""
-        if not patterns.matches_all_patterns(name_part, self.name_patterns):
+        if not patterns.matches_all_patterns(name_part, patterns=self.name_patterns):
             return False
 
-        if not patterns.matches_all_patterns(path_part, self.path_patterns):
+        if not patterns.matches_all_patterns(path_part, patterns=self.path_patterns):
             return False
 
         return True
@@ -183,8 +183,8 @@ class Seek(CLIProgram):
         self.found_any_match = True
 
         if self.print_color and not self.args.invert_match:
-            name_part = render.color_pattern_matches(name_part, self.name_patterns, color=Colors.MATCH)
-            path_part = render.color_pattern_matches(path_part, self.path_patterns, color=Colors.MATCH)
+            name_part = render.color_pattern_matches(name_part, patterns=self.name_patterns, color=Colors.MATCH)
+            path_part = render.color_pattern_matches(path_part, patterns=self.path_patterns, color=Colors.MATCH)
 
         if self.args.abs:
             if is_current_directory:  # Do not join the current working directory with '.'.

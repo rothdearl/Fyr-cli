@@ -48,7 +48,7 @@ class CLIProgram(ABC):
 
     def check_option_dependencies(self) -> None:
         """Enforce relationships and mutual constraints between command-line options."""
-        pass
+        pass  # Optional hook; no action by default.
 
     @final
     def check_parsed_arguments(self) -> None:
@@ -70,7 +70,7 @@ class CLIProgram(ABC):
 
     def normalize_options(self) -> None:
         """Apply derived defaults and adjust option values for consistent internal use."""
-        pass
+        pass  # Optional hook; no action by default.
 
     @final
     def parse_arguments(self) -> None:
@@ -138,7 +138,7 @@ class CLIProgram(ABC):
 
     def validate_option_ranges(self) -> None:
         """Validate that option values fall within their allowed numeric or logical ranges."""
-        pass
+        pass  # Optional hook; no action by default.
 
 
 __all__: Final[tuple[str, ...]] = ("CLIProgram",)

@@ -76,10 +76,10 @@ class ProgressBar(_ProgressIndicator):
 
         return f"{bar} {int(fraction * 100):3d}%"
 
-    def _render_final(self, *, message: ProgressMessage) -> None:
+    def _render_final(self, message: ProgressMessage) -> None:
         """Render the final indicator state and terminate the line when appropriate."""
         if self.clear_on_finish:
-            self._finalize_with_message(message=message)
+            self._finalize_with_message(message)
             return
 
         bar = self._render_bar(self._fraction_completed(self._completed))

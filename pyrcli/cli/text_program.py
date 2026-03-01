@@ -50,7 +50,7 @@ class TextProgram(CLIProgram, ABC):
         """
         processed_files = []
 
-        for file_info in read_text_files(files, self.encoding, on_error=self.print_error):
+        for file_info in read_text_files(files, encoding=self.encoding, on_error=self.print_error):
             try:
                 self.handle_text_stream(file_info)
                 processed_files.append(file_info.file_name)

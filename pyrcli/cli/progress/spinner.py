@@ -34,9 +34,9 @@ class Spinner(_ProgressIndicator):
 
         self.frames = tuple(self.frames) or _DEFAULT_SPINNER_FRAMES
 
-    def _render_final(self, *, message: ProgressMessage) -> None:
+    def _render_final(self, message: ProgressMessage) -> None:
         """Render the final indicator state and terminate the line when appropriate."""
-        self._finalize_with_message(message=message)
+        self._finalize_with_message(message)
 
     def advance(self, *, message: ProgressMessage = None) -> None:
         """Advance the spinner by one frame and redraw the current line."""
