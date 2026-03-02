@@ -116,7 +116,12 @@ class Glue(TextProgram):
     def render_number(self, line: str) -> str:
         """Prefix a formatted line number to the line."""
         if self.print_color:
-            return f"{Colors.NUMBER}{self.line_number:>{self.args.number_width}}{ansi.RESET} {line}"
+            return (
+                f"{Colors.NUMBER}"
+                f"{self.line_number:>{self.args.number_width}}"
+                f"{ansi.RESET}"
+                f" {line}"
+            )
 
         return f"{self.line_number:>{self.args.number_width}} {line}"
 
@@ -126,13 +131,24 @@ class Glue(TextProgram):
 
         if self.args.show_tabs:
             if self.print_color:
-                rendered = rendered.replace("\t", f"{Colors.TAB_MARKER}{Whitespace.TAB_MARKER}{ansi.RESET}")
+                tab_marker = (
+                    f"{Colors.TAB_MARKER}"
+                    f"{Whitespace.TAB_MARKER}"
+                    f"{ansi.RESET}"
+                )
+
+                rendered = rendered.replace("\t", tab_marker)
             else:
                 rendered = rendered.replace("\t", Whitespace.TAB_MARKER)
 
         if self.args.show_ends:
             if self.print_color:
-                rendered = f"{rendered}{Colors.END_MARKER}{Whitespace.END_MARKER}{ansi.RESET}"
+                rendered = (
+                    f"{rendered}"
+                    f"{Colors.END_MARKER}"
+                    f"{Whitespace.END_MARKER}"
+                    f"{ansi.RESET}"
+                )
             else:
                 rendered = f"{rendered}{Whitespace.END_MARKER}"
 

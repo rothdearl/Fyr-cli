@@ -152,7 +152,12 @@ class Tally(TextProgram):
         for index, count in enumerate(counts):
             if self.flags[index]:
                 if self.print_color:
-                    print(f"{count_color}{count:>{padding},}{ansi.RESET}", end="")
+                    print(
+                        f"{count_color}"
+                        f"{count:>{padding},}"
+                        f"{ansi.RESET}",
+                        end=""
+                    )
                 else:
                     print(f"{count:>{padding},}", end="")
 

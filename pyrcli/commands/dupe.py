@@ -160,7 +160,12 @@ class Dupe(TextProgram):
                     # Only print the group count for the first line.
                     if line_index == 0:
                         if self.print_color:
-                            group_count_str = f"{Colors.GROUP_COUNT}{group_count:>{self.args.count_width},}{Colors.COLON}:{ansi.RESET}"
+                            group_count_str = (
+                                f"{Colors.GROUP_COUNT}"
+                                f"{group_count:>{self.args.count_width},}"
+                                f"{Colors.COLON}:"
+                                f"{ansi.RESET}"
+                            )
                         else:
                             group_count_str = f"{group_count:>{self.args.count_width},}:"
                     else:

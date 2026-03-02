@@ -126,14 +126,24 @@ class Show(TextProgram):
     def render_ends(self, line: str) -> str:
         """Append a visible end-of-line marker to the line."""
         if self.print_color:
-            return f"{line}{Colors.END_MARKER}{Whitespace.END_MARKER}{ansi.RESET}"
+            return (
+                f"{line}"
+                f"{Colors.END_MARKER}"
+                f"{Whitespace.END_MARKER}"
+                f"{ansi.RESET}"
+            )
 
         return f"{line}{Whitespace.END_MARKER}"
 
     def render_line_number(self, line: str, line_number: int, padding: int) -> str:
         """Prefix the line with a line number, right-aligned to the specified padding."""
         if self.print_color:
-            return f"{Colors.LINE_NUMBER}{line_number:>{padding}}{ansi.RESET} {line}"
+            return (
+                f"{Colors.LINE_NUMBER}"
+                f"{line_number:>{padding}}"
+                f"{ansi.RESET}"
+                f" {line}"
+            )
 
         return f"{line_number:>{padding}} {line}"
 
@@ -146,7 +156,9 @@ class Show(TextProgram):
         rendered = rendered[:-trailing_count] if trailing_count else rendered
 
         if self.print_color:
-            rendered = rendered.replace(" ", f"{Colors.SPACE_MARKER}{Whitespace.SPACE_MARKER}{ansi.RESET}")
+            space_marker = f"{Colors.SPACE_MARKER}{Whitespace.SPACE_MARKER}{ansi.RESET}"
+
+            rendered = rendered.replace(" ", space_marker)
             rendered = rendered + Colors.SPACE_MARKER + (Whitespace.TRAILING_SPACE_MARKER * trailing_count) + ansi.RESET
         else:
             rendered = rendered.replace(" ", Whitespace.SPACE_MARKER)
@@ -157,7 +169,13 @@ class Show(TextProgram):
     def render_tabs(self, line: str) -> str:
         """Replace tabs with visible markers."""
         if self.print_color:
-            return line.replace("\t", f"{Colors.TAB_MARKER}{Whitespace.TAB_MARKER}{ansi.RESET}")
+            tab_marker = (
+                f"{Colors.TAB_MARKER}"
+                f"{Whitespace.TAB_MARKER}"
+                f"{ansi.RESET}"
+            )
+
+            return line.replace("\t", tab_marker)
 
         return line.replace("\t", Whitespace.TAB_MARKER)
 

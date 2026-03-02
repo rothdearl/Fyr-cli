@@ -129,9 +129,19 @@ class Num(TextProgram):
     def render_line_number(self, line: str, line_number: int, *, format_prefix: str) -> str:
         """Prefix a formatted line number to the line."""
         if self.print_color:
-            return f"{Colors.LINE_NUMBER}{line_number:{format_prefix}{self.args.number_width}}{ansi.RESET}{self.args.number_separator}{line}"
+            return (
+                f"{Colors.LINE_NUMBER}"
+                f"{line_number:{format_prefix}{self.args.number_width}}"
+                f"{ansi.RESET}"
+                f"{self.args.number_separator}"
+                f"{line}"
+            )
 
-        return f"{line_number:{format_prefix}{self.args.number_width}}{self.args.number_separator}{line}"
+        return (
+            f"{line_number:{format_prefix}{self.args.number_width}}"
+            f"{self.args.number_separator}"
+            f"{line}"
+        )
 
     def should_suppress_blank_line(self, blank_line_count: int) -> bool:
         """Return whether a blank line should be suppressed."""

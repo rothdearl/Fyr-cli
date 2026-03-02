@@ -162,7 +162,13 @@ class Scan(TextProgram):
             for line_number, line in matches:
                 if self.args.line_number:
                     if self.print_color:
-                        print(f"{Colors.LINE_NUMBER}{line_number:>{padding}}{Colors.COLON}:{ansi.RESET}", end="")
+                        print(
+                            f"{Colors.LINE_NUMBER}"
+                            f"{line_number:>{padding}}"
+                            f"{Colors.COLON}:"
+                            f"{ansi.RESET}",
+                            end=""
+                        )
                     else:
                         print(f"{line_number:>{padding}}:", end="")
 
