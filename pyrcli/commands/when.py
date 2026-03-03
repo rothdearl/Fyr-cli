@@ -88,7 +88,7 @@ class When(CLIProgram):
 
     @staticmethod
     def highlight(text: str) -> str:
-        """Return the text wrapped in reverse-video ANSI escape codes."""
+        """Return the text wrapped in reverse-video ANSI SGR escape codes."""
         return render.reverse_video(text)
 
     def highlight_day_within_bounds(self, line: str, day: str, bounds: CalendarQuarterColumnBounds) -> str:
