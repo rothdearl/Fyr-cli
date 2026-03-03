@@ -13,7 +13,7 @@ class FileInfo(NamedTuple):
     """
     Immutable container for information about a file being read.
 
-    :ivar file_name: File name with a single trailing newline removed, if present.
+    :ivar file_name: File name with one trailing newline removed, if present.
     :ivar text_stream: Open text stream for the file, valid only until the next yield.
     """
     file_name: str

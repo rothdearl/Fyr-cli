@@ -16,9 +16,9 @@ def decode_python_escape_sequences(line: str) -> str:
 
 def iter_nonempty_lines(lines: Iterable[str]) -> Iterator[str]:
     """Yield normalized, non-empty lines."""
-    for file_name in iter_normalized_lines(lines):
-        if file_name:
-            yield file_name
+    for line in iter_normalized_lines(lines):
+        if line:
+            yield line
 
 
 def iter_normalized_lines(lines: Iterable[str]) -> Iterator[str]:
