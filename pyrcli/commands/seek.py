@@ -211,13 +211,7 @@ class Seek(CLIProgram):
                 self.print_path(root)
 
                 try:
-                    for path in root.rglob("*"):
-                        depth = len(path.relative_to(root).parts)
-
-                        # Skip paths deeper than --max-depth.
-                        if self.args.max_depth < depth:
-                            continue
-
+                    for path in io.iter_paths(root, max_depth=self.args.max_depth):
                         self.print_path(path)
                 except PermissionError as error:
                     self.print_error(f"{error.filename!r}: permission denied")
