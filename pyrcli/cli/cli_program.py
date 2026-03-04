@@ -23,12 +23,7 @@ class CLIProgram(ABC):
     """
 
     def __init__(self, *, name: str, error_exit_code: int = 1) -> None:
-        """
-        Initialize a new ``CLIProgram`` instance.
-
-        :param name: Name of the program.
-        :param error_exit_code: Exit code when an error occurs (default: ``1``).
-        """
+        """Initialize the instance."""
         self.args: argparse.Namespace | None = None
         self.error_exit_code: Final[int] = error_exit_code
         self.has_errors: bool = False

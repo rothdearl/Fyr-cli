@@ -19,7 +19,7 @@ class Dupe(TextProgram):
     """A program that filters duplicate or unique lines from files."""
 
     def __init__(self) -> None:
-        """Initialize a new ``Dupe`` instance."""
+        """Initialize the instance."""
         super().__init__(name="dupe")
 
     @override

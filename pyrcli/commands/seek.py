@@ -29,7 +29,7 @@ class Seek(CLIProgram):
     NO_MATCHES_EXIT_CODE: Final[int] = 1
 
     def __init__(self) -> None:
-        """Initialize a new ``Seek`` instance."""
+        """Initialize the instance."""
         super().__init__(name="seek", error_exit_code=2)
 
         self.found_any_match: bool = False

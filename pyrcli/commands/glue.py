@@ -29,7 +29,7 @@ class Glue(TextProgram):
     """
 
     def __init__(self) -> None:
-        """Initialize a new ``Glue`` instance."""
+        """Initialize the instance."""
         super().__init__(name="glue")
 
         self.line_number: int = 0

@@ -19,7 +19,7 @@ class Peek(TextProgram):
     """A program that prints the first part of files."""
 
     def __init__(self) -> None:
-        """Initialize a new ``Peek`` instance."""
+        """Initialize the instance."""
         super().__init__(name="peek")
 
     @override

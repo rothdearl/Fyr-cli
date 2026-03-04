@@ -29,7 +29,7 @@ class Num(TextProgram):
     }
 
     def __init__(self) -> None:
-        """Initialize a new ``Num`` instance."""
+        """Initialize the instance."""
         super().__init__(name="num")
 
     @override

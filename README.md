@@ -530,7 +530,7 @@ from pyrcli.cli.progress import ProgressBar, Spinner
 
 class CLIProgramDemo(CLIProgram):
     def __init__(self) -> None:
-        """Initialize a new ``CLIProgramDemo`` instance."""
+        """Initialize the instance."""
         super().__init__(name="demo")
 
     @override
@@ -624,7 +624,7 @@ class TextProgramDemo(TextProgram):
     """A program that prints files to standard output."""
 
     def __init__(self) -> None:
-        """Initialize a new ``TextProgramDemo`` instance."""
+        """Initialize the instance."""
         super().__init__(name="demo")
 
     @override

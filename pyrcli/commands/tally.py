@@ -37,7 +37,7 @@ class Tally(TextProgram):
     WORD_PATTERN: Final[re.Pattern[str]] = re.compile(r"\b\w+\b")
 
     def __init__(self) -> None:
-        """Initialize a new ``Tally`` instance."""
+        """Initialize the instance."""
         super().__init__(name="tally")
 
         self.files_counted: int = 0

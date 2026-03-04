@@ -18,12 +18,7 @@ class TextProgram(CLIProgram, ABC):
     """
 
     def __init__(self, *, name: str, error_exit_code: int = 1) -> None:
-        """
-        Initialize a new ``TextProgram`` instance.
-
-        :param name: Name of the program.
-        :param error_exit_code: Exit code when an error occurs (default: ``1``).
-        """
+        """Initialize the instance."""
         super().__init__(name=name, error_exit_code=error_exit_code)
 
         self.encoding: str = "utf-8"

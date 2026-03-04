@@ -13,7 +13,7 @@ class Emit(CLIProgram):
     """A program that writes strings to standard output."""
 
     def __init__(self) -> None:
-        """Initialize a new ``Emit`` instance."""
+        """Initialize the instance."""
         super().__init__(name="emit")
 
     @override

@@ -30,7 +30,7 @@ class Show(TextProgram):
     """A program that prints files to standard output."""
 
     def __init__(self) -> None:
-        """Initialize a new ``Show`` instance."""
+        """Initialize the instance."""
         super().__init__(name="show")
 
     @override
