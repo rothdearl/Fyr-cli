@@ -1,37 +1,42 @@
 """Predicates describing whether the standard streams are attached to a terminal."""
 
 import sys
-from typing import Final
+from typing import Final, TextIO
+
+
+def _is_terminal(stream: TextIO) -> bool:
+    """Return whether the stream is attached to a terminal."""
+    return stream.isatty()
 
 
 def stderr_is_redirected() -> bool:
-    """Return whether standard error is redirected."""
-    return not stderr_is_terminal()
+    """Return whether standard error is not attached to a terminal."""
+    return not _is_terminal(sys.stderr)
 
 
 def stderr_is_terminal() -> bool:
     """Return whether standard error is attached to a terminal."""
-    return sys.stderr.isatty()
+    return _is_terminal(sys.stderr)
 
 
 def stdin_is_redirected() -> bool:
-    """Return whether standard input is redirected."""
-    return not stdin_is_terminal()
+    """Return whether standard input is not attached to a terminal."""
+    return not _is_terminal(sys.stdin)
 
 
 def stdin_is_terminal() -> bool:
     """Return whether standard input is attached to a terminal."""
-    return sys.stdin.isatty()
+    return _is_terminal(sys.stdin)
 
 
 def stdout_is_redirected() -> bool:
-    """Return whether standard output is redirected."""
-    return not stdout_is_terminal()
+    """Return whether standard output is not attached to a terminal."""
+    return not _is_terminal(sys.stdout)
 
 
 def stdout_is_terminal() -> bool:
     """Return whether standard output is attached to a terminal."""
-    return sys.stdout.isatty()
+    return _is_terminal(sys.stdout)
 
 
 __all__: Final[tuple[str, ...]] = (
