@@ -12,7 +12,7 @@ from .types import ProgressMessage, ProgressMessagePosition
 @dataclass(kw_only=True, slots=True)
 class _ProgressIndicator(ABC):
     """
-    Abstract base class (ABC) for terminal progress indicators that update a single line in place and emit an optional final message.
+    Base class for terminal progress indicators that update a single line in place and emit an optional final message.
 
     :ivar text_stream: Text stream where output is written.
     :ivar visible: Whether dynamic progress output is rendered.
@@ -57,7 +57,7 @@ class _ProgressIndicator(ABC):
 
     @final
     def finalize(self) -> None:
-        """Finalize the indicator and emit its final output."""
+        """Finalize the indicator (idempotent) and emit any final output."""
         if self._finished:
             return
 

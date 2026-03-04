@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import ClassVar, Final, final
 
-from pyrcli.cli import ansi
+from pyrcli.cli.ansi import RESET
 from ._base import _ProgressIndicator
 from .types import ProgressMessage
 
@@ -34,7 +34,7 @@ class ProgressBarLayout:
     show_percent: bool = True
     percent_style: str = ""
     percent_symbol_style: str = ""
-    percent_reset: str = ansi.RESET
+    percent_reset: str = RESET
 
     def __post_init__(self) -> None:
         """Initialize and normalize configuration."""
@@ -50,8 +50,10 @@ class ProgressBar(_ProgressIndicator):
     - Displays a horizontal progress bar for work with a known total.
     - Updates the rendered bar when progress advances.
     - Clamps progress to ``[0, total]`` when ``total > 0``; otherwise renders as permanently 100%.
-    - Finalizes by either retaining or clearing the bar according to ``clear_on_finish``.
-    - Writes a final message followed by a newline when a message is provided, even when the indicator is not visible.
+    - On finalization:
+        - Retains or clears the bar according to ``clear_on_finish``.
+        - Prints a terminating newline when visible and not cleared.
+        - Writes a non-empty final message followed by a newline (even when not visible).
     - Treats empty messages as no message.
 
     :ivar total: Total number of units representing 100% completion (non-positive values render as permanently 100%).
