@@ -1,4 +1,4 @@
-"""Prints lines matching patterns in files."""
+"""Provides a program for printing lines matching patterns in files."""
 
 import argparse
 import sys
@@ -24,7 +24,7 @@ class Styles:
 
 class Scan(TextProgram):
     """
-    Prints lines matching patterns in files.
+    Program for printing lines matching patterns in files.
 
     :cvar NO_MATCHES_EXIT_CODE: Exit code when no matches are found.
     :ivar found_any_match: Whether any match was found.

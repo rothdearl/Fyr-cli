@@ -1,4 +1,4 @@
-"""Prints the first part of files."""
+"""Provides a program for printing the first part of files."""
 
 import argparse
 import sys
@@ -16,7 +16,7 @@ class Styles:
 
 
 class Peek(TextProgram):
-    """Prints the first part of files."""
+    """Program for printing the first part of files."""
 
     def __init__(self) -> None:
         """Initialize the instance."""

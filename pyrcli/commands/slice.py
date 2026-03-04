@@ -1,4 +1,4 @@
-"""Splits lines in files into fields."""
+"""Provides a program for splitting lines in files into fields."""
 
 import argparse
 import sys
@@ -16,7 +16,7 @@ class Styles:
 
 class Slice(TextProgram):
     """
-    Splits lines in files into fields.
+    Program for splitting lines in files into fields.
 
     :ivar selected_fields: Selected fields to print.
     """

@@ -1,4 +1,4 @@
-"""Writes strings to standard output."""
+"""Provides a program for writing strings to standard output."""
 
 import argparse
 import sys
@@ -10,7 +10,7 @@ from pyrcli.cli import CLIProgram, terminal, text
 
 
 class Emit(CLIProgram):
-    """Writes strings to standard output."""
+    """Program for writing strings to standard output."""
 
     def __init__(self) -> None:
         """Initialize the instance."""

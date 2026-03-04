@@ -1,4 +1,4 @@
-"""Searches for files in a directory hierarchy."""
+"""Provides a program for searching for files in a directory hierarchy."""
 
 import argparse
 import os
@@ -18,7 +18,7 @@ class Styles:
 
 class Seek(CLIProgram):
     """
-    Searches for files in a directory hierarchy.
+    Program for searching for files in a directory hierarchy.
 
     :cvar NO_MATCHES_EXIT_CODE: Exit code when no matches are found.
     :ivar found_any_match: Whether any match was found.
