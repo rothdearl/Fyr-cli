@@ -31,24 +31,9 @@ class CLIProgram(ABC):
         self.print_color: bool = False
         self.version: Final[str] = __version__
 
-    @abstractmethod
-    def build_arguments(self) -> argparse.ArgumentParser:
-        """Build and return an argument parser."""
-        ...
-
-    def check_option_dependencies(self) -> None:
-        """Enforce relationships and mutual constraints between command-line options."""
-        pass  # Optional hook; no action by default.
-
-    def exit_if_errors(self) -> None:
-        """Raise ``SystemExit(error_exit_code)`` if the error flag is set."""
-        if self.has_errors:
-            raise SystemExit(self.error_exit_code)
-
-    @final
-    def check_parsed_options(self) -> None:
+    def _configure_from_options(self) -> None:
         """
-        Validate, normalize, and initialize from parsed options.
+        Configure the program from parsed options.
 
         - Check option dependencies.
         - Validate ranges.
@@ -60,10 +45,28 @@ class CLIProgram(ABC):
         self.normalize_options()
         self.initialize_runtime_state()
 
+    def _parse_arguments(self) -> None:
+        """Parse command-line arguments to initialize program options."""
+        self.args = self.build_arguments().parse_args()
+
+    @abstractmethod
+    def build_arguments(self) -> argparse.ArgumentParser:
+        """Build and return an argument parser."""
+        ...
+
+    def check_option_dependencies(self) -> None:
+        """Enforce relationships and mutual constraints between command-line options."""
+        pass  # Optional hook; no action by default.
+
     @abstractmethod
     def execute(self) -> None:
         """Execute the command using the prepared runtime state."""
         ...
+
+    def exit_if_errors(self) -> None:
+        """Raise ``SystemExit(error_exit_code)`` if the error flag is set."""
+        if self.has_errors:
+            raise SystemExit(self.error_exit_code)
 
     def initialize_runtime_state(self) -> None:
         """Initialize internal state derived from parsed options."""
@@ -73,11 +76,6 @@ class CLIProgram(ABC):
     def normalize_options(self) -> None:
         """Apply derived defaults and adjust option values for consistent internal use."""
         pass  # Optional hook; no action by default.
-
-    @final
-    def parse_arguments(self) -> None:
-        """Parse command-line arguments to initialize program options."""
-        self.args = self.build_arguments().parse_args()
 
     @final
     def print_error(self, error_message: str) -> None:
@@ -120,8 +118,8 @@ class CLIProgram(ABC):
 
                 signal(SIGPIPE, SIG_DFL)
 
-            self.parse_arguments()
-            self.check_parsed_options()
+            self._parse_arguments()
+            self._configure_from_options()
             self.execute()
             self.exit_if_errors()
         except BrokenPipeError:
