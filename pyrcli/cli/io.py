@@ -14,8 +14,8 @@ class FileInfo(NamedTuple):
     """
     Immutable container for information about a file being read.
 
-    - file_name: File name (normalized by the caller).
-    - text_stream: Open text stream for the file, valid only until the next yield.
+    :ivar file_name: File name (normalized by the caller).
+    :ivar text_stream: Open text stream for the file, valid only until the next yield.
     """
     file_name: str
     text_stream: TextIO

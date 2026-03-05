@@ -61,7 +61,7 @@ class Peek(TextProgram):
 
     @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream in ``file_info``."""
+        """Process the text stream for a single file."""
         self.print_file_header(file_info.file_name)
         self.print_lines(file_info.text_stream)
 

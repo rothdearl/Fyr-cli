@@ -119,7 +119,7 @@ class Scan(TextProgram):
 
     @override
     def handle_text_stream(self, file_info: io.FileInfo) -> None:
-        """Process the text stream in ``file_info``."""
+        """Process the text stream for a single file."""
         self.print_matches(file_info.text_stream, origin_file=file_info.file_name)
 
     @override

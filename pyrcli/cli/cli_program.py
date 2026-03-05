@@ -1,4 +1,4 @@
-"""Abstract base class (ABC) for command-line programs, defining a standard program lifecycle."""
+"""Abstract base class for command-line programs, defining a standard program lifecycle."""
 
 import argparse
 import sys
@@ -9,17 +9,21 @@ from pyrcli import __version__
 from .os_info import IS_WINDOWS
 from .terminal import stdout_is_terminal
 
+# Exit codes.
+_KEYBOARD_INTERRUPT_EXIT_CODE: Final[int] = 130
+_SIGPIPE_EXIT_CODE: Final[int] = 141
+
 
 class CLIProgram(ABC):
     """
     Base class for command-line programs, defining a standard program lifecycle.
 
-    - args: Parsed command-line arguments.
-    - error_exit_code: Exit code when an error occurs (default: ``1``).
-    - has_errors: Whether the program has encountered errors.
-    - name: Name of the program.
-    - print_color: Whether color output is enabled.
-    - version: Program version.
+    :ivar args: Parsed command-line arguments.
+    :ivar error_exit_code: Exit code when an error occurs (default: ``1``).
+    :ivar has_errors: Whether the program has encountered errors.
+    :ivar name: Name of the program.
+    :ivar print_color: Whether color output is enabled.
+    :ivar version: Program version.
     """
 
     def __init__(self, *, name: str, error_exit_code: int = 1) -> None:
@@ -32,14 +36,7 @@ class CLIProgram(ABC):
         self.version: Final[str] = __version__
 
     def _configure_from_options(self) -> None:
-        """
-        Configure the program from parsed options.
-
-        - Check option dependencies.
-        - Validate ranges.
-        - Normalize options.
-        - Initialize runtime state.
-        """
+        """Configure the program from parsed options by running the option lifecycle hooks in order."""
         self.check_option_dependencies()
         self.validate_option_ranges()
         self.normalize_options()
@@ -88,7 +85,7 @@ class CLIProgram(ABC):
 
     @final
     def print_error_and_exit(self, error_message: str) -> None:
-        """Print the error message to standard error and raise ``SystemExit``."""
+        """Print to standard error and raise ``SystemExit`` immediately."""
         print(f"{self.name}: error: {error_message}", file=sys.stderr)
         raise SystemExit(self.error_exit_code)
 
@@ -105,9 +102,6 @@ class CLIProgram(ABC):
         :return: ``0`` on success.
         :raises SystemExit: With an exit code on failure.
         """
-        keyboard_interrupt_exit_code = 130
-        sigpipe_exit_code = 141
-
         try:
             if IS_WINDOWS:  # Enable ANSI color support on Windows (via colorama).
                 from colorama import just_fix_windows_console
@@ -123,13 +117,13 @@ class CLIProgram(ABC):
             self.execute()
             self.exit_if_errors()
         except BrokenPipeError:
-            raise SystemExit(self.error_exit_code if IS_WINDOWS else sigpipe_exit_code)
+            raise SystemExit(self.error_exit_code if IS_WINDOWS else _SIGPIPE_EXIT_CODE)
         except KeyboardInterrupt:
             # Add a newline after Ctrl-C if standard output is attached to a terminal.
             if stdout_is_terminal():
                 print()
 
-            raise SystemExit(self.error_exit_code if IS_WINDOWS else keyboard_interrupt_exit_code)
+            raise SystemExit(self.error_exit_code if IS_WINDOWS else _KEYBOARD_INTERRUPT_EXIT_CODE)
         except OSError as error:
             # Normalize unexpected OS errors to a clean exit code.
             raise SystemExit(self.error_exit_code) from error

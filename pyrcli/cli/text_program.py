@@ -1,4 +1,4 @@
-"""Abstract base class (ABC) for command-line programs that process text files."""
+"""Abstract base class for command-line programs that process text files."""
 
 import os
 from abc import ABC, abstractmethod
@@ -12,9 +12,9 @@ from .io import FileInfo, iter_stdin_file_names, read_text_files
 
 class TextProgram(CLIProgram, ABC):
     """
-    Base class for command-line programs that process text files.
+    Base class for text-file processing programs, extending ``CLIProgram`` with stream handling and encoding support.
 
-    - encoding: Encoding for reading and writing to files (default: ``"utf-8"``).
+    :ivar encoding: Encoding for reading and writing to files (default: ``"utf-8"``).
     """
 
     def __init__(self, *, name: str, error_exit_code: int = 1) -> None:
@@ -25,7 +25,7 @@ class TextProgram(CLIProgram, ABC):
 
     @abstractmethod
     def handle_text_stream(self, file_info: FileInfo) -> None:
-        """Process the text stream in ``file_info``."""
+        """Process the text stream for a single file."""
         ...
 
     @override
