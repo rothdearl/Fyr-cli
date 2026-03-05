@@ -32,7 +32,7 @@ from .io import (
 )
 from .os_info import (
     IS_LINUX,
-    IS_MAC,
+    IS_MACOS,
     IS_POSIX,
     IS_WINDOWS,
 )
@@ -109,7 +109,7 @@ __all__: Final[tuple[str, ...]] = (
 
     # os_info
     "IS_LINUX",
-    "IS_MAC",
+    "IS_MACOS",
     "IS_POSIX",
     "IS_WINDOWS",
 

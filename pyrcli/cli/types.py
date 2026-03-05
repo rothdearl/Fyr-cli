@@ -13,7 +13,7 @@ type ErrorReporter = Callable[[str], None]
 #: A decoded JSON object represented as a dictionary.
 type JsonObject = dict[str, Any]
 
-#: String-to-string mappings used for HTTP headers or form payload fields.
+#: String-to-string mappings used for HTTP headers.
 type KeyValuePairs = Mapping[str, str]
 
 #: Mapping of form field names to (filename, binary file object) tuples for multipart uploads.

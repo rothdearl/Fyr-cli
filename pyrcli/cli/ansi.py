@@ -8,14 +8,14 @@ _CSI: Final[str] = "\x1b["
 #: Reset all text attributes and colors.
 RESET: Final[str] = f"{_CSI}0m"
 
-#: 256-color palettes (xterm-compatible SGR codes 38;5;0–255 and 48;5;0–255).
+#: 256-color palettes (SGR codes 38;5;0–255 and 48;5;0–255).
 BACKGROUND_COLORS_256: Final[tuple[str, ...]] = tuple(f"{_CSI}48;5;{code}m" for code in range(256))
 FOREGROUND_COLORS_256: Final[tuple[str, ...]] = tuple(f"{_CSI}38;5;{code}m" for code in range(256))
 
 
 @final
 class BackgroundColors:
-    """Constants for background colors from the standard 16-color palette (SGR codes 40–47 and 100–107)."""
+    """Constants for background colors from the standard 16-color palette"""
     BLACK: Final[str] = f"{_CSI}40m"
     RED: Final[str] = f"{_CSI}41m"
     GREEN: Final[str] = f"{_CSI}42m"
@@ -36,7 +36,7 @@ class BackgroundColors:
 
 @final
 class ForegroundColors:
-    """Constants for foreground colors from the standard 16-color palette (SGR codes 30–37 and 90–97)."""
+    """Constants for foreground colors from the standard 16-color palette."""
     BLACK: Final[str] = f"{_CSI}30m"
     RED: Final[str] = f"{_CSI}31m"
     GREEN: Final[str] = f"{_CSI}32m"
@@ -57,7 +57,7 @@ class ForegroundColors:
 
 @final
 class TextAttributes:
-    """Constants for text attributes (SGR codes 1–9, excluding 6, which is undefined)."""
+    """Text attribute constants for bold, italic, underline, and related SGR styles."""
     BOLD: Final[str] = f"{_CSI}1m"
     DIM: Final[str] = f"{_CSI}2m"
     ITALIC: Final[str] = f"{_CSI}3m"
