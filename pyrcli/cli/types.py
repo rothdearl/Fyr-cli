@@ -16,8 +16,8 @@ type JsonObject = dict[str, Any]
 #: String-to-string mappings used for HTTP headers or form payload fields.
 type KeyValuePairs = dict[str, str]
 
-#: Mapping of form field names to binary file-like objects for multipart uploads.
-type MultipartFiles = Mapping[str, BinaryIO]
+#: Mapping of form field names to (filename, binary file object) tuples for multipart uploads.
+type MultipartFiles = Mapping[str, tuple[str, BinaryIO]]
 
 #: String-to-string mappings encoded into the URL query string.
 type QueryParameters = dict[str, str]
