@@ -1,11 +1,11 @@
-"""Type aliases used throughout the command-line interface package."""
+"""Type aliases for the CLI framework."""
 
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any, BinaryIO, Final
 
 #: List of compiled regular expression patterns.
-type CompiledPatterns = list[re.Pattern[str]]
+type CompiledPatterns = Sequence[re.Pattern[str]]
 
 #: Callback for reporting error messages.
 type ErrorReporter = Callable[[str], None]
@@ -14,13 +14,13 @@ type ErrorReporter = Callable[[str], None]
 type JsonObject = dict[str, Any]
 
 #: String-to-string mappings used for HTTP headers or form payload fields.
-type KeyValuePairs = dict[str, str]
+type KeyValuePairs = Mapping[str, str]
 
 #: Mapping of form field names to (filename, binary file object) tuples for multipart uploads.
 type MultipartFiles = Mapping[str, tuple[str, BinaryIO]]
 
 #: String-to-string mappings encoded into the URL query string.
-type QueryParameters = dict[str, str]
+type QueryParameters = Mapping[str, str]
 
 __all__: Final[tuple[str, ...]] = (
     "CompiledPatterns",
