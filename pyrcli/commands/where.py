@@ -18,7 +18,7 @@ class Where(CLIProgram):
     IPINFO_URL: Final[str] = "https://ipinfo.io/json"
 
     def __init__(self) -> None:
-        """Initialize the instance."""
+        """Initialize the ``Where``."""
         super().__init__(name="where")
 
     @override

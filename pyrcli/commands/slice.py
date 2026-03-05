@@ -22,7 +22,7 @@ class Slice(TextProgram):
     """
 
     def __init__(self) -> None:
-        """Initialize the instance."""
+        """Initialize the ``Slice``."""
         super().__init__(name="slice")
 
         self.selected_fields: list[int] = []
