@@ -8,7 +8,7 @@ from typing import Final, NoReturn, override
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
 
-class Styles:
+class _Styles:
     """Namespace for ANSI styling constants."""
     COLON: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
     END_MARKER: Final[str] = ansi.ForegroundColors.BRIGHT_BLUE
@@ -18,7 +18,7 @@ class Styles:
     TAB_MARKER: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
 
 
-class Whitespace:
+class _Whitespace:
     """Namespace for whitespace replacement constants."""
     END_MARKER: Final[str] = "$"
     SPACE_MARKER: Final[str] = "·"
@@ -27,7 +27,7 @@ class Whitespace:
 
 
 class Show(TextProgram):
-    """Prints files to standard output."""
+    """Command implementation for printing files to standard output."""
 
     def __init__(self) -> None:
         """Initialize a new instance."""
@@ -46,10 +46,10 @@ class Show(TextProgram):
                             type=int)
         parser.add_argument("-n", "--line-numbers", action="store_true", help="number lines")
         parser.add_argument("--ends", action="store_true",
-                            help=f"display '{Whitespace.END_MARKER}' at end of each line")
+                            help=f"display '{_Whitespace.END_MARKER}' at end of each line")
         parser.add_argument("--spaces", action="store_true",
-                            help=f"display spaces as '{Whitespace.SPACE_MARKER}' and trailing spaces as '{Whitespace.TRAILING_SPACE_MARKER}'")
-        parser.add_argument("--tabs", action="store_true", help=f"display tab characters as '{Whitespace.TAB_MARKER}'")
+                            help=f"display spaces as '{_Whitespace.SPACE_MARKER}' and trailing spaces as '{_Whitespace.TRAILING_SPACE_MARKER}'")
+        parser.add_argument("--tabs", action="store_true", help=f"display tab characters as '{_Whitespace.TAB_MARKER}'")
         parser.add_argument("-H", "--no-file-name", action="store_true", help="suppress file name prefixes")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for file names, line numbers, and whitespace (default: on)")
@@ -94,7 +94,7 @@ class Show(TextProgram):
     def print_file_header(self, file_name: str) -> None:
         """Print the rendered file header for ``file_name``."""
         if self.can_print_file_header():
-            print(self.render_file_header(file_name, file_name_style=Styles.FILE_NAME, colon_style=Styles.COLON))
+            print(self.render_file_header(file_name, file_name_style=_Styles.FILE_NAME, colon_style=_Styles.COLON))
 
     def print_lines(self, lines: Sequence[str]) -> None:
         """Print lines to standard output, applying numbering and whitespace rendering."""
@@ -129,18 +129,18 @@ class Show(TextProgram):
         if self.print_color:
             return (
                 f"{line}"
-                f"{Styles.END_MARKER}"
-                f"{Whitespace.END_MARKER}"
+                f"{_Styles.END_MARKER}"
+                f"{_Whitespace.END_MARKER}"
                 f"{ansi.RESET}"
             )
 
-        return f"{line}{Whitespace.END_MARKER}"
+        return f"{line}{_Whitespace.END_MARKER}"
 
     def render_line_number(self, line: str, line_number: int, padding: int) -> str:
         """Prefix the line with a line number, right-aligned to the specified padding."""
         if self.print_color:
             return (
-                f"{Styles.LINE_NUMBER}"
+                f"{_Styles.LINE_NUMBER}"
                 f"{line_number:>{padding}}"
                 f"{ansi.RESET}"
                 f" {line}"
@@ -157,13 +157,14 @@ class Show(TextProgram):
         rendered = rendered[:-trailing_count] if trailing_count else rendered
 
         if self.print_color:
-            space_marker = f"{Styles.SPACE_MARKER}{Whitespace.SPACE_MARKER}{ansi.RESET}"
+            space_marker = f"{_Styles.SPACE_MARKER}{_Whitespace.SPACE_MARKER}{ansi.RESET}"
 
             rendered = rendered.replace(" ", space_marker)
-            rendered = rendered + Styles.SPACE_MARKER + (Whitespace.TRAILING_SPACE_MARKER * trailing_count) + ansi.RESET
+            rendered = rendered + _Styles.SPACE_MARKER + (
+                    _Whitespace.TRAILING_SPACE_MARKER * trailing_count) + ansi.RESET
         else:
-            rendered = rendered.replace(" ", Whitespace.SPACE_MARKER)
-            rendered = rendered + (Whitespace.TRAILING_SPACE_MARKER * trailing_count)
+            rendered = rendered.replace(" ", _Whitespace.SPACE_MARKER)
+            rendered = rendered + (_Whitespace.TRAILING_SPACE_MARKER * trailing_count)
 
         return rendered
 
@@ -171,14 +172,14 @@ class Show(TextProgram):
         """Replace tabs with visible markers."""
         if self.print_color:
             tab_marker = (
-                f"{Styles.TAB_MARKER}"
-                f"{Whitespace.TAB_MARKER}"
+                f"{_Styles.TAB_MARKER}"
+                f"{_Whitespace.TAB_MARKER}"
                 f"{ansi.RESET}"
             )
 
             return line.replace("\t", tab_marker)
 
-        return line.replace("\t", Whitespace.TAB_MARKER)
+        return line.replace("\t", _Whitespace.TAB_MARKER)
 
     @override
     def validate_option_ranges(self) -> None:

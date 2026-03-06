@@ -7,22 +7,18 @@ from typing import Final, NamedTuple, NoReturn, override
 
 from pyrcli.cli import CLIProgram, os_info, render
 
+# Default format for printing the date and time.
+_DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p" if os_info.IS_POSIX else "%a %b %d %I:%M%p"
 
-class CalendarQuarterColumnBounds(NamedTuple):
+
+class _CalendarQuarterColumnBounds(NamedTuple):
     """Column bounds for a month within a quarter row from ``calendar.calendar(..., m=3)`` output."""
     start: int
     end: int
 
 
 class When(CLIProgram):
-    """
-    Displays the current calendar, with optional date and time.
-
-    Attributes:
-        DEFAULT_DATETIME_FORMAT: Default format for printing the date and time.
-    """
-
-    DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p" if os_info.IS_POSIX else "%a %b %d %I:%M%p"
+    """Command implementation for displaying the current calendar, with optional date and time."""
 
     def __init__(self) -> None:
         """Initialize a new instance."""
@@ -67,7 +63,7 @@ class When(CLIProgram):
                 self.print_year(text_calendar)
 
         if self.args.datetime:
-            date_format = self.args.datetime_format or self.DEFAULT_DATETIME_FORMAT
+            date_format = self.args.datetime_format or _DEFAULT_DATETIME_FORMAT
             now = datetime.datetime.now()
 
             try:
@@ -77,12 +73,12 @@ class When(CLIProgram):
                 self.print_error_and_exit("invalid datetime format")
 
     @staticmethod
-    def get_quarter_column_bounds_for_month(month: int) -> CalendarQuarterColumnBounds:
+    def get_quarter_column_bounds_for_month(month: int) -> _CalendarQuarterColumnBounds:
         """Return character column bounds for a month within a quarter row of ``calendar.calendar(..., m=3)`` output."""
         bounds_by_index = (
-            CalendarQuarterColumnBounds(0, 20),
-            CalendarQuarterColumnBounds(26, 46),
-            CalendarQuarterColumnBounds(52, 72)
+            _CalendarQuarterColumnBounds(0, 20),
+            _CalendarQuarterColumnBounds(26, 46),
+            _CalendarQuarterColumnBounds(52, 72)
         )
 
         return bounds_by_index[(month - 1) % 3]
@@ -92,7 +88,7 @@ class When(CLIProgram):
         """Return the text wrapped in reverse-video ANSI SGR escape codes."""
         return render.reverse_video(text)
 
-    def highlight_day_within_bounds(self, line: str, day: str, bounds: CalendarQuarterColumnBounds) -> str:
+    def highlight_day_within_bounds(self, line: str, day: str, bounds: _CalendarQuarterColumnBounds) -> str:
         """Return the line with a day highlighted only within the bounds."""
         colored_text = line[bounds.start:bounds.end].replace(day, self.highlight(day))
 

@@ -17,7 +17,7 @@ class _Match(NamedTuple):
     line: str
 
 
-class Styles:
+class _Styles:
     """Namespace for ANSI styling constants."""
     COLON: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
     FILE_NAME: Final[str] = ansi.ForegroundColors.BRIGHT_MAGENTA
@@ -84,7 +84,7 @@ class Scan(TextProgram):
                 self.found_any_match = True
 
                 if self.print_color and not self.args.invert_match:
-                    line = render.style_pattern_matches(line, patterns=self.patterns, ansi_style=Styles.MATCH)
+                    line = render.style_pattern_matches(line, patterns=self.patterns, ansi_style=_Styles.MATCH)
 
                 matches.append(_Match(line_number, line))
 
@@ -152,7 +152,8 @@ class Scan(TextProgram):
         file_name = ""
 
         if self.can_print_file_header():
-            file_name = self.render_file_header(origin_file, file_name_style=Styles.FILE_NAME, colon_style=Styles.COLON)
+            file_name = self.render_file_header(origin_file, file_name_style=_Styles.FILE_NAME,
+                                                colon_style=_Styles.COLON)
 
         if self.is_printing_counts():
             print(f"{file_name}{len(matches)}")
@@ -166,9 +167,9 @@ class Scan(TextProgram):
                 if self.args.line_number:
                     if self.print_color:
                         print(
-                            f"{Styles.LINE_NUMBER}"
+                            f"{_Styles.LINE_NUMBER}"
                             f"{line_number:>{padding}}"
-                            f"{Styles.COLON}:"
+                            f"{_Styles.COLON}:"
                             f"{ansi.RESET}",
                             end=""
                         )

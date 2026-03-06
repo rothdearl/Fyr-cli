@@ -7,16 +7,12 @@ import requests
 
 from pyrcli.cli import CLIProgram, JsonObject
 
+# Endpoint returning public IP geolocation data in JSON.
+_IPINFO_URL: Final[str] = "https://ipinfo.io/json"
+
 
 class Where(CLIProgram):
-    """
-    Displays current IP-based location information.
-
-    Attributes:
-        IPINFO_URL: Endpoint returning public IP geolocation data in JSON.
-    """
-
-    IPINFO_URL: Final[str] = "https://ipinfo.io/json"
+    """Command implementation for displaying current IP-based location information."""
 
     def __init__(self) -> None:
         """Initialize a new instance."""
@@ -48,7 +44,7 @@ class Where(CLIProgram):
     def execute(self) -> None:
         """Execute the command using the prepared runtime state."""
         try:
-            response = requests.get(self.IPINFO_URL, timeout=5)
+            response = requests.get(_IPINFO_URL, timeout=5)
 
             # Ensure a successful response.
             response.raise_for_status()

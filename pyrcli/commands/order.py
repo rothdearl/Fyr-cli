@@ -21,7 +21,7 @@ _DIGIT_TOKEN_REGEX: Final[str] = r"(\d+)"
 _NON_WORD_OR_WHITESPACE_REGEX: Final[str] = r"[^\w\s]+"
 
 
-class Styles:
+class _Styles:
     """Namespace for ANSI styling constants."""
     COLON: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
     FILE_NAME: Final[str] = ansi.ForegroundColors.BRIGHT_MAGENTA
@@ -235,7 +235,7 @@ class Order(TextProgram):
     def print_file_header(self, file_name: str) -> None:
         """Print the rendered file header for ``file_name``."""
         if self.can_print_file_header():
-            print(self.render_file_header(file_name, file_name_style=Styles.FILE_NAME, colon_style=Styles.COLON))
+            print(self.render_file_header(file_name, file_name_style=_Styles.FILE_NAME, colon_style=_Styles.COLON))
 
     def sort_and_print_lines(self, lines: list[str]) -> None:
         """Sort and print lines to standard output according to command-line options."""

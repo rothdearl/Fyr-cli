@@ -10,14 +10,14 @@ from typing import Final, NoReturn, override
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
 
-class Styles:
+class _Styles:
     """Namespace for ANSI styling constants."""
     COLON: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
     FILE_NAME: Final[str] = ansi.ForegroundColors.BRIGHT_MAGENTA
 
 
 class Track(TextProgram):
-    """Prints the last part of files, optionally following new lines."""
+    """Command implementation for printing the last part of files, optionally following new lines."""
 
     def __init__(self) -> None:
         """Initialize a new instance."""
@@ -128,7 +128,7 @@ class Track(TextProgram):
     def print_file_header(self, file_name: str) -> None:
         """Print the rendered file header for ``file_name``."""
         if self.can_print_file_header():
-            print(self.render_file_header(file_name, file_name_style=Styles.FILE_NAME, colon_style=Styles.COLON))
+            print(self.render_file_header(file_name, file_name_style=_Styles.FILE_NAME, colon_style=_Styles.COLON))
 
     def print_lines(self, lines: Sequence[str]) -> None:
         """Print lines to standard output."""

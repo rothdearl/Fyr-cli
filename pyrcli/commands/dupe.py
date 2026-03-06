@@ -8,7 +8,7 @@ from typing import Final, NoReturn, override
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
 
-class Styles:
+class _Styles:
     """Namespace for ANSI styling constants."""
     COLON: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
     FILE_NAME: Final[str] = ansi.ForegroundColors.BRIGHT_MAGENTA
@@ -179,7 +179,7 @@ class Dupe(TextProgram):
     def print_file_header(self, file_name: str) -> None:
         """Print the rendered file header for ``file_name``."""
         if self.can_print_file_header():
-            print(self.render_file_header(file_name, file_name_style=Styles.FILE_NAME, colon_style=Styles.COLON))
+            print(self.render_file_header(file_name, file_name_style=_Styles.FILE_NAME, colon_style=_Styles.COLON))
 
     def print_line_groups(self, line_groups: Iterable[Sequence[str]], *, origin_file: str) -> None:
         """Print line groups as duplicates, unique lines, or grouped output."""
@@ -201,9 +201,9 @@ class Dupe(TextProgram):
                     if line_index == 0:
                         if self.print_color:
                             group_count_str = (
-                                f"{Styles.GROUP_COUNT}"
+                                f"{_Styles.GROUP_COUNT}"
                                 f"{group_count:>{self.args.count_width},}"
-                                f"{Styles.COLON}:"
+                                f"{_Styles.COLON}:"
                                 f"{ansi.RESET}"
                             )
                         else:

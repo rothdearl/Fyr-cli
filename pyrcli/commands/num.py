@@ -7,8 +7,15 @@ from typing import Final, NoReturn, override
 
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
+# Mapping of short format keys to format-spec prefixes used when formatting line numbers.
+_FORMAT_PREFIXES: Final[dict[str, str]] = {
+    "ln": "<",  # Left-aligned
+    "rn": ">",  # Right-aligned
+    "rz": "0>",  # Zero-padded, right-aligned
+}
 
-class Styles:
+
+class _Styles:
     """Namespace for ANSI styling constants."""
     COLON: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
     FILE_NAME: Final[str] = ansi.ForegroundColors.BRIGHT_MAGENTA
@@ -16,18 +23,7 @@ class Styles:
 
 
 class Num(TextProgram):
-    """
-    Numbers lines from files and prints them to standard output.
-
-    Attributes:
-        FORMAT_PREFIXES: Mapping of short format keys to format-spec prefixes used when formatting line numbers.
-    """
-
-    FORMAT_PREFIXES: Final[dict[str, str]] = {
-        "ln": "<",  # Left-aligned
-        "rn": ">",  # Right-aligned
-        "rz": "0>",  # Zero-padded, right-aligned
-    }
+    """Command implementation for numbering lines from files and printing them to standard output."""
 
     def __init__(self) -> None:
         """Initialize a new instance."""
@@ -96,7 +92,7 @@ class Num(TextProgram):
     def number_lines(self, lines: Iterable[str]) -> None:
         """Number and print lines to standard output according to command-line arguments."""
         blank_line_count = 0
-        format_prefix = self.FORMAT_PREFIXES[self.args.number_format]
+        format_prefix = _FORMAT_PREFIXES[self.args.number_format]
         line_number = self.args.number_start - 1
 
         for line in text.iter_normalized_lines(lines):
@@ -126,13 +122,13 @@ class Num(TextProgram):
     def print_file_header(self, file_name: str) -> None:
         """Print the rendered file header for ``file_name``."""
         if self.can_print_file_header():
-            print(self.render_file_header(file_name, file_name_style=Styles.FILE_NAME, colon_style=Styles.COLON))
+            print(self.render_file_header(file_name, file_name_style=_Styles.FILE_NAME, colon_style=_Styles.COLON))
 
     def render_line_number(self, line: str, line_number: int, *, format_prefix: str) -> str:
         """Prefix a formatted line number to the line."""
         if self.print_color:
             return (
-                f"{Styles.LINE_NUMBER}"
+                f"{_Styles.LINE_NUMBER}"
                 f"{line_number:{format_prefix}{self.args.number_width}}"
                 f"{ansi.RESET}"
                 f"{self.args.number_separator}"

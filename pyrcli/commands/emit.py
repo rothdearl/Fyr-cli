@@ -10,7 +10,7 @@ from pyrcli.cli import CLIProgram, terminal, text
 
 
 class Emit(CLIProgram):
-    """Writes strings to standard output."""
+    """Command implementation for writing strings to standard output."""
 
     def __init__(self) -> None:
         """Initialize a new instance."""

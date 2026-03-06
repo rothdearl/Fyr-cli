@@ -8,14 +8,14 @@ from typing import Final, NoReturn, override
 from pyrcli.cli import TextProgram, ansi, io, terminal, text
 
 
-class Styles:
+class _Styles:
     """Namespace for ANSI styling constants."""
     END_MARKER: Final[str] = ansi.ForegroundColors.BRIGHT_BLUE
     NUMBER: Final[str] = ansi.ForegroundColors.BRIGHT_GREEN
     TAB_MARKER: Final[str] = ansi.ForegroundColors.BRIGHT_CYAN
 
 
-class Whitespace:
+class _Whitespace:
     """Namespace for whitespace replacement constants."""
     END_MARKER: Final[str] = "$"
     TAB_MARKER: Final[str] = ">···"
@@ -23,7 +23,7 @@ class Whitespace:
 
 class Glue(TextProgram):
     """
-    Concatenates files and standard input to standard output.
+    Command implementation for concatenating files and standard input to standard output.
 
     Attributes:
         line_number: Line number to be printed with output lines.
@@ -51,9 +51,9 @@ class Glue(TextProgram):
         blank_group.add_argument("-s", "--squeeze-blank", action="store_true", help="suppress repeated blank lines")
         blank_group.add_argument("--no-blank", action="store_true", help="suppress blank lines")
         parser.add_argument("-E", "--show-ends", action="store_true",
-                            help=f"display '{Whitespace.END_MARKER}' at end of each line")
+                            help=f"display '{_Whitespace.END_MARKER}' at end of each line")
         parser.add_argument("-T", "--show-tabs", action="store_true",
-                            help=f"display tab characters as '{Whitespace.TAB_MARKER}'")
+                            help=f"display tab characters as '{_Whitespace.TAB_MARKER}'")
         parser.add_argument("--color", choices=("on", "off"), default="on",
                             help="use color for numbers and whitespace (default: on)")
         parser.add_argument("--latin1", action="store_true", help="read FILES as latin-1 (default: utf-8)")
@@ -119,7 +119,7 @@ class Glue(TextProgram):
         """Prefix a formatted line number to the line."""
         if self.print_color:
             return (
-                f"{Styles.NUMBER}"
+                f"{_Styles.NUMBER}"
                 f"{self.line_number:>{self.args.number_width}}"
                 f"{ansi.RESET}"
                 f" {line}"
@@ -134,25 +134,25 @@ class Glue(TextProgram):
         if self.args.show_tabs:
             if self.print_color:
                 tab_marker = (
-                    f"{Styles.TAB_MARKER}"
-                    f"{Whitespace.TAB_MARKER}"
+                    f"{_Styles.TAB_MARKER}"
+                    f"{_Whitespace.TAB_MARKER}"
                     f"{ansi.RESET}"
                 )
 
                 rendered = rendered.replace("\t", tab_marker)
             else:
-                rendered = rendered.replace("\t", Whitespace.TAB_MARKER)
+                rendered = rendered.replace("\t", _Whitespace.TAB_MARKER)
 
         if self.args.show_ends:
             if self.print_color:
                 rendered = (
                     f"{rendered}"
-                    f"{Styles.END_MARKER}"
-                    f"{Whitespace.END_MARKER}"
+                    f"{_Styles.END_MARKER}"
+                    f"{_Whitespace.END_MARKER}"
                     f"{ansi.RESET}"
                 )
             else:
-                rendered = f"{rendered}{Whitespace.END_MARKER}"
+                rendered = f"{rendered}{_Whitespace.END_MARKER}"
 
         return rendered
 
