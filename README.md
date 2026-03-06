@@ -400,7 +400,7 @@ Handled additionally in `TextProgram`:
 
 ## Optional Method
 
-### check_for_errors(self)
+### exit_if_errors(self)
 
 Override **only if** the program needs additional end-of-run validation.
 
@@ -524,7 +524,7 @@ import sys
 import time
 from typing import NoReturn, override
 
-from pyrcli.cli import CLIProgram, terminal
+from pyrcli.cli import CLIProgram
 from pyrcli.cli.progress import ProgressBar, Spinner
 
 
@@ -547,18 +547,16 @@ class CLIProgramDemo(CLIProgram):
     def execute(self) -> None:
         files = ("file_1", "file_2", "file_3", "file_4", "file_5", "file_6", "file_7", "file_8")
         files_to_update = len(files)
-        text_stream = sys.stderr
-        visible = terminal.stderr_is_terminal()
 
         # Find files to update.
-        with Spinner(text_stream=text_stream, visible=visible, message_position="left",
+        with Spinner(text_stream=sys.stdout, message_position="left",
                      final_message=f"Found {files_to_update} files that require an update.") as spin:
             for _ in range(files_to_update * 2):
                 spin.advance(message="Finding files to update")
                 time.sleep(0.125)  # Simulate finding a file.
 
         # Download updates.
-        with ProgressBar(total=files_to_update, text_stream=text_stream, visible=visible, clear_on_finish=True,
+        with ProgressBar(total=files_to_update, text_stream=sys.stdout, clear_on_finish=True,
                          final_message="Updates downloaded.") as bar:
             bar.start(message="Connecting to server...")
             time.sleep(.5)  # Simulate connecting to a server.
@@ -568,7 +566,7 @@ class CLIProgramDemo(CLIProgram):
                 bar.advance(message=f"Downloaded{file_index:>2} of {files_to_update}")
 
         # Apply updates.
-        with ProgressBar(total=files_to_update, text_stream=text_stream, visible=visible, clear_on_finish=True,
+        with ProgressBar(total=files_to_update, text_stream=sys.stdout, clear_on_finish=True,
                          final_message="Updates applied.") as bar:
             bar.start(message="Applying updates to files...")
             time.sleep(.25)  # Simulate starting the update process.
@@ -578,7 +576,7 @@ class CLIProgramDemo(CLIProgram):
                 bar.advance(message=f"Updated {file_index:>2} of {files_to_update}")
 
         # Perform any cleanup.
-        with Spinner(text_stream=text_stream, visible=visible, message_position="left") as spin:
+        with Spinner(text_stream=sys.stdout, message_position="left") as spin:
             for _ in range(files_to_update):
                 spin.advance(message="Cleaning up")
                 time.sleep(0.125)  # Simulate cleaning up.
