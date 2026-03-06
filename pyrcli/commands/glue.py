@@ -87,10 +87,10 @@ class Glue(TextProgram):
     def print_lines(self, lines: Iterable[str]) -> None:
         """Print lines to standard output, applying numbering, whitespace rendering, and blank-line handling."""
         blank_line_count = 0
-        number_lines = self.args.number or self.args.number_nonblank
+        numbering_enabled = self.args.number or self.args.number_nonblank
 
         for line in text.iter_normalized_lines(lines):
-            print_number = number_lines
+            print_number = numbering_enabled
 
             if not line:
                 blank_line_count += 1

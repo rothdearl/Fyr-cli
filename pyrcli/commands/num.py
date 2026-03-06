@@ -89,6 +89,12 @@ class Num(TextProgram):
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_name = True
 
+        # Decode escape sequences in --number-separator.
+        try:
+            self.args.number_separator = self.args.number_separator.encode().decode("unicode_escape")
+        except UnicodeDecodeError:
+            self.print_error_and_exit("--number-separator contains an invalid escape sequence")
+
     def number_lines(self, lines: Iterable[str]) -> None:
         """Number and print lines to standard output according to command-line arguments."""
         blank_line_count = 0
@@ -159,12 +165,6 @@ class Num(TextProgram):
 
         if self.args.number_width < 1:
             self.print_error_and_exit("--number-width must be >= 1")
-
-        # Decode escape sequences in --number-separator.
-        try:
-            self.args.number_separator = self.args.number_separator.encode().decode("unicode_escape")
-        except UnicodeDecodeError:
-            self.print_error_and_exit("--number-separator contains an invalid escape sequence")
 
 
 def main() -> int | NoReturn:

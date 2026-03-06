@@ -116,7 +116,7 @@ class Show(TextProgram):
                     rendered = self.render_ends(rendered)
 
                 if self.args.line_numbers:
-                    rendered = self.render_line_number(rendered, line_number, padding)
+                    rendered = self.render_line_number(rendered, line_number, padding=padding)
 
                 print(rendered)
 
@@ -136,7 +136,7 @@ class Show(TextProgram):
 
         return f"{line}{_Whitespace.END_MARKER}"
 
-    def render_line_number(self, line: str, line_number: int, padding: int) -> str:
+    def render_line_number(self, line: str, line_number: int, *, padding: int) -> str:
         """Prefix the line with a line number, right-aligned to the specified padding."""
         if self.print_color:
             return (
@@ -149,7 +149,7 @@ class Show(TextProgram):
         return f"{line_number:>{padding}} {line}"
 
     def render_spaces(self, line: str) -> str:
-        """Replace spaces and trailing spaces with visible markers."""
+        """Replace interior spaces and trailing spaces with distinct visible markers."""
         rendered = line
         trailing_count = len(rendered) - len(rendered.rstrip(" "))
 
