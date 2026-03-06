@@ -106,7 +106,7 @@ class Seek(CLIProgram):
         super().exit_if_errors()
 
         if not self.found_any_match:
-            raise SystemExit(self.NO_MATCHES_EXIT_CODE)
+            raise SystemExit(_NO_MATCHES_EXIT_CODE)
 
     @override
     def initialize_runtime_state(self) -> None:
