@@ -1,4 +1,4 @@
-"""Provides a program for printing lines matching patterns in files."""
+"""Implements a program that prints lines matching patterns in files."""
 
 import argparse
 import sys
@@ -24,7 +24,7 @@ class Styles:
 
 class Scan(TextProgram):
     """
-    Program for printing lines matching patterns in files.
+    Prints lines matching patterns in files.
 
     Attributes:
         NO_MATCHES_EXIT_CODE: Exit code when no matches are found.
@@ -35,6 +35,7 @@ class Scan(TextProgram):
     NO_MATCHES_EXIT_CODE: Final[int] = 1
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="scan", error_exit_code=2)
 
         self.found_any_match: bool = False

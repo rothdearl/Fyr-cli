@@ -1,4 +1,4 @@
-"""Provides a program for displaying the current calendar, with optional date and time."""
+"""Implements a program that displays the current calendar, with optional date and time."""
 
 import argparse
 import calendar
@@ -16,7 +16,7 @@ class CalendarQuarterColumnBounds(NamedTuple):
 
 class When(CLIProgram):
     """
-    Program for displaying the current calendar, with optional date and time.
+    Displays the current calendar, with optional date and time.
 
     Attributes:
         DEFAULT_DATETIME_FORMAT: Default format for printing the date and time.
@@ -25,6 +25,7 @@ class When(CLIProgram):
     DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p" if os_info.IS_POSIX else "%a %b %d %I:%M%p"
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="when")
 
     @override

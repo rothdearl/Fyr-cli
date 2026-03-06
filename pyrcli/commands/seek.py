@@ -1,4 +1,4 @@
-"""Provides a program for searching for files in a directory hierarchy."""
+"""Implements a program that searches for files in a directory hierarchy."""
 
 import argparse
 import os
@@ -18,7 +18,7 @@ class Styles:
 
 class Seek(CLIProgram):
     """
-    Program for searching for files in a directory hierarchy.
+    Searches for files in a directory hierarchy.
 
     Attributes:
         NO_MATCHES_EXIT_CODE: Exit code when no matches are found.
@@ -30,6 +30,7 @@ class Seek(CLIProgram):
     NO_MATCHES_EXIT_CODE: Final[int] = 1
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="seek", error_exit_code=2)
 
         self.found_any_match: bool = False

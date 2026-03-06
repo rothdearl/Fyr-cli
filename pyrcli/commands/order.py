@@ -1,4 +1,4 @@
-"""Provides a program for sorting files and prints them to standard output."""
+"""Implements a program that sorts files and prints them to standard output."""
 
 import argparse
 import datetime
@@ -20,7 +20,7 @@ class Styles:
 
 class Order(TextProgram):
     """
-    Program for sorting files and prints them to standard output.
+    Sorts files and prints them to standard output.
 
     Attributes:
         CURRENCY_SANITIZE_REGEX: Matches one or more consecutive characters that are not digits, commas, or periods.
@@ -33,6 +33,7 @@ class Order(TextProgram):
     NON_WORD_OR_WHITESPACE_REGEX: Final[str] = r"[^\w\s]+"
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="order")
 
     @override

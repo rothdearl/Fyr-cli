@@ -1,4 +1,4 @@
-"""Abstract base class for command-line programs with a standard parse-configure-execute lifecycle"""
+"""Abstract base class for command-line programs with a standard parse–configure–execute lifecycle."""
 
 import argparse
 import sys
@@ -17,7 +17,7 @@ _SIGPIPE_EXIT_CODE: Final[int] = 141
 
 class CLIProgram(ABC):
     """
-    Base class for command-line programs with a standard parse-configure-execute lifecycle.
+    Base class for command-line programs with a standard parse–configure–execute lifecycle.
 
     Attributes:
         args: Parsed command-line arguments.
@@ -29,6 +29,7 @@ class CLIProgram(ABC):
     """
 
     def __init__(self, *, name: str, error_exit_code: int = _DEFAULT_ERROR_EXIT_CODE) -> None:
+        """Initialize a new instance."""
         self.args: argparse.Namespace | None = None
         self.error_exit_code: Final[int] = error_exit_code
         self.has_errors: bool = False
@@ -36,16 +37,16 @@ class CLIProgram(ABC):
         self.print_color: bool = False
         self.version: Final[str] = __version__
 
-    def _configure_from_options(self) -> None:
-        """Configure the program from parsed options by running the option lifecycle hooks in order."""
+    def _parse_arguments(self) -> None:
+        """Parse command-line arguments to initialize program options."""
+        self.args = self.build_arguments().parse_args()
+
+    def _prepare_runtime_state(self) -> None:
+        """Prepare the runtime state by running the option lifecycle hooks in order."""
         self.check_option_dependencies()
         self.validate_option_ranges()
         self.normalize_options()
         self.initialize_runtime_state()
-
-    def _parse_arguments(self) -> None:
-        """Parse command-line arguments to initialize program options."""
-        self.args = self.build_arguments().parse_args()
 
     @abstractmethod
     def build_arguments(self) -> argparse.ArgumentParser:
@@ -96,7 +97,12 @@ class CLIProgram(ABC):
         Run the full program lifecycle and normalize process termination.
 
         - Configures the environment.
-        - Parses arguments and prepares runtime state.
+        - Parses arguments and prepares runtime state by running the option lifecycle hooks in order:
+
+          - ``check_option_dependencies()``
+          - ``validate_option_ranges()``
+          - ``normalize_options()``
+          - ``initialize_runtime_state()``
         - Executes the command.
         - Handles errors.
         - Returns ``0`` on success.
@@ -113,7 +119,7 @@ class CLIProgram(ABC):
                 signal(SIGPIPE, SIG_DFL)
 
             self._parse_arguments()
-            self._configure_from_options()
+            self._prepare_runtime_state()
             self.execute()
             self.exit_if_errors()
         except BrokenPipeError:

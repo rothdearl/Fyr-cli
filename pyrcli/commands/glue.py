@@ -1,4 +1,4 @@
-"""Provides a program for concatenating files and standard input to standard output."""
+"""Implements a program that concatenates files and standard input to standard output."""
 
 import argparse
 import sys
@@ -23,13 +23,14 @@ class Whitespace:
 
 class Glue(TextProgram):
     """
-    Program for concatenating files and standard input to standard output.
+    Concatenates files and standard input to standard output.
 
     Attributes:
         line_number: Line number to be printed with output lines.
     """
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="glue")
 
         self.line_number: int = 0

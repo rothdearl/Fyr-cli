@@ -32,13 +32,14 @@ def style_pattern_matches(text: str, *, patterns: Collection[re.Pattern[str]], a
     if not patterns:
         return text
 
-    # Collect, merge overlapping, and style match ranges.
+    # Collect match ranges.
     ranges = []
 
     for pattern in patterns:
         for match in pattern.finditer(text):
             ranges.append((match.start(), match.end()))
 
+    # Merge overlapping match ranges.
     merged_ranges = []
 
     for start, end in sorted(ranges):
@@ -47,6 +48,7 @@ def style_pattern_matches(text: str, *, patterns: Collection[re.Pattern[str]], a
         else:
             merged_ranges.append((start, end))
 
+    # Style match ranges.
     styled_text = []
     prev_end = 0
 

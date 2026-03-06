@@ -12,13 +12,14 @@ from .io import FileInfo, iter_stdin_file_names, read_text_files
 
 class TextProgram(CLIProgram, ABC):
     """
-    Base class for text-file processing programs, extending ``CLIProgram`` with stream handling and encoding support.
+    Base class for command-line programs that process text files.
 
     Attributes:
         encoding: Encoding for reading and writing to files (default: ``"utf-8"``).
     """
 
     def __init__(self, *, name: str, error_exit_code: int = 1) -> None:
+        """Initialize a new instance."""
         super().__init__(name=name, error_exit_code=error_exit_code)
 
         self.encoding: str = "utf-8"
@@ -45,7 +46,7 @@ class TextProgram(CLIProgram, ABC):
         """
         Process each text file.
 
-        - Delegates stream handling to ``handle_text_stream``.
+        - Delegates stream handling to ``handle_text_stream()``.
         - Returns the names of files successfully processed.
         """
         processed_files = []

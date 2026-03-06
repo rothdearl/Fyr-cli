@@ -1,4 +1,4 @@
-"""Provides a program for counting lines, words, and characters in files."""
+"""Implements a program that counts lines, words, and characters in files."""
 
 import argparse
 import re
@@ -26,7 +26,7 @@ class Styles:
 
 class Tally(TextProgram):
     """
-    Program for counting lines, words, and characters in files.
+    Counts lines, words, and characters in files.
 
     Attributes:
         WORD_PATTERN: Matches a whole word token.
@@ -38,6 +38,7 @@ class Tally(TextProgram):
     WORD_PATTERN: Final[re.Pattern[str]] = re.compile(r"\b\w+\b")
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="tally")
 
         self.files_counted: int = 0

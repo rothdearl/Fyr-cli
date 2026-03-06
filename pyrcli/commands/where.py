@@ -1,4 +1,4 @@
-"""Provides a program for displaying current IP-based location information."""
+"""Implements a program that displays current IP-based location information."""
 
 import argparse
 from typing import Final, NoReturn, override
@@ -10,7 +10,7 @@ from pyrcli.cli import CLIProgram, JsonObject
 
 class Where(CLIProgram):
     """
-    Program for displaying current IP-based location information.
+    Displays current IP-based location information.
 
     Attributes:
         IPINFO_URL: Endpoint returning public IP geolocation data in JSON.
@@ -19,6 +19,7 @@ class Where(CLIProgram):
     IPINFO_URL: Final[str] = "https://ipinfo.io/json"
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="where")
 
     @override

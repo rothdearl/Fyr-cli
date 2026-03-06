@@ -1,4 +1,4 @@
-"""Provides a program for printing the first part of files."""
+"""Implements a program that prints the first part of files."""
 
 import argparse
 import sys
@@ -16,9 +16,10 @@ class Styles:
 
 
 class Peek(TextProgram):
-    """Program for printing the first part of files."""
+    """Prints the first part of files."""
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="peek")
 
     @override

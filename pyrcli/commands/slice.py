@@ -1,4 +1,4 @@
-"""Provides a program for splitting lines in files into fields."""
+"""Implements a program that splits lines in files into fields."""
 
 import argparse
 import sys
@@ -16,13 +16,14 @@ class Styles:
 
 class Slice(TextProgram):
     """
-    Program for splitting lines in files into fields.
+    Splits lines in files into fields.
 
     Attributes:
         selected_fields: Selected fields to print.
     """
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="slice")
 
         self.selected_fields: list[int] = []

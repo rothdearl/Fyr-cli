@@ -1,4 +1,4 @@
-"""Provides a program for numbering lines from files and prints them to standard output."""
+"""Implements a program that numbers lines from files and prints them to standard output."""
 
 import argparse
 import sys
@@ -17,7 +17,7 @@ class Styles:
 
 class Num(TextProgram):
     """
-    Program for numbering lines from files and prints them to standard output.
+    Numbers lines from files and prints them to standard output.
 
     Attributes:
         FORMAT_PREFIXES: Mapping of short format keys to format-spec prefixes used when formatting line numbers.
@@ -30,6 +30,7 @@ class Num(TextProgram):
     }
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="num")
 
     @override

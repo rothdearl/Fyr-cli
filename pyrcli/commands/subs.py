@@ -1,4 +1,4 @@
-"""Provides a program for replacing matching text in files."""
+"""Implements a program that replaces matching text in files."""
 
 import argparse
 import re
@@ -17,13 +17,14 @@ class Styles:
 
 class Subs(TextProgram):
     """
-    Program for replacing matching text in files.
+    Replaces matching text in files.
 
     Attributes:
         pattern: Compiled pattern to match.
     """
 
     def __init__(self) -> None:
+        """Initialize a new instance."""
         super().__init__(name="subs")
 
         self.pattern: re.Pattern[str] | None = None
