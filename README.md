@@ -18,14 +18,14 @@ All Pyr-CLI commands report a single, project-wide version sourced from `pyproje
 
 Pyr-CLI follows a small set of operational rules:
 
-- **Single responsibility** --- each program performs one operation on a text stream or structured input.
-- **Pipeline first** --- all tools read from `stdin` when no input file is provided and write results to `stdout`.
-- **Deterministic by default** --- identical input produces identical output unless the program explicitly depends on
+- **Single responsibility** — each program performs one operation on a text stream or structured input.
+- **Pipeline first** — all tools read from `stdin` when no input file is provided and write results to `stdout`.
+- **Deterministic by default** — identical input produces identical output unless the program explicitly depends on
   time, environment, or filesystem state.
-- **Explicit side effects** --- programs that touch the filesystem or external state document that behavior.
-- **TTY-aware formatting** --- ANSI rendering is applied only when output is a terminal; otherwise plain text is
+- **Explicit side effects** — programs that touch the filesystem or external state document that behavior.
+- **TTY-aware formatting** — ANSI rendering is applied only when output is a terminal; otherwise plain text is
   emitted.
-- **Stable output contracts** --- output shape and ordering are defined and suitable for downstream processing.
+- **Stable output contracts** — output shape and ordering are defined and suitable for downstream processing.
 
 These constraints make the tools predictable, scriptable, and safe for composition.
 
@@ -48,6 +48,13 @@ These dependencies must be available in the active Python environment before run
 ## Installation
 
 Pyr-CLI is installed using `pip`.
+
+> Some environments (such as embedded Python distributions) may require setuptools to be installed manually before
+> building:
+
+```bash
+pip install --upgrade setuptools
+````
 
 ### Development Install (Editable)
 
@@ -125,11 +132,13 @@ All filesystem and terminal interaction is isolated here. This makes core logic 
 
 ## Output Conventions
 
-- **stdout** --- primary program output
-- **stderr** --- diagnostics and error messages
+- **stdout** — primary program output
+- **stderr** — diagnostics and error messages
 - **Exit codes**
-    - `0` --- success
-    - `>0` --- user error, invalid input, or system failure
+    - `0` — success
+    - `1` — no matches found (scan, seek) or user/system error
+    - `2` — user/system error (scan, seek)
+    - `>0` — user error, invalid input, or system failure (all other commands)
 
 Unless a tool explicitly documents ordering semantics, output preserves the input order.
 
@@ -177,7 +186,7 @@ A minimal command for displaying files with optional whitespace rendering.
 
 ### `slice`
 
-A program that splits lines in files into fields.
+A minimal, cut-like command that splits lines in files into fields.
 
 ### `subs`
 
@@ -529,6 +538,7 @@ from pyrcli.cli.progress import ProgressBar, Spinner
 
 
 class CLIProgramDemo(CLIProgram):
+    """Command implementation for demoing progress indicators."""
     def __init__(self) -> None:
         """Initialize a new instance."""
         super().__init__(name="demo")
@@ -545,6 +555,7 @@ class CLIProgramDemo(CLIProgram):
 
     @override
     def execute(self) -> None:
+        """Execute the command using the prepared runtime state."""
         files = ("file_1", "file_2", "file_3", "file_4", "file_5", "file_6", "file_7", "file_8")
         files_to_update = len(files)
 
@@ -619,7 +630,7 @@ class _Styles:
 
 
 class TextProgramDemo(TextProgram):
-    """Prints files to standard output."""
+    """Command implementation for printing files to standard output."""
 
     def __init__(self) -> None:
         """Initialize a new instance."""
@@ -669,7 +680,7 @@ class TextProgramDemo(TextProgram):
     @override
     def normalize_options(self) -> None:
         """Apply derived defaults and adjust option values for consistent internal use."""
-        # Set --no-file-name to True if there are no files and --stdin-files=False.
+        # Suppress file headers when standard input is the only source.
         if not self.args.files and not self.args.stdin_files:
             self.args.no_file_name = True
 
