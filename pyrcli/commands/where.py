@@ -75,7 +75,7 @@ class Where(CLIProgram):
 
     @staticmethod
     def format_coordinates_cardinal(coordinates: str) -> str:
-        """Return coordinates in a human-readable cardinal format."""
+        """Return ``coordinates`` formatted with cardinal direction suffixes (e.g., N/S or E/W)."""
         try:
             lat_str, lon_str = (part.strip() for part in coordinates.split(",", 1))
 

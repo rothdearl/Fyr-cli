@@ -12,7 +12,7 @@ _DEFAULT_DATETIME_FORMAT: Final[str] = "%a %b %-d %-I:%M%p" if os_info.IS_POSIX 
 
 
 class _CalendarQuarterColumnBounds(NamedTuple):
-    """Column bounds for a month within a quarter row from ``calendar.calendar(..., m=3)`` output."""
+    """Character column bounds for a single month within a three-month quarter row."""
     start: int
     end: int
 
@@ -74,7 +74,7 @@ class When(CLIProgram):
 
     @staticmethod
     def get_quarter_column_bounds_for_month(month: int) -> _CalendarQuarterColumnBounds:
-        """Return character column bounds for a month within a quarter row of ``calendar.calendar(..., m=3)`` output."""
+        """Return the character column bounds for ``month`` within a three-month quarter row."""
         bounds_by_index = (
             _CalendarQuarterColumnBounds(0, 20),
             _CalendarQuarterColumnBounds(26, 46),
@@ -85,7 +85,7 @@ class When(CLIProgram):
 
     @staticmethod
     def highlight(text: str) -> str:
-        """Return the text wrapped in reverse-video ANSI SGR escape codes."""
+        """Return ``text`` highlighted for the current day or month."""
         return render.reverse_video(text)
 
     def highlight_day_within_bounds(self, line: str, day: str, bounds: _CalendarQuarterColumnBounds) -> str:
@@ -104,7 +104,10 @@ class When(CLIProgram):
         print(month[1])
 
         # Print weeks highlighting the current day of the month.
+        # Pad day to two characters; ensures " 1" cannot match " 11".
         day = f"{date.day:>2}"
+
+        # Stop after the first match; the same day number may appear in subsequent weeks.
         found_day = False
 
         for output in month[2:]:
@@ -142,7 +145,10 @@ class When(CLIProgram):
         print(year[quarter_header_index + 1])
 
         # Print weeks highlighting the current day of the month.
+        # Pad day to two characters; ensures " 1" cannot match " 11".
         day = f"{date.day:>2}"
+
+        # Stop after the first match; the same day number may appear in subsequent weeks.
         found_day = False
 
         for output in year[quarter_header_index + 2:]:
@@ -164,7 +170,10 @@ class When(CLIProgram):
         year = text_calendar.formatyear(date.year, w=2, l=1, c=6, m=3).splitlines()  # Use defaults for consistency.
 
         # Print months highlighting the current month and day.
+        # Pad day to two characters; ensures " 1" cannot match " 11".
         day = f"{date.day:>2}"
+
+        # Day highlighting is restricted to the current month's column bounds.
         found_day, found_month = False, False
 
         for output in year:
