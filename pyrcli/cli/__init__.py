@@ -48,6 +48,7 @@ from .render import (
     style,
     style_pattern_matches,
 )
+from .reporters import raises
 from .terminal import (
     stderr_is_redirected,
     stderr_is_terminal,
@@ -124,6 +125,9 @@ __all__: Final[tuple[str, ...]] = (
     "reverse_video",
     "style",
     "style_pattern_matches",
+
+    # reporters
+    "raises",
 
     # terminal
     "stderr_is_redirected",
