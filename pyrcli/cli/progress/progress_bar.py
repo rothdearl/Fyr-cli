@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import ClassVar, Final, final
 
-from pyrcli.cli.ansi import RESET
+from pyrcli.cli import RESET
 from ._base import _ProgressIndicator
 from .types import ProgressMessage
 
